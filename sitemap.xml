@@ -1,0 +1,676 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  
+  <url>
+    <loc>http://zhengyk.cn/2019/04/10/es/introduction-practice/</loc>
+    
+    <lastmod>2019-12-27T02:17:03.335Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://zhengyk.cn/2018/08/23/java/AtomicInteger/</loc>
+    
+    <lastmod>2019-12-20T06:31:44.839Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://zhengyk.cn/2018/05/25/springcloud/eureka/</loc>
+    
+    <lastmod>2019-12-09T09:16:20.949Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://zhengyk.cn/2019/04/15/springboot/spring-boot-config-load-order/</loc>
+    
+    <lastmod>2019-12-01T03:59:48.799Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://zhengyk.cn/chat/index.html</loc>
+    
+    <lastmod>2019-11-04T08:49:50.602Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://zhengyk.cn/play/index.html</loc>
+    
+    <lastmod>2019-11-04T08:49:36.875Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://zhengyk.cn/2019/03/30/java/CollectorstoMapNPE/</loc>
+    
+    <lastmod>2019-10-30T09:02:24.561Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://zhengyk.cn/2018/11/30/mq/mqtt/mqtt/</loc>
+    
+    <lastmod>2019-10-24T06:37:31.128Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://zhengyk.cn/2017/10/24/spring/AopLog-Exeption/</loc>
+    
+    <lastmod>2019-10-18T08:56:21.036Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://zhengyk.cn/2018/06/22/spring/Rollback-rule/</loc>
+    
+    <lastmod>2019-10-18T08:56:21.023Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://zhengyk.cn/2017/10/10/spring/ResponseBody/</loc>
+    
+    <lastmod>2019-10-18T08:56:21.012Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://zhengyk.cn/2018/11/15/mq/kafka/kafka-note/</loc>
+    
+    <lastmod>2019-10-18T08:56:20.680Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://zhengyk.cn/2018/03/25/mq/rabbitmq/ack-durable/</loc>
+    
+    <lastmod>2019-10-18T08:56:20.657Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://zhengyk.cn/2018/03/30/mq/rabbitmq/delay-queue/</loc>
+    
+    <lastmod>2019-10-18T08:56:20.647Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://zhengyk.cn/2018/03/26/mq/rabbitmq/pub-sub/</loc>
+    
+    <lastmod>2019-10-18T08:56:20.641Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://zhengyk.cn/2018/03/18/mq/rabbitmq/user-vhost/</loc>
+    
+    <lastmod>2019-10-18T08:56:20.628Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://zhengyk.cn/2018/03/29/mq/rabbitmq/tx-confirm/</loc>
+    
+    <lastmod>2019-10-18T08:56:20.622Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://zhengyk.cn/2018/03/17/mq/rabbitmq/install/</loc>
+    
+    <lastmod>2019-10-18T08:56:20.601Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://zhengyk.cn/2018/03/23/mq/rabbitmq/round-robin/</loc>
+    
+    <lastmod>2019-10-18T08:56:20.587Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://zhengyk.cn/2018/03/22/mq/rabbitmq/java-simple-queue/</loc>
+    
+    <lastmod>2019-10-18T08:56:20.570Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://zhengyk.cn/2018/03/28/mq/rabbitmq/topic/</loc>
+    
+    <lastmod>2019-10-18T08:56:20.558Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://zhengyk.cn/2018/03/24/mq/rabbitmq/fair-dipatch/</loc>
+    
+    <lastmod>2019-10-18T08:56:20.534Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://zhengyk.cn/2018/03/27/mq/rabbitmq/routing/</loc>
+    
+    <lastmod>2019-10-18T08:56:20.513Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://zhengyk.cn/2018/03/20/mq/rabbitmq/basic-concept/</loc>
+    
+    <lastmod>2019-10-18T08:56:20.494Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://zhengyk.cn/2017/09/19/linux/CentOS7_Clean/</loc>
+    
+    <lastmod>2019-10-18T08:56:20.473Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://zhengyk.cn/2017/10/23/linux/Docker/</loc>
+    
+    <lastmod>2019-10-18T08:56:20.470Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://zhengyk.cn/2018/01/21/linux/Linux-Command/</loc>
+    
+    <lastmod>2019-10-18T08:56:20.410Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://zhengyk.cn/2017/12/25/project/chainofresponsibility/</loc>
+    
+    <lastmod>2019-10-18T08:56:20.359Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://zhengyk.cn/2018/09/04/netty/netty-interfaces/</loc>
+    
+    <lastmod>2019-10-18T08:56:20.354Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://zhengyk.cn/2018/09/03/netty/nio-theory/</loc>
+    
+    <lastmod>2019-10-18T08:56:20.346Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://zhengyk.cn/2018/09/15/netty/springboot-netty/</loc>
+    
+    <lastmod>2019-10-18T08:56:20.328Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://zhengyk.cn/2018/09/14/netty/tcp-zb-cb/</loc>
+    
+    <lastmod>2019-10-18T08:56:20.290Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://zhengyk.cn/2017/09/18/server/Resolve_tomcat_start/</loc>
+    
+    <lastmod>2019-10-18T08:56:20.248Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://zhengyk.cn/2018/03/08/server/Nginx-File-Server/</loc>
+    
+    <lastmod>2019-10-18T08:56:20.244Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://zhengyk.cn/2018/08/14/java/ReentrantLock-1/</loc>
+    
+    <lastmod>2019-10-18T08:56:20.228Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://zhengyk.cn/2018/07/07/java/LinkedList/</loc>
+    
+    <lastmod>2019-10-18T08:56:20.193Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://zhengyk.cn/2018/08/31/java/ThreadPool/</loc>
+    
+    <lastmod>2019-10-18T08:56:20.126Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://zhengyk.cn/2018/06/30/java/ArrayList/</loc>
+    
+    <lastmod>2019-10-18T08:56:20.104Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://zhengyk.cn/2017/03/13/java/HFJ01/</loc>
+    
+    <lastmod>2019-10-18T08:56:20.073Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://zhengyk.cn/2019/01/16/java/joda-time-common-use/</loc>
+    
+    <lastmod>2019-10-18T08:56:20.067Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://zhengyk.cn/2018/09/01/java/ThreadLocal/</loc>
+    
+    <lastmod>2019-10-18T08:56:20.044Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://zhengyk.cn/2017/10/03/java/Eqha/</loc>
+    
+    <lastmod>2019-10-18T08:56:20.003Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://zhengyk.cn/2019/01/15/java/Optional-practice/</loc>
+    
+    <lastmod>2019-10-18T08:56:19.975Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://zhengyk.cn/2017/10/31/java/Thread_sdf/</loc>
+    
+    <lastmod>2019-10-18T08:56:19.960Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://zhengyk.cn/2017/11/15/java/volatile/</loc>
+    
+    <lastmod>2019-10-18T08:56:19.934Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://zhengyk.cn/2018/08/24/java/ConcurrentHashMap/</loc>
+    
+    <lastmod>2019-10-18T08:56:19.899Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://zhengyk.cn/2017/10/15/java/aliGuide/</loc>
+    
+    <lastmod>2019-10-18T08:56:19.844Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://zhengyk.cn/2018/08/16/java/BlockingQueue/</loc>
+    
+    <lastmod>2019-10-18T08:56:19.837Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://zhengyk.cn/2017/03/25/java/Reflect/</loc>
+    
+    <lastmod>2019-10-18T08:56:19.805Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://zhengyk.cn/2018/07/14/java/HashMap/</loc>
+    
+    <lastmod>2019-10-18T08:56:19.792Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://zhengyk.cn/2017/03/28/java/Java_Exception/</loc>
+    
+    <lastmod>2019-10-18T08:56:19.762Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://zhengyk.cn/2018/08/07/java/lock-aqs/</loc>
+    
+    <lastmod>2019-10-18T08:56:19.750Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://zhengyk.cn/2018/07/26/java/LinkedHashMap/</loc>
+    
+    <lastmod>2019-10-18T08:56:19.716Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://zhengyk.cn/2018/07/31/java/synchronized/</loc>
+    
+    <lastmod>2019-10-18T08:56:19.671Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://zhengyk.cn/2017/11/01/java/HandleException/</loc>
+    
+    <lastmod>2019-10-18T08:56:19.620Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://zhengyk.cn/2017/03/15/java/HFJ02/</loc>
+    
+    <lastmod>2019-10-18T08:56:19.521Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://zhengyk.cn/2018/08/15/java/ReentrantLock-2/</loc>
+    
+    <lastmod>2019-10-18T08:56:19.442Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://zhengyk.cn/2017/11/10/java/transient/</loc>
+    
+    <lastmod>2019-10-18T08:56:19.412Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://zhengyk.cn/2018/07/20/java/HashSet/</loc>
+    
+    <lastmod>2019-10-18T08:56:19.392Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://zhengyk.cn/2017/11/21/jvm/JVM-03/</loc>
+    
+    <lastmod>2019-10-18T08:56:19.386Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://zhengyk.cn/2017/10/29/jvm/JVM-02/</loc>
+    
+    <lastmod>2019-10-18T08:56:19.381Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://zhengyk.cn/2017/12/17/jvm/JVM-06/</loc>
+    
+    <lastmod>2019-10-18T08:56:19.376Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://zhengyk.cn/2017/10/27/jvm/JVM_01/</loc>
+    
+    <lastmod>2019-10-18T08:56:19.363Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://zhengyk.cn/2017/12/16/jvm/JVM-05/</loc>
+    
+    <lastmod>2019-10-18T08:56:19.352Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://zhengyk.cn/2017/11/26/jvm/JVM-04/</loc>
+    
+    <lastmod>2019-10-18T08:56:19.326Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://zhengyk.cn/2017/10/15/other/Markdown-summary/</loc>
+    
+    <lastmod>2019-10-18T08:56:19.295Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://zhengyk.cn/2018/01/02/other/Git-Hooks/</loc>
+    
+    <lastmod>2019-10-18T08:56:19.271Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://zhengyk.cn/2018/03/09/other/Thumbnails/</loc>
+    
+    <lastmod>2019-10-18T08:56:19.254Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://zhengyk.cn/2017/11/01/fe/Vue00/</loc>
+    
+    <lastmod>2019-10-18T08:56:19.231Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://zhengyk.cn/2017/11/03/fe/JavaScript9Console/</loc>
+    
+    <lastmod>2019-10-18T08:56:19.209Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://zhengyk.cn/2017/09/01/redis/Redis01/</loc>
+    
+    <lastmod>2019-10-18T08:56:19.152Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://zhengyk.cn/2018/09/02/redis/redis-distributed-lock/</loc>
+    
+    <lastmod>2019-10-18T08:56:19.127Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://zhengyk.cn/2018/09/23/framework/canal-sync-mysql-redis/</loc>
+    
+    <lastmod>2019-10-18T08:56:19.101Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://zhengyk.cn/2018/09/16/framework/limit-degrade/</loc>
+    
+    <lastmod>2019-10-18T08:56:19.095Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://zhengyk.cn/2019/03/16/go/best-practice-for-handling-ex-error/</loc>
+    
+    <lastmod>2019-10-18T08:56:19.015Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://zhengyk.cn/2019/03/10/go/why-i-learn-go/</loc>
+    
+    <lastmod>2019-10-18T08:56:18.959Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://zhengyk.cn/2019/03/15/go/three-mistakes/</loc>
+    
+    <lastmod>2019-10-18T08:56:18.957Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://zhengyk.cn/2018/04/01/zk/zookeeper/</loc>
+    
+    <lastmod>2019-10-18T08:56:18.915Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://zhengyk.cn/2018/10/20/springcloud/fegin-interceptor/</loc>
+    
+    <lastmod>2019-10-18T08:56:18.897Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://zhengyk.cn/2018/06/09/springcloud/hystrix/</loc>
+    
+    <lastmod>2019-10-18T08:56:18.889Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://zhengyk.cn/2018/06/10/springcloud/zuul-01/</loc>
+    
+    <lastmod>2019-10-18T08:56:18.881Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://zhengyk.cn/2018/06/21/springcloud/sleuth-zipkin/</loc>
+    
+    <lastmod>2019-10-18T08:56:18.861Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://zhengyk.cn/2018/06/17/springcloud/micro-service-deploy/</loc>
+    
+    <lastmod>2019-10-18T08:56:18.847Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://zhengyk.cn/2018/09/29/springcloud/holes/</loc>
+    
+    <lastmod>2019-10-18T08:56:18.832Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://zhengyk.cn/2018/05/27/springcloud/register-discovery/</loc>
+    
+    <lastmod>2019-10-18T08:56:18.823Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://zhengyk.cn/2018/11/01/springcloud/spring-security-oauth2-jwt/</loc>
+    
+    <lastmod>2019-10-18T08:56:18.802Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://zhengyk.cn/2018/05/18/springcloud/introduce/</loc>
+    
+    <lastmod>2019-10-18T08:56:18.750Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://zhengyk.cn/2018/06/01/springcloud/load-balance/</loc>
+    
+    <lastmod>2019-10-18T08:56:18.742Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://zhengyk.cn/2018/06/16/springcloud/zuul-02/</loc>
+    
+    <lastmod>2019-10-18T08:56:18.718Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://zhengyk.cn/2017/10/20/springboot/Sboot04/</loc>
+    
+    <lastmod>2019-10-18T08:56:18.691Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://zhengyk.cn/2017/10/16/springboot/Sboot01/</loc>
+    
+    <lastmod>2019-10-18T08:56:18.674Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://zhengyk.cn/2017/10/18/springboot/Sboot02/</loc>
+    
+    <lastmod>2019-10-18T08:56:18.657Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://zhengyk.cn/2017/10/20/springboot/Sboot03/</loc>
+    
+    <lastmod>2019-10-18T08:56:18.633Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://zhengyk.cn/2018/12/30/reading/java-workspace-strategy/</loc>
+    
+    <lastmod>2019-10-18T08:56:18.543Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://zhengyk.cn/about/index.html</loc>
+    
+    <lastmod>2019-06-27T07:13:46.480Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://zhengyk.cn/search/index.html</loc>
+    
+    <lastmod>2018-04-05T08:47:29.000Z</lastmod>
+    
+  </url>
+  
+</urlset>
