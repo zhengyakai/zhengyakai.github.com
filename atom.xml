@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://zhengyk.cn/"/>
-  <updated>2019-12-01T03:59:48.799Z</updated>
+  <updated>2020-07-14T07:40:32.364Z</updated>
   <id>http://zhengyk.cn/</id>
   
   <author>
@@ -15,6 +15,33 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>过期订单自动取消的几种实现方式</title>
+    <link href="http://zhengyk.cn/2019/05/01/mq/rabbitmq/cancel-expired-order/"/>
+    <id>http://zhengyk.cn/2019/05/01/mq/rabbitmq/cancel-expired-order/</id>
+    <published>2019-05-01T05:20:16.000Z</published>
+    <updated>2020-07-14T07:40:32.364Z</updated>
+    
+    <content type="html"><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在电商系统中，经常会遇到这样的场景：当订单未支付超时，需要自动取消订单，否则会一直占用库存等资源。</p><p>那么实现订单未支付超时，自动取消的方式有哪些呢？这里列举些我了解的几种方式。</p><h3 id="扫表实现"><a href="#扫表实现" class="headerlink" title="扫表实现"></a>扫表实现</h3><blockquote><p> 原理： 通过定时任务轮询扫描订单表，超时的批量修改状态</p><p>优点： 实现非常简单 </p><p>缺点:    大量数据集，对服务器内存消耗大。 数据库频繁查询，订单量大的情况下，IO是瓶颈。 存在延迟，间隔短则耗资源，间隔长则时效性差，两者是一对矛盾。 不易控制，随着定时业务的增多和细化，每个业务都要对订单重复扫描，引发查询浪费</p></blockquote><h3 id="java-延迟队列实现"><a href="#java-延迟队列实现" class="headerlink" title="java 延迟队列实现"></a>java 延迟队列实现</h3><blockquote><p> 原理： 通过DelayQueue，每下一单，放入一个订单元素并实现getDelay()方法，方法返回该元素距离失效还剩余的时 间，当&lt;=0时元素就失效，就可以从队列中获取到。启用线程池对数据监听，一旦捕获失效订单，取出之后，调用 取消逻辑进行处理。</p><p>优点:    基于jvm内存，效率高，任务触发时间延迟低。</p><p>缺点:    存在jvm内存中，服务器重启后，数据全部丢失。 依赖代码硬编码，集群扩展麻烦 依赖jvm内存，如果订单量过大，无界队列内容扩充，容易出现OOM 需要代码实现，多线程处理业务，复杂度较高 多线程处理时，数据频繁触发等待和唤醒，多了无谓的竞争</p></blockquote><h3 id="消息队列实现"><a href="#消息队列实现" class="headerlink" title="消息队列实现"></a>消息队列实现</h3><blockquote><p> 原理：设置两个队列，每下一单放一条进延迟队列，设定过期时间。消息一旦过期，获取并放入工作队列，由consumer 获取，唤起超时处理逻辑。</p><p>*<em>如果采用的是RabbitMQ，其本身没有直接支持延迟队列功能，可以针对Queue和Message设置 x-message-ttl， 用消息的生存时间，和死信队列来实现，具体有两种手段， A: 通过队列属性设置，队列中所有消息都有相同的过 期时间，粗粒度，编码简单 B: 对消息进行单独设置，每条消息TTL可以不同，细粒度，但编码稍微复杂。 *</em></p><p>优点：可以随时在队列移除，实现实时取消订单，及时恢复订单占用的资源（如商品）</p><p>消息存储在mq中，不占用应用服务器资源</p><p>异步化处理，一旦处理能力不足，consumer集群可以很方便的扩容</p><p>缺点：可能会导致消息大量堆积 mq服务器一旦故障重启后，持久化的队列过期时间会被重新计算，造成精度不足 死信消息可能会导致监控系统频繁预警</p></blockquote><h3 id="redis实现"><a href="#redis实现" class="headerlink" title="redis实现"></a>redis实现</h3><blockquote><p>原理:    利用redis的notify-keyspace-events，该选项默认为空，改为Ex开启过期事件，配置消息监听。每下一单在redis中 放置一个key（如订单id），并设置过期时间。</p><p>优点:    消息都存储在Redis中，不占用应用内存。 外部redis存储，应用down机不会丢失数据。 做集群扩展相当方便 依赖redis超时，时间准确度高</p><p>缺点:    订单量大时，每一单都要存储redis内存，需要大量redis服务器资源</p></blockquote><h3 id="被动取消"><a href="#被动取消" class="headerlink" title="被动取消"></a>被动取消</h3><blockquote><p>原理：在每次用户查询订单的时候，判断订单时间，超时则同时完成订单取消业务。</p><p>优点：实现极其简单 不会有额外的性能付出 不依赖任何外部中间件，只是应用逻辑的处理</p><p>缺点：延迟度不可控，如果用户一直没触发查询，则订单一直挂着，既不支付也未取消，库存也就被占着</p></blockquote>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;h2 id=&quot;前言&quot;&gt;&lt;a href=&quot;#前言&quot; class=&quot;headerlink&quot; title=&quot;前言&quot;&gt;&lt;/a&gt;前言&lt;/h2&gt;&lt;p&gt;在电商系统中，经常会遇到这样的场景：当订单未支付超时，需要自动取消订单，否则会一直占用库存等资源。&lt;/p&gt;
+&lt;p&gt;那么实现订单未支付超时，自
+      
+    
+    </summary>
+    
+    
+      <category term="消息队列" scheme="http://zhengyk.cn/categories/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97/"/>
+    
+    
+      <category term="rabbitmq" scheme="http://zhengyk.cn/tags/rabbitmq/"/>
+    
+  </entry>
   
   <entry>
     <title>SpringBoot 配置加载优先级顺序</title>
@@ -519,33 +546,6 @@
     
     
       <category term="netty" scheme="http://zhengyk.cn/tags/netty/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>NIO的一些知识点</title>
-    <link href="http://zhengyk.cn/2018/09/03/netty/nio-theory/"/>
-    <id>http://zhengyk.cn/2018/09/03/netty/nio-theory/</id>
-    <published>2018-09-03T10:01:54.000Z</published>
-    <updated>2019-10-18T08:56:20.346Z</updated>
-    
-    <content type="html"><![CDATA[<p>学习 NIO有一段时间了，今天主要总结下什么是 NIO，以及 NIO 的三大组件Buffer、Channel、Selector以及其他相关概念。</p><h2 id="NIO"><a href="#NIO" class="headerlink" title="NIO"></a>NIO</h2><p>传统 BIO 和 NIO最大的区别在于 NIO 是非阻塞的，阻塞和非阻塞的区别在于线程得到返回结果前是否可以做其他事情，阻塞是不可以的，非阻塞可以。</p><p>举个例子：一个餐厅里客人来了后要有服务员对客人进行服务，BIO是每来一个客人都得有一个服务员服务他，在客人吃完饭之前，服务员不能做其他的事直至客人吃完饭走人。但是 NIO 不一样，NIO 可以让同一个服务员同时服务多个客人，在客人 A 点餐时服务员可以去接待客人 B。这种模式大大节省了成本同时提高了效率。</p><p>NIO是基于通道、缓冲区、多路复用进行操作，数据是从通道读取到缓冲区，从缓冲区写入到通道。</p><h3 id="Buffer"><a href="#Buffer" class="headerlink" title="Buffer"></a>Buffer</h3><hr><p>Buffer 是 NIO中三大组件之一，本质上就是内存中的一块区域，这块区域称作缓冲区。</p><p>Java NIO 中 Buffer 的继承关系图：</p><p><img src="http://media.zhengyk.cn/Buffer.jpg" alt=""></p><p>最常使用的是 ByteBuffer，Buffer 可以理解为一个数组，ByteBuffer 里面就是 Byte 数组，只不过除了数组以外还有其他的属性。</p><h4 id="capacity"><a href="#capacity" class="headerlink" title="capacity"></a>capacity</h4><p>capacity属性表示 Buffer 的容量，我们知道数组一旦初始化后，容量是不可更改的。capacity 就是初始化 Buffer 的时候数组的容量。</p><h4 id="position"><a href="#position" class="headerlink" title="position"></a>position</h4><p>因为 NIO 的 Buffer 是双工的，可读可写，所以 Buffer 分为读模式和写模式，当我们初始化一个 Buffer 后，一开始是写模式，通过调用 Buffer的<code>flip()</code>方法切换读模式（flip()方法就是将 Buffer 的写模式切换到读模式）。</p><p>position初始为0，在写模式下，每次向 Buffer 中写入一个值，position 的值+1，读模式也一样，每读一个值 position+1。</p><p>调用flip()方法，position 值清零，这样就是从头开始读了。</p><h4 id="limit"><a href="#limit" class="headerlink" title="limit"></a>limit</h4><p>limit 属性在读写模式下也有不同的含义：</p><blockquote><p>写模式：limit 代表最大能写入的数据量，此时就等于 capacity</p><p>读模式：此时的 limit等于 Buffer 中实际的数据量。</p></blockquote><h4 id="mark"><a href="#mark" class="headerlink" title="mark"></a>mark</h4><p>mark 用于临时标记 position 的值，调用 mark()方法会将 mark 设置为当前的position。</p><p>用途：当我们读Buffer 读到某个位置时，mark 标记一下，继续往下读了一会，想再回到刚才那个标记的位置时，只要调用下reset()方法即可。</p><p><strong>注意：这里的读写模式是相对与 Buffer 的，但是从系统层面上来讲，数据从外部 Channel 到内存 Buffer里是系统意义上的读，对应的是 Buffer 的写，数据从内存 Buffer 到 Channel 是系统意义上的写，对应的是 Buffer 的读，这里要区分清楚。</strong></p><h3 id="Channel"><a href="#Channel" class="headerlink" title="Channel"></a>Channel</h3><hr><p>NIO 操作都需要通道 Channel，Channel 是 jdk1.4引入 NIO 之后才有的概念，类似于传统 IO 中的流，它是数据来源或者数据写入的目的地，与 Buffer 进行交互。</p><p>Java NIO 中的 Channel：</p><p><img src="http://media.zhengyk.cn/Channel.jpg?v=2" alt=""></p><blockquote><p>FileChannle：文件通道</p><p>SocketChannel：TCP连接通道，数据传输时使用。</p><p>ServerSocketChannel：服务端 TCP 通道，监听端口进来的请求</p></blockquote><p>Channel称作通道，系统可以将数据从 Channel 读到 Buffer 中（channel.read(buffer)），也可以从 Buffer 中写入到 Channel（channel.write(buffer)）</p><h3 id="Selector"><a href="#Selector" class="headerlink" title="Selector"></a>Selector</h3><hr><p>我们知道 NIO 是非阻塞的，非阻塞的意义就是线程在等待某个操作的结果返回之前可以去干其他事。Selector 就是建立在非阻塞的基础上，其作用是在一个线程中管理多个 Channel，每个 Channel 做各自的事。</p><p>Buffer、Channel、Selector 之间的关系图：</p><p><img src="http://media.zhengyk.cn/C-B-S.jpg" alt=""> </p><h3 id="分散读取和聚集写入"><a href="#分散读取和聚集写入" class="headerlink" title="分散读取和聚集写入"></a>分散读取和聚集写入</h3><hr><p>上图看到一个Channel 可以对应多个 Buffer，这涉及到了 NIO 中一个很重要的概念：<strong>分散读取和聚集写入</strong></p><h4 id="分散读取"><a href="#分散读取" class="headerlink" title="分散读取"></a>分散读取</h4><p><img src="http://media.zhengyk.cn/scatter-read.jpg" alt=""></p><p>一个 Channel 可以对应多个 Buffer，如当我们读取一个文件时，可以使用多个缓冲区来读这样会大大提高读取效率，将缓冲区的内容写入到Channel中时会用到聚集写入。</p><h4 id="聚集写入"><a href="#聚集写入" class="headerlink" title="聚集写入"></a>聚集写入</h4><p><img src="http://media.zhengyk.cn/gather-write.jpg" alt=""></p><h4 id="代码示例"><a href="#代码示例" class="headerlink" title="代码示例"></a>代码示例</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception </span>&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line">    <span class="comment">//可读可写文件</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line">    RandomAccessFile file1 = <span class="keyword">new</span> RandomAccessFile(<span class="string">"test1.txt"</span>,<span class="string">"rw"</span>);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line">    <span class="comment">//获取 channel</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">5</span></pre></td><td class="code"><pre><span class="line">    FileChannel channel1 = file1.getChannel();</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">6</span></pre></td><td class="code"><pre><span class="line">    <span class="comment">//指定缓冲区</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">7</span></pre></td><td class="code"><pre><span class="line">    ByteBuffer buf1 = ByteBuffer.allocate(<span class="number">100</span>);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">8</span></pre></td><td class="code"><pre><span class="line">    ByteBuffer buf2 = ByteBuffer.allocate(<span class="number">1024</span>);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">9</span></pre></td><td class="code"><pre><span class="line">    <span class="comment">//构造多缓冲区数组</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">10</span></pre></td><td class="code"><pre><span class="line">    ByteBuffer[] bufs = &#123;buf1,buf2&#125;;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">11</span></pre></td><td class="code"><pre><span class="line">    <span class="comment">//Channel1分散读取数据到多个Buffer中，对应 Buffer是写模式</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">12</span></pre></td><td class="code"><pre><span class="line">    channel1.read(bufs);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">13</span></pre></td><td class="code"><pre><span class="line">    <span class="comment">//输出读取的内容：</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">14</span></pre></td><td class="code"><pre><span class="line">    System.out.println(<span class="keyword">new</span> String(bufs[<span class="number">0</span>].array()).trim());</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">15</span></pre></td><td class="code"><pre><span class="line">    System.out.println(<span class="keyword">new</span> String(bufs[<span class="number">1</span>].array()).trim());</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">16</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">17</span></pre></td><td class="code"><pre><span class="line">    <span class="comment">//下面开始聚集写入，将 两个Buffer中的数据聚集写入到Channel2，再到 text2.txt 文件中</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">18</span></pre></td><td class="code"><pre><span class="line">    RandomAccessFile file2 = <span class="keyword">new</span> RandomAccessFile(<span class="string">"test2.txt"</span>,<span class="string">"rw"</span>);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">19</span></pre></td><td class="code"><pre><span class="line">    FileChannel channel2 = file2.getChannel();</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">20</span></pre></td><td class="code"><pre><span class="line">    System.out.println(<span class="string">"=======开始聚集写入到 text2.txt 文件中======"</span>);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">21</span></pre></td><td class="code"><pre><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; bufs.length; i++) &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">22</span></pre></td><td class="code"><pre><span class="line">        <span class="comment">//聚集写入时，应切换 Buffer 为读模式</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">23</span></pre></td><td class="code"><pre><span class="line">        bufs[i].flip();</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">24</span></pre></td><td class="code"><pre><span class="line">    &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">25</span></pre></td><td class="code"><pre><span class="line">    channel2.write(bufs);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">26</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">27</span></pre></td><td class="code"><pre><span class="line">    <span class="comment">//关闭</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">28</span></pre></td><td class="code"><pre><span class="line">    file2.close();</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">29</span></pre></td><td class="code"><pre><span class="line">    file1.close();</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">30</span></pre></td><td class="code"><pre><span class="line">&#125;</span></pre></td></tr></table></figure><h3 id="非直接缓冲区和直接缓冲区"><a href="#非直接缓冲区和直接缓冲区" class="headerlink" title="非直接缓冲区和直接缓冲区"></a>非直接缓冲区和直接缓冲区</h3><p>缓冲区分为直接缓冲区和非直接缓冲区，这俩是什么？有什么区别呢？</p><h4 id="非直接缓冲区"><a href="#非直接缓冲区" class="headerlink" title="非直接缓冲区"></a>非直接缓冲区</h4><p>非直接缓冲区是在JVM中，初始化 Buffer 时调用allocate()方法，此方式使用的是非直接缓冲区。</p><h4 id="直接缓冲区"><a href="#直接缓冲区" class="headerlink" title="直接缓冲区"></a>直接缓冲区</h4><p>直接缓冲区直接在内存中，比如当我们从磁盘读取数据时，直接读取到物理内存里，这块内存叫直接缓冲区。</p><p>通过allocateDirect()方法创建。</p><h4 id="二者区别"><a href="#二者区别" class="headerlink" title="二者区别"></a>二者区别</h4><p>直接缓冲区相比非直接缓冲区效率更高，因为相较于非直接缓存区省去了从内存拷贝到 JVM 中的操作，但是非直接缓冲区的好处是缓冲区交给 JVM 管理更安全且便于回收。</p>]]></content>
-    
-    <summary type="html">
-    
-      
-      
-        &lt;p&gt;学习 NIO有一段时间了，今天主要总结下什么是 NIO，以及 NIO 的三大组件Buffer、Channel、Selector以及其他相关概念。&lt;/p&gt;
-&lt;h2 id=&quot;NIO&quot;&gt;&lt;a href=&quot;#NIO&quot; class=&quot;headerlink&quot; title=&quot;NIO&quot;&gt;&lt;
-      
-    
-    </summary>
-    
-    
-      <category term="Java框架" scheme="http://zhengyk.cn/categories/Java%E6%A1%86%E6%9E%B6/"/>
-    
-    
-      <category term="NIO" scheme="http://zhengyk.cn/tags/NIO/"/>
     
   </entry>
   
