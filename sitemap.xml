@@ -2,6 +2,20 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://zhengyk.cn/2019/09/04/es/es-optimized/</loc>
+    
+    <lastmod>2020-07-16T07:46:28.688Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://zhengyk.cn/2019/04/10/es/introduction-practice/</loc>
+    
+    <lastmod>2020-07-16T07:42:17.248Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>http://zhengyk.cn/2019/05/01/mq/rabbitmq/cancel-expired-order/</loc>
     
     <lastmod>2020-07-14T07:40:32.364Z</lastmod>
@@ -12,13 +26,6 @@
     <loc>http://zhengyk.cn/2017/10/23/linux/Docker/</loc>
     
     <lastmod>2020-04-18T18:00:57.614Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://zhengyk.cn/2019/04/10/es/introduction-practice/</loc>
-    
-    <lastmod>2019-12-27T02:17:03.335Z</lastmod>
     
   </url>
   
