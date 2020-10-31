@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>http://zhengyk.cn/2019/10/10/redis/simple-build-redis-cluster-tool/</loc>
+    <lastmod>2020-10-25</lastmod>
+  </url>  <url>
+    <loc>http://zhengyk.cn/2019/06/30/java/jdk8-new-feature/</loc>
+    <lastmod>2020-09-28</lastmod>
+  </url>  <url>
     <loc>http://zhengyk.cn/2019/06/04/java/idempotence/</loc>
     <lastmod>2020-09-22</lastmod>
   </url>  <url>
