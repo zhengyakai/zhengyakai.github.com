@@ -1,7 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>http://zhengyk.cn/2017/12/25/project/tx-distributedLock/</loc>
+    <loc>http://zhengyk.cn/2019/11/30/elasticsearch/es-reindex/</loc>
+    <lastmod>2021-02-22</lastmod>
+  </url>  <url>
+    <loc>http://zhengyk.cn/2019/09/04/elasticsearch/es-optimized/</loc>
+    <lastmod>2021-02-22</lastmod>
+  </url>  <url>
+    <loc>http://zhengyk.cn/2019/11/11/project/tx-distributedLock/</loc>
     <lastmod>2021-02-22</lastmod>
   </url>  <url>
     <loc>http://zhengyk.cn/2019/10/10/redis/simple-build-redis-cluster-tool/</loc>
@@ -13,10 +19,7 @@
     <loc>http://zhengyk.cn/2019/06/04/java/idempotence/</loc>
     <lastmod>2020-09-22</lastmod>
   </url>  <url>
-    <loc>http://zhengyk.cn/2019/09/04/es/es-optimized/</loc>
-    <lastmod>2020-07-16</lastmod>
-  </url>  <url>
-    <loc>http://zhengyk.cn/2019/04/10/es/introduction-practice/</loc>
+    <loc>http://zhengyk.cn/2019/04/10/elasticsearch/introduction-practice/</loc>
     <lastmod>2020-07-16</lastmod>
   </url>  <url>
     <loc>http://zhengyk.cn/2019/05/01/mq/rabbitmq/cancel-expired-order/</loc>

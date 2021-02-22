@@ -2,9 +2,23 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
-    <loc>http://zhengyk.cn/2017/12/25/project/tx-distributedLock/</loc>
+    <loc>http://zhengyk.cn/2019/11/30/elasticsearch/es-reindex/</loc>
     
-    <lastmod>2021-02-22T06:43:27.483Z</lastmod>
+    <lastmod>2021-02-22T08:12:56.094Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://zhengyk.cn/2019/09/04/elasticsearch/es-optimized/</loc>
+    
+    <lastmod>2021-02-22T07:51:57.813Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://zhengyk.cn/2019/11/11/project/tx-distributedLock/</loc>
+    
+    <lastmod>2021-02-22T07:40:50.896Z</lastmod>
     
   </url>
   
@@ -30,14 +44,7 @@
   </url>
   
   <url>
-    <loc>http://zhengyk.cn/2019/09/04/es/es-optimized/</loc>
-    
-    <lastmod>2020-07-16T07:53:56.219Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://zhengyk.cn/2019/04/10/es/introduction-practice/</loc>
+    <loc>http://zhengyk.cn/2019/04/10/elasticsearch/introduction-practice/</loc>
     
     <lastmod>2020-07-16T07:42:17.248Z</lastmod>
     
