@@ -2,6 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://zhengyk.cn/about/index.html</loc>
+    
+    <lastmod>2021-04-25T01:45:56.626Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>http://zhengyk.cn/2020/01/15/architecture/e-commerce-big-sale/</loc>
     
     <lastmod>2021-03-23T10:02:48.785Z</lastmod>
@@ -705,13 +712,6 @@
     <loc>http://zhengyk.cn/2018/12/30/reading/java-workspace-strategy/</loc>
     
     <lastmod>2019-10-18T08:56:18.543Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://zhengyk.cn/about/index.html</loc>
-    
-    <lastmod>2019-06-27T07:13:46.480Z</lastmod>
     
   </url>
   
