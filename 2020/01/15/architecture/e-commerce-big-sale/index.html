@@ -1,0 +1,922 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="keywords" content="Hexo Theme Redefine">
+    
+    <meta name="author" content="郑亚凯">
+    <!-- preconnect -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    
+    <!--- Seo Part-->
+    
+    <link rel="canonical" href="http://example.com/2020/01/15/architecture/e-commerce-big-sale/"/>
+    <meta name="robots" content="index,follow">
+    <meta name="googlebot" content="index,follow">
+    <meta name="revisit-after" content="1 days">
+    
+        <meta name="description" content="前言每到双 11、618 等大促月时，各大电商是如何应对海量并发请求的呢，今天总结归纳下这背后的技术架构体系，并列举出我们技术人员面临的一些挑战，如何克服解决。 电商整体架构概述从组织架构到技术架构，当前各大电商系统基本趋于中台化。中台在2015由阿里提出，其实是一种企业 架构而不是单纯的技术层面，目前几乎各大电商都进行着中台化的建设。 中台没有什么神秘的，说到底，中台就是对 “共享”、“通用”">
+<meta property="og:type" content="article">
+<meta property="og:title" content="我认知的电商在大促活动下的架构体系">
+<meta property="og:url" content="http://example.com/2020/01/15/architecture/e-commerce-big-sale/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="前言每到双 11、618 等大促月时，各大电商是如何应对海量并发请求的呢，今天总结归纳下这背后的技术架构体系，并列举出我们技术人员面临的一些挑战，如何克服解决。 电商整体架构概述从组织架构到技术架构，当前各大电商系统基本趋于中台化。中台在2015由阿里提出，其实是一种企业 架构而不是单纯的技术层面，目前几乎各大电商都进行着中台化的建设。 中台没有什么神秘的，说到底，中台就是对 “共享”、“通用”">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://www.zhengyk.cn/images/2020-01-15-01.jpg">
+<meta property="og:image" content="https://www.zhengyk.cn/images/2020-01-15-02.jpg?a=1">
+<meta property="article:published_time" content="2020-01-15T11:44:48.000Z">
+<meta property="article:modified_time" content="2023-11-17T11:37:37.342Z">
+<meta property="article:author" content="John Doe">
+<meta property="article:tag" content="架构">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://www.zhengyk.cn/images/2020-01-15-01.jpg">
+    
+    
+    <!--- Icon Part-->
+    <link rel="icon" type="image/png" href="https://www.zhengyk.cn/images/portrait.jpg" sizes="192x192">
+    <link rel="apple-touch-icon" sizes="180x180" href="https://www.zhengyk.cn/images/portrait.jpg">
+    <meta name="theme-color" content="#A31F34">
+    <link rel="shortcut icon" href="https://www.zhengyk.cn/images/portrait.jpg">
+    <!--- Page Info-->
+    
+    <title>
+        
+            我认知的电商在大促活动下的架构体系 -
+        
+        薛定谔的汪
+    </title>
+    
+<link rel="stylesheet" href="/css/style.css">
+
+
+    
+        
+<link rel="stylesheet" href="/assets/build/styles.css">
+
+    
+
+    
+<link rel="stylesheet" href="/fonts/fonts.css">
+
+    
+<link rel="stylesheet" href="/fonts/Satoshi/satoshi.css">
+
+    
+<link rel="stylesheet" href="/fonts/Chillax/chillax.css">
+
+    <!--- Font Part-->
+    
+    
+    
+    
+
+    <!--- Inject Part-->
+    
+    <script id="hexo-configurations">
+    window.config = {"hostname":"example.com","root":"/","language":"en"};
+    window.theme = {"articles":{"style":{"font_size":"16px","line_height":1.5,"image_border_radius":"14px","image_alignment":"center","image_caption":false,"link_icon":true,"title_alignment":"left"},"word_count":{"enable":true,"count":true,"min2read":true},"author_label":{"enable":false,"auto":false,"list":[]},"code_block":{"copy":true,"style":"mac","font":{"enable":false,"family":null,"url":null}},"toc":{"enable":true,"max_depth":3,"number":false,"expand":true,"init_open":true},"copyright":{"enable":true,"default":"cc_by_nc_sa"},"lazyload":true,"recommendation":{"enable":false,"title":"推荐阅读","limit":3,"mobile_limit":2,"placeholder":"/images/wallhaven-wqery6-light.webp","skip_dirs":[]}},"colors":{"primary":"#A31F34","secondary":null},"global":{"fonts":{"chinese":{"enable":false,"family":null,"url":null},"english":{"enable":false,"family":null,"url":null}},"content_max_width":"1000px","sidebar_width":"210px","hover":{"shadow":true,"scale":false},"scroll_progress":{"bar":false,"percentage":true},"website_counter":{"url":"https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js","enable":false,"site_pv":false,"site_uv":false,"post_pv":false},"single_page":true,"open_graph":true,"google_analytics":{"enable":false,"id":null}},"home_banner":{"enable":true,"style":"fixed","image":{"light":"https://www.zhengyk.cn/images/wallhaven-wqery6-light.png","dark":"https://www.zhengyk.cn/images/wallhaven-wqery6-dark.png"},"title":"学习技术 | 分享生活","subtitle":{"text":[],"hitokoto":{"enable":false,"api":"https://v1.hitokoto.cn"},"typing_speed":100,"backing_speed":80,"starting_delay":500,"backing_delay":1500,"loop":true,"smart_backspace":true},"text_color":{"light":"#fff","dark":"#d1d1b6"},"text_style":{"title_size":"2.8rem","subtitle_size":"1.5rem","line_height":1.2},"custom_font":{"enable":false,"family":null,"url":null},"social_links":{"enable":false,"links":{"github":"https://github.com/zhengyakai","instagram":null,"zhihu":null,"twitter":null,"email":null},"qrs":{"weixin":null}}},"plugins":{"feed":{"enable":false},"aplayer":{"enable":false,"type":"fixed","audios":[{"name":null,"artist":null,"url":null,"cover":null}]},"mermaid":{"enable":false,"version":"9.3.0"}},"version":"2.5.2","navbar":{"auto_hide":false,"color":{"left":"#f78736","right":"#367df7","transparency":35},"links":{"Home":{"path":"/","icon":"fa-regular fa-house"},"主页":{"path":"/","icon":"fa-regular fa-house"},"文章":{"path":"/archives","icon":"fa-regular fa-archive"},"关于":{"path":"/about","icon":"fa-regular fa-folder"}},"search":{"enable":true,"preload":true}},"page_templates":{"friends_column":2,"tags_style":"blur"},"home":{"sidebar":{"enable":true,"position":"left","first_item":"menu","announcement":null,"links":{"文章":{"path":"/archives","icon":"fa-regular fa-archive"}}},"article_date_format":"auto","categories":{"enable":true,"limit":10},"tags":{"enable":true,"limit":10}},"footerStart":2017};
+    window.lang_ago = {"second":"%s seconds ago","minute":"%s minutes ago","hour":"%s hours ago","day":"%s days ago","week":"%s weeks ago","month":"%s months ago","year":"%s years ago"};
+    window.data = {"masonry":false};
+  </script>
+    
+    <!--- Fontawesome Part-->
+    
+<link rel="stylesheet" href="/fontawesome/fontawesome.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/brands.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/solid.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/regular.min.css">
+
+    
+    
+    
+    
+<meta name="generator" content="Hexo 7.0.0"><link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+</head>
+
+
+<body>
+<div class="progress-bar-container">
+    
+
+    
+        <span class="pjax-progress-bar"></span>
+        <span class="swup-progress-icon">
+            <i class="fa-solid fa-circle-notch fa-spin"></i>
+        </span>
+    
+</div>
+
+
+<main class="page-container" id="swup">
+
+    
+
+    <div class="main-content-container">
+
+
+        <div class="main-content-header">
+            <header class="navbar-container">
+    
+    <div class="navbar-content">
+        <div class="left">
+            
+            <a class="logo-title" href="/">
+                
+                薛定谔的汪
+                
+            </a>
+        </div>
+
+        <div class="right">
+            <!-- PC -->
+            <div class="desktop">
+                <ul class="navbar-list">
+                    
+                        
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class="" 
+                                    href="/"  >
+                                    
+                                        
+                                            <i class="fa-regular fa-house"></i>
+                                        
+                                        HOME
+                                    
+                                </a>
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                        
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class="" 
+                                    href="/"  >
+                                    
+                                        
+                                            <i class="fa-regular fa-house"></i>
+                                        
+                                        主页
+                                    
+                                </a>
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                        
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class="" 
+                                    href="/archives"  >
+                                    
+                                        
+                                            <i class="fa-regular fa-archive"></i>
+                                        
+                                        文章
+                                    
+                                </a>
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                        
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class="" 
+                                    href="/about"  >
+                                    
+                                        
+                                            <i class="fa-regular fa-folder"></i>
+                                        
+                                        关于
+                                    
+                                </a>
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                    
+                        <li class="navbar-item search search-popup-trigger">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                        </li>
+                    
+                </ul>
+            </div>
+            <!-- Mobile -->
+            <div class="mobile">
+                
+                    <div class="icon-item search search-popup-trigger"><i class="fa-solid fa-magnifying-glass"></i></div>
+                
+                <div class="icon-item navbar-bar">
+                    <div class="navbar-bar-middle"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile drawer -->
+    <div class="navbar-drawer w-full absolute top-0 left-0 bg-background-color">
+        <ul class="drawer-navbar-list flex flex-col justify-start items-center">
+            
+                
+                    <li class="drawer-navbar-item text-base my-1.5 flex justify-center items-center">
+                        <a class="rounded-3xl py-1.5 px-5 hover:border hover:!text-primary active:!text-primary group " 
+                        href="/"  >
+                             
+                                
+                                    <i class="fa-regular fa-house"></i>
+                                
+                                HOME
+                            
+                        </a>
+                    </li>
+                    <!-- Submenu -->
+                    
+            
+                
+                    <li class="drawer-navbar-item text-base my-1.5 flex justify-center items-center">
+                        <a class="rounded-3xl py-1.5 px-5 hover:border hover:!text-primary active:!text-primary group " 
+                        href="/"  >
+                             
+                                
+                                    <i class="fa-regular fa-house"></i>
+                                
+                                主页
+                            
+                        </a>
+                    </li>
+                    <!-- Submenu -->
+                    
+            
+                
+                    <li class="drawer-navbar-item text-base my-1.5 flex justify-center items-center">
+                        <a class="rounded-3xl py-1.5 px-5 hover:border hover:!text-primary active:!text-primary group " 
+                        href="/archives"  >
+                             
+                                
+                                    <i class="fa-regular fa-archive"></i>
+                                
+                                文章
+                            
+                        </a>
+                    </li>
+                    <!-- Submenu -->
+                    
+            
+                
+                    <li class="drawer-navbar-item text-base my-1.5 flex justify-center items-center">
+                        <a class="rounded-3xl py-1.5 px-5 hover:border hover:!text-primary active:!text-primary group " 
+                        href="/about"  >
+                             
+                                
+                                    <i class="fa-regular fa-folder"></i>
+                                
+                                关于
+                            
+                        </a>
+                    </li>
+                    <!-- Submenu -->
+                    
+            
+
+        </ul>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+        </div>
+
+        <div class="main-content-body">
+
+            
+
+            <div class="main-content">
+
+                
+                    <div class="post-page-container">
+    <div class="article-content-container">
+
+        <div class="article-title relative w-full">
+            
+                
+                
+                <img src="https://www.zhengyk.cn/images/2020-01-15.jpg" alt="我认知的电商在大促活动下的架构体系" class="w-full h-60 sm:h-72 md:h-80 object-cover sm:rounded-t-large dark:brightness-75"/>
+                
+                <div class="w-full flex items-center absolute bottom-0 justify-start">
+                    <h1 class="article-title-cover text-center mx-6 my-6 text-second-text-color bg-background-color-transparent px-4 py-3 text-3xl sm:text-4xl md:text-5xl font-bold backdrop-blur-lg rounded-xl border border-border-color ">我认知的电商在大促活动下的架构体系</h1>
+                </div>
+            
+            </div>
+
+        
+            <div class="article-header flex flex-row gap-2 items-center px-2 sm:px-6 md:px-8">
+                <div class="avatar w-[46px] h-[46px] flex-shrink-0 rounded-medium border border-border-color p-[1px]">
+                    <img src="https://www.zhengyk.cn/images/portrait.jpg">
+                </div>
+                <div class="info flex flex-col justify-between">
+                    <div class="author flex items-center">
+                        <span class="name text-default-text-color text-lg font-semibold">郑亚凯</span>
+                        
+                    </div>
+                    <div class="meta-info">
+                        <div class="article-meta-info">
+    <span class="article-date article-meta-item">
+        <i class="fa-regular fa-pen-fancy"></i>&nbsp;
+        <span class="desktop">2020-01-15 19:44:48</span>
+        <span class="mobile">2020-01-15 19:44:48</span>
+        <span class="hover-info">Created</span>
+    </span>
+    
+        <span class="article-date article-meta-item">
+            <i class="fa-regular fa-wrench"></i>&nbsp;
+            <span class="desktop">2023-11-17 19:37:37</span>
+            <span class="mobile">2023-11-17 19:37:37</span>
+            <span class="hover-info">Updated</span>
+        </span>
+    
+
+    
+        <span class="article-categories article-meta-item">
+            <i class="fa-regular fa-folders"></i>&nbsp;
+            <ul>
+                
+                
+                    
+                        
+                        <li>
+                            <a href="/categories/%E6%9E%B6%E6%9E%84/">架构</a>&nbsp;
+                        </li>
+                    
+                    
+                
+            </ul>
+        </span>
+    
+    
+        <span class="article-tags article-meta-item">
+            <i class="fa-regular fa-tags"></i>&nbsp;
+            <ul>
+                
+                    <li>
+                        <a href="/tags/%E6%9E%B6%E6%9E%84/">架构</a>&nbsp;
+                    </li>
+                
+            </ul>
+        </span>
+    
+
+    
+    
+    
+    
+</div>
+
+                    </div>
+                </div>
+            </div>
+        
+
+        
+
+
+        <div class="article-content markdown-body px-2 sm:px-6 md:px-8 pb-8">
+            <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>每到双 11、618 等大促月时，各大电商是如何应对海量并发请求的呢，今天总结归纳下这背后的技术架构体系，并列举出我们技术人员面临的一些挑战，如何克服解决。</p>
+<h1 id="电商整体架构"><a href="#电商整体架构" class="headerlink" title="电商整体架构"></a>电商整体架构</h1><h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>从组织架构到技术架构，当前各大电商系统基本趋于中台化。中台在2015由阿里提出，其实是一种企业 架构而不是单纯的技术层面，目前几乎各大电商都进行着中台化的建设。</p>
+<p>中台没有什么神秘的，说到底，中台就是对 “共享”、“通用” 理念系统化的归纳和总结。</p>
+<ul>
+<li>重复功能建设和维护带来的重复投资 </li>
+<li>烟囱式建设造成系统壁垒，数据孤岛 </li>
+<li>业务沉淀促进可持续发展 </li>
+<li>大中台小前台快速响应市场的需要</li>
+</ul>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="https://www.zhengyk.cn/images/2020-01-15-01.jpg"
+                      alt="image-20210318122506676"
+                ></p>
+<h3 id="上层业务"><a href="#上层业务" class="headerlink" title="上层业务"></a>上层业务</h3><p>即大中台，小前台的前台，电商中直面用户的B2B,B2C等各个业务线。</p>
+<h3 id="业务中台"><a href="#业务中台" class="headerlink" title="业务中台"></a>业务中台</h3><p>业务中台基于公共服务的沉淀，需要收敛一些基础的业务服务，如商品、订单、会员、库存、财务、结 算等等。</p>
+<h3 id="数据中台"><a href="#数据中台" class="headerlink" title="数据中台"></a>数据中台</h3><p>数据中台不是一个平台，也不是一个系统。数据仓库、数据平台和数据中台是有区别的。简单的举例： 数据平台可以理解为数据库，数据仓库类比为报表，而数据中台更贴近上层业务，带着业务属性。</p>
+<h3 id="技术中台"><a href="#技术中台" class="headerlink" title="技术中台"></a>技术中台</h3><p>与业务无关的基础沉淀，中间件，系统框架，监控，日志，集成部署等等</p>
+<h3 id="运维中台"><a href="#运维中台" class="headerlink" title="运维中台"></a>运维中台</h3><p>不一定存在，系统运维相关的内容，硬件，机房，包括企业云平台的建设等可以划分为单独的运维中台</p>
+<h2 id="面临挑战"><a href="#面临挑战" class="headerlink" title="面临挑战"></a>面临挑战</h2><ul>
+<li>高性能：提供快速的访问体验。 </li>
+<li>高可用：网站服务7*24正常访问。</li>
+<li>可伸缩：硬件弹性增加&#x2F;减少能力（快速扩容与释放）。 </li>
+<li>扩展性：方便地增加&#x2F;减少新的功能&#x2F;模块（迭代与服务降级）。 </li>
+<li>安全性：安全访问和数据加密、安全存储等策略。 </li>
+<li>敏捷性：快速应对突发情况的能力（灾备等）。</li>
+</ul>
+<h3 id="内部瓶颈"><a href="#内部瓶颈" class="headerlink" title="内部瓶颈"></a>内部瓶颈</h3><ul>
+<li>木桶效应：水管最细的地方决定流量，水桶最低的地方决定容量（QPS压测调优为例） 。 </li>
+<li>CPU：序列化和反序列化、高频日志输出、大量反射、大量线程的应用 。</li>
+<li>内存：使用内存的中间件或服务，如redis，jvm大量对象堆积内存的应用等 。</li>
+<li>带宽：大流量高并发环境下，用户访问量激增，造成网络拥堵 。</li>
+<li>磁盘IO：文件上传下载，数据库频繁读写，不合理或大批量的日志输出。</li>
+<li>数据库连接数：应用服务器连接池大批扩容，警惕底层数据库、Redis 等连接数瓶颈。</li>
+</ul>
+<h3 id="外部瓶颈"><a href="#外部瓶颈" class="headerlink" title="外部瓶颈"></a>外部瓶颈</h3><ul>
+<li>短信：短信延迟与送达率问题， 可以搭建短信平台， 多家渠道做路由和切换分流。</li>
+<li>支付：银行支付与回调延迟，搭建支付中心，对接多支付渠道。</li>
+<li>快递：快递服务对接（快递100）。</li>
+<li>外部云存储：文件访问、流量扩容。</li>
+<li>CDN：静态文件采用  cdn 加速。</li>
+</ul>
+<p>外部云存储：云存储文件访问， 流量扩容（ 大家所使用的存储？nfs 的架构与事故） </p>
+<p>CDN：外部静态文件访问提速服务（使用过的项目？）</p>
+<h2 id="应对措施"><a href="#应对措施" class="headerlink" title="应对措施"></a>应对措施</h2><h3 id="订单中心"><a href="#订单中心" class="headerlink" title="订单中心"></a>订单中心</h3><h4 id="异步化"><a href="#异步化" class="headerlink" title="异步化"></a>异步化</h4><p>场景：订单状态变更时，实时同步到数据中台、大屏展示等。</p>
+<p>问题：需要注意订单异步化引发的乱序问题，一是传输阶段，二是消费阶段。</p>
+<p>示例：</p>
+<ol>
+<li><p>Rabbitmq ：可以在队列级保证顺序，单消费者消费一个队列可以严格保障顺序性，就是多一些 queue 而已；或者就一个 queue 但是对应一个 consumer，然后这个 consumer 内部用内存队列做排队，然后分发给底层不同的 worker 来处理。</p>
+</li>
+<li><p>Kafka：分区级别顺序保障，只能保障投放和传输阶段的顺序性，然后 一个 topic，一个 partition，一个 consumer，内部单线程消费，单线程吞吐量太低，一般不会用这个。<br>写 N 个内存 queue，具有相同 订单 的数据都到同一个内存 queue；然后对于 N 个线程，每个线程分别消费一个内存 queue 即可，这样就能保证顺序性。</p>
+</li>
+</ol>
+<h4 id="过期订单"><a href="#过期订单" class="headerlink" title="过期订单"></a>过期订单</h4><p>可以参考这篇：<a class="link"   target="_blank" rel="noopener" href="https://zhengyk.cn/2019/05/01/mq/rabbitmq/cancel-expired-order/" >过期订单自动取消的几种实现方式 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></p>
+<h3 id="支付中心"><a href="#支付中心" class="headerlink" title="支付中心"></a>支付中心</h3><p>一般会有一个支付平台，由于我没完整做过支付，所以只列出常见支付的问题以及解决思路供参考：</p>
+<h4 id="重复支付"><a href="#重复支付" class="headerlink" title="重复支付"></a>重复支付</h4><p>应对方案： </p>
+<ul>
+<li><p>前端程序屏蔽，前端js触发按钮置灰或者遮罩提示（支付成功？遇到问题？），或者在支付方式选择页直接 跳转。 </p>
+</li>
+<li><p>后端处理，发现不同通道下的支付成功回调，抛消息队列或记录日志。</p>
+</li>
+<li><p>数据修复： 首先查支付日志，确认针对同一笔订单收到了不同支付渠道的回调。</p>
+<p> 其次，在支付平台管理后端可以查到入账记录，人工介入。 </p>
+<p> 最后对账阶段会发现对方多帐，我方补单时出现重复订单。</p>
+</li>
+</ul>
+<p>问题处理：</p>
+<p>调取退款接口或者在支付渠道的管理后台操作退款（一定要多次确认无误）。</p>
+<h4 id="异常订单"><a href="#异常订单" class="headerlink" title="异常订单"></a>异常订单</h4><h5 id="未收到支付成功"><a href="#未收到支付成功" class="headerlink" title="未收到支付成功"></a>未收到支付成功</h5><p>场景： 用户明明支付成功，但还是显示未成功</p>
+<p> 问题分析： 一般支付渠道会间隔性多次回调支付成功链接，银行未回调的可能性比较小，着重排查开 单接口是否可用。如果可用追查日志是否出现异常记录。</p>
+<p>应对措施：</p>
+<p>订单支付结果查询：定时主动去查银行支付状态。</p>
+<p>对账阶段可以查漏，程序自动完成补单，但是处理相对延迟。</p>
+<h4 id="回调延迟"><a href="#回调延迟" class="headerlink" title="回调延迟"></a>回调延迟</h4><p>场景：用户是期望支付完成的同时立马看到结果。但是中间多层远程的调用，可能发生订单状态更新延迟问题。</p>
+<p>解决： 主动查询。在用户查看订单的时候，如果是类似“支付中”的中间态时，触发远程订单状态查询接口。比如支付完成后，用户在界面点击“支付完成”时，触发单笔订单支付结果查询</p>
+<h4 id="支付路由"><a href="#支付路由" class="headerlink" title="支付路由"></a>支付路由</h4><p>背景：</p>
+<p>保障支付可用性及支付分流，支付中心对接多家渠道</p>
+<p>方案：</p>
+<ul>
+<li>支付中心对接多个支付渠道，支付宝，微信，各银行或第三方支付供应商。 </li>
+<li>对不同用户，进入支付方式选择页时，做支付分流。 </li>
+<li>做好监控统计，一旦某个支付渠道不可用或者延迟较大，切掉，下线，或者降权。</li>
+</ul>
+<h3 id="营销中心"><a href="#营销中心" class="headerlink" title="营销中心"></a>营销中心</h3><h4 id="概述-1"><a href="#概述-1" class="headerlink" title="概述"></a>概述</h4><p>大促肯定伴随营销，一般营销中心所面对的主要是促销策略、优惠方式等业务上的架构问题。</p>
+<p>营销活动：单品促销活动、套装促销活动、店铺促销活动，平台促销活动。</p>
+<p>营销类型：满减、折扣、赠品、优惠券等。</p>
+<p>业务复杂度高，一般遵循：“同类营销仅可选其一，不同类营销可叠加” 的规则。</p>
+<h4 id="赠品设计"><a href="#赠品设计" class="headerlink" title="赠品设计"></a>赠品设计</h4><p>先了解 <a class="link"   target="_blank" rel="noopener" href="https://www.zhihu.com/question/29073730" >SPU、SKU 的基础概念 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></p>
+<p>赠品有两种设计方案，一种是不做单独的SKU，只有一个空的描述，设计简单，缺点是没有商品详情 页，无法给用户直观的查看和估值。</p>
+<p>另一种是单独做SKU，赠品也会作为一个商品存在，与主商品关联，下单的时候将会自动加到商品列 表，价格降为0。这种更为常见。整个商品有完善的详情页，用户可以直接看到价格甚至单独下单购 买。</p>
+<h4 id="排他与优先级"><a href="#排他与优先级" class="headerlink" title="排他与优先级"></a>排他与优先级</h4><p>检查同类别促销，将最大优惠力度的规则应用到订单，并且满足排他性，同类只享受其一。比如满10减 3，满20减5，那么用户购买大于20时，只减5即可。</p>
+<p>不同类别不做排斥，如购物车整体满减后，不影响单个商品的折扣。在记录数据时，优惠要细化到每个 单独的订单明细上。退款也做到明细级别的单独退。</p>
+<h4 id="价格分摊"><a href="#价格分摊" class="headerlink" title="价格分摊"></a>价格分摊</h4><p>满减或平台券等优惠，在多个商品下单时，涉及到金额的分摊。即 优惠总额度&#x2F;购物车总额 ，得到比例 后再按比例均分到每个商品。只有分摊才能在发生部分退款时退回真实金额。</p>
+<p>但是这会涉及到一个精度问题。举例如下：满99减9活动，假设用户购买了 30+40+50&#x3D;120，3件商品 应付111元。按比例折算的话，9&#x2F;99取4位小数是0.9090，那么分摊后为 30x0.9090+40x0.9090+50x0.9090&#x3D;109.08与实际支付金额出现偏差。这会造成财务无法平账。</p>
+<p>解决方案：记账时在订单明细记录，将误差 111-109.08&#x3D;1.92计入金额最大的明细，也就是50元商品 上。那么最终记账为：30x0.9090 + 40x0.9090 +（50*0.909+1.92）&#x3D; 111</p>
+<h4 id="退单处理"><a href="#退单处理" class="headerlink" title="退单处理"></a>退单处理</h4><p>退单后要同时恢复用户的权益，比如优惠券的再次使用，限购次数等。确保用户体验。</p>
+<h4 id="商品中心"><a href="#商品中心" class="headerlink" title="商品中心"></a>商品中心</h4><ol>
+<li><p>限时商品下架控制：这个和过期订单自动取消的技术手段一样，不再赘述。</p>
+</li>
+<li><p>库存管理：</p>
+<blockquote>
+<p>普通商品可以直接借助数据库锁实现，一般分乐观锁和悲观锁两种方案，如果采用悲观锁（如select语 句带forupdate）， 会带来很大的性能阻塞， 所以更多的采用乐观锁设计。 </p>
+<p>乐观锁就是在最后执行库存扣减操作时，将事务开始前获取的库存数量带入到SQL语句中作为更新的 where条件，如果数量相等，则该条更新库存的语句成功执行返回update条数为1；如果不相等，则表 示该商品的库存信息已经被其他事务修改，需要放弃该条update的执行，采用重试处理。</p>
+<p>库存秒杀商品因为大批量的访问在一瞬间涌入，数据库扛不住。可以采用 redis缓存做decr处理，正常</p>
+<p>下单后，再使用mq异步更新到db。</p>
+</blockquote>
+</li>
+</ol>
+<h2 id="技术中台-1"><a href="#技术中台-1" class="headerlink" title="技术中台"></a>技术中台</h2><h3 id="数据库优化"><a href="#数据库优化" class="headerlink" title="数据库优化"></a>数据库优化</h3><p>数据库层的调优一般发生在大促之前的预备阶段，大促开始后再优化已经来不及了。</p>
+<p>总结下主要有几点：</p>
+<blockquote>
+<ol>
+<li><p>在大促开始前梳理耗时查询业务，对关键业务压测。</p>
+</li>
+<li><p>开启mysql的慢查询日志（两种方式）</p>
+<div class="highlight-container" data-rel="Properties"><figure class="iseeu highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#配置文件方式，需要重启mysql </span></span><br><span class="line"><span class="comment">#日志文件位置 </span></span><br><span class="line"><span class="attr">log-slow-queries</span>=<span class="string">/opt/data/slowquery.log </span></span><br><span class="line"><span class="comment">#超时时间，默认10s long_query_time=2</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">#临时开启，不需要重启</span></span><br><span class="line"><span class="attr">set</span> <span class="string">global slow_query_log=on;</span></span><br><span class="line"><span class="attr">set</span> <span class="string">global long_query_time=2;</span></span><br><span class="line"><span class="attr">set</span> <span class="string">global slow_query_log_file=‘/opt/data/slow_query.log’;</span></span><br></pre></td></tr></table></figure></div>
+</li>
+<li><p>借助 explain查看sql执行计划，对sql调优。</p>
+</li>
+</ol>
+</blockquote>
+<h3 id="缓存优化"><a href="#缓存优化" class="headerlink" title="缓存优化"></a>缓存优化</h3><h4 id="策略"><a href="#策略" class="headerlink" title="策略"></a>策略</h4><ol>
+<li>热数据预热：常规缓存设计趋向于懒加载，大促期间的热点数据尽量做到预热加载。比如某个促销专题，不要等待活 动开始的一瞬间再读库加缓存，搞不好引发击穿。</li>
+<li><strong>细粒度设计</strong>：集合与单体分开存储，缓存结构细粒度化。如某个推荐商品列表，常规存储一个key，value为整个商品集合。优化为列表与每个商品详细信息设置两个独立缓存值，在查询环节组装。新增一个推荐则失效列表，修改商品则仅仅失效当前商品缓存。这样做的好处是缓存存储颗粒度变小，当数据库修改时可以降低缓存的修改冲击。</li>
+<li>可用性：缓存穿透、缓存雪崩等。</li>
+</ol>
+<h4 id="多级缓存"><a href="#多级缓存" class="headerlink" title="多级缓存"></a>多级缓存</h4><p>优化缓存体系，对关键业务请求，如商品详情页，采用多级缓存处理</p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="https://www.zhengyk.cn/images/2020-01-15-02.jpg?a=1"
+                     
+                ></p>
+<h3 id="分流与限流"><a href="#分流与限流" class="headerlink" title="分流与限流"></a>分流与限流</h3><p>CDN的引入本身起到了按ip分流的作用，但是我们可以在下层做到更细粒度化的控制。根据业务情况将 不同的请求分流到各自的服务器。</p>
+<p>限流是 当系统超过一定流量后，超过的流量做直接拒绝处理，以便保护后 端的服务，原则就是要么不进来，进来的都正常服务。常见的限流算法有这几种：滑动窗口、计数器、漏桶、令牌桶。</p>
+<p>限流算法参考此篇：<a class="link"   target="_blank" rel="noopener" href="https://zhengyk.cn/2018/09/16/framework/limit-degrade/" >降级与限流 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></p>
+<h4 id="业务分流"><a href="#业务分流" class="headerlink" title="业务分流"></a>业务分流</h4><p>根据不同的业务线分发请求，配备二级域名如b2b.xxx.com，b2c.xxx.com，或者在nginx软负载层针对 不同虚拟主机名做upstream分发</p>
+<p>大促期的活动页，或者促销专题页面，采用新访问入口和机器部署，与主站分离。活动结束后也利于 机器资源的快速释放。</p>
+<h4 id="终端分流"><a href="#终端分流" class="headerlink" title="终端分流"></a>终端分流</h4><p>按不同的请求终端分流，在header头的user-agent中可以捕获用户的访问终端。android，ios，pc， 根据不同终端设备，做流量分发，到不同的应用机器。同时方便对用户终端流量的监控和统计。</p>
+<h4 id="nginx限流"><a href="#nginx限流" class="headerlink" title="nginx限流"></a>nginx限流</h4><p>Nginx中使用 ngx_http_limit_req_module 模块来限制请求的访问频率，基于漏桶算法原理实现。</p>
+<h4 id="网关限流"><a href="#网关限流" class="headerlink" title="网关限流"></a>网关限流</h4><p>从代理服务器放进来的流量，会进入应用服务器，第一道关卡是微服务的网关。应对大促，针对各个微 服务具体业务具体分析，配备对应限流措施。zuul和springcloud gateway是团队中最常遇到的网关组件。</p>
+<h3 id="服务降级"><a href="#服务降级" class="headerlink" title="服务降级"></a>服务降级</h3><p>当服务器压力剧增的情况下，根据实际业务情况及流量，对一些服务和页面有策略的不处理或换种简单 的方式处理，从而释放服务器资源以保证核心交易正常运作或高效运作。是一种舍车保帅的策略。</p>
+<p>比如平时客户来我的店铺购买衣服。平时可以试穿，给出建议，帮助搭配，最后下单支付，送用户祝福 卡片等。双11大促则简单粗暴响应下单支付收钱发货。其他不太重要的服务关闭开关，腾出资源让位主 交易流程。</p>
+<p>服务降级可以从前端页面，后端微服务两个点着手。</p>
+<h4 id="页面降级"><a href="#页面降级" class="headerlink" title="页面降级"></a>页面降级</h4><p>很好理解，针对页面元素处理，将不重要的操作入口置灰或屏蔽。平时调用后端接口实时呈现数据的地 方替换为静态页也可以理解为一种降级操作。</p>
+<h4 id="微服务降级"><a href="#微服务降级" class="headerlink" title="微服务降级"></a>微服务降级</h4><p>配置接口开关，并通过配置中心可以灵活开闭。必要时关闭开关，屏蔽接口的实际查询，直接返回 mock数据。</p>
+<h4 id="快速熔断"><a href="#快速熔断" class="headerlink" title="快速熔断"></a>快速熔断</h4><p>快速熔断可以认为是在应对突发情况时，对服务请求结果准确性的一种妥协。避免因单一服务垮台导致 整个调用链路崩溃。常用手段如下：</p>
+<p>抛异常：这种处理需要上层配备异常处理机制，在捕获异常时，导向错误页、等待页或稍后重试 等。 返回NULL：简单粗暴，可能会出现空白结果，并不友好。 调用Fallback处理逻辑：更人性化的手段，也最常用。为每个业务配备一个备选方案。</p>
+<p>举个例子：商品页或订单详情页面，一般都会有猜你喜欢这个模块，通过对用户的购买行为、浏览记录、收藏记录等等进行大数据分析，然后给每一个用户推送自己可能喜欢的商品。在双11大促背景下， 如果推荐服务压力过大，出现服务出错、网络延迟等等之类突发情况，导致最后调用服务失败，则可以 配备一个fallback，直接返回当前商品同类别下的几款商品，作为备选方案，这比抛异常或者返回null空 白页面体验要更优。</p>
+<h3 id="安全性"><a href="#安全性" class="headerlink" title="安全性"></a>安全性</h3><p>大促前做好安全防范。常见的DDos，Arp，脚本等攻击平时也会存在，日常防范已经配备。大促期间需 要注意的可能更多的是业务层面的入侵，比如抢购或秒杀时的恶意刷接口。</p>
+<p>实名制，限制单用户，单ip等维度下的频次 </p>
+<p>必要的地方添加验证码（图片复杂度升级，或滑块等新型方式） </p>
+<p>黑名单机制，一旦发现恶意行为，列入黑名单，并自动维护</p>
+
+        </div>
+
+        
+            <div class="post-copyright-info px-2 sm:px-6 md:px-8">
+                <div class="article-copyright-info-container">
+    <ul>
+        <li><strong>Title:</strong> 我认知的电商在大促活动下的架构体系</li>
+        <li><strong>Author:</strong> 郑亚凯</li>
+        <li><strong>Created at
+                :</strong> 2020-01-15 19:44:48</li>
+        
+            <li>
+                <strong>Updated at
+                    :</strong> 2023-11-17 19:37:37
+            </li>
+        
+        <li>
+            <strong>Link:</strong> https://www.zhengyk.cn/2020/01/15/architecture/e-commerce-big-sale/
+        </li>
+        <li>
+            <strong>
+                License:
+            </strong>
+            
+
+            
+                This work is licensed under <a class="license" target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0">CC BY-NC-SA 4.0</a>.
+            
+        </li>
+    </ul>
+</div>
+
+            </div>
+        
+
+        
+            <ul class="post-tags-box">
+                
+                    <li class="tag-item">
+                        <a href="/tags/%E6%9E%B6%E6%9E%84/">#架构</a>&nbsp;
+                    </li>
+                
+            </ul>
+        
+
+        
+
+        
+            <div class="article-nav my-8 flex justify-between items-center px-2 sm:px-6 md:px-8">
+                
+                    <div class="article-prev border-border-color shadow-redefine-flat shadow-shadow-color-2 rounded-medium px-4 py-2 hover:shadow-redefine-flat-hover hover:shadow-shadow-color-2">
+                        <a class="prev"
+                        rel="prev"
+                        href="/2021/12/12/other/stop-neihao/"
+                        >
+                            <span class="left arrow-icon flex justify-center items-center">
+                                <i class="fa-solid fa-chevron-left"></i>
+                            </span>
+                            <span class="title flex justify-center items-center">
+                                <span class="post-nav-title-item">停止心理内耗才能变更强</span>
+                                <span class="post-nav-item">Prev posts</span>
+                            </span>
+                        </a>
+                    </div>
+                
+                
+                    <div class="article-next border-border-color shadow-redefine-flat shadow-shadow-color-2 rounded-medium px-4 py-2 hover:shadow-redefine-flat-hover hover:shadow-shadow-color-2">
+                        <a class="next"
+                        rel="next"
+                        href="/2019/11/30/elasticsearch/es-reindex/"
+                        >
+                            <span class="title flex justify-center items-center">
+                                <span class="post-nav-title-item">Elasticsearch 使用 reindex 快速修改生产环境索引 mapping</span>
+                                <span class="post-nav-item">Next posts</span>
+                            </span>
+                            <span class="right arrow-icon flex justify-center items-center">
+                                <i class="fa-solid fa-chevron-right"></i>
+                            </span>
+                        </a>
+                    </div>
+                
+            </div>
+        
+
+
+        
+    </div>
+
+    
+        <div class="toc-content-container">
+            <div class="post-toc-wrap">
+    <div class="post-toc">
+        <div class="toc-title">On this page</div>
+        <div class="page-title">我认知的电商在大促活动下的架构体系</div>
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%94%B5%E5%95%86%E6%95%B4%E4%BD%93%E6%9E%B6%E6%9E%84"><span class="nav-text">电商整体架构</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0"><span class="nav-text">概述</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%8A%E5%B1%82%E4%B8%9A%E5%8A%A1"><span class="nav-text">上层业务</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%9A%E5%8A%A1%E4%B8%AD%E5%8F%B0"><span class="nav-text">业务中台</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E4%B8%AD%E5%8F%B0"><span class="nav-text">数据中台</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8A%80%E6%9C%AF%E4%B8%AD%E5%8F%B0"><span class="nav-text">技术中台</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%BF%90%E7%BB%B4%E4%B8%AD%E5%8F%B0"><span class="nav-text">运维中台</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%9D%A2%E4%B8%B4%E6%8C%91%E6%88%98"><span class="nav-text">面临挑战</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%86%85%E9%83%A8%E7%93%B6%E9%A2%88"><span class="nav-text">内部瓶颈</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A4%96%E9%83%A8%E7%93%B6%E9%A2%88"><span class="nav-text">外部瓶颈</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BA%94%E5%AF%B9%E6%8E%AA%E6%96%BD"><span class="nav-text">应对措施</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%AE%A2%E5%8D%95%E4%B8%AD%E5%BF%83"><span class="nav-text">订单中心</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%94%AF%E4%BB%98%E4%B8%AD%E5%BF%83"><span class="nav-text">支付中心</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%90%A5%E9%94%80%E4%B8%AD%E5%BF%83"><span class="nav-text">营销中心</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8A%80%E6%9C%AF%E4%B8%AD%E5%8F%B0-1"><span class="nav-text">技术中台</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E5%BA%93%E4%BC%98%E5%8C%96"><span class="nav-text">数据库优化</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BC%93%E5%AD%98%E4%BC%98%E5%8C%96"><span class="nav-text">缓存优化</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%86%E6%B5%81%E4%B8%8E%E9%99%90%E6%B5%81"><span class="nav-text">分流与限流</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9C%8D%E5%8A%A1%E9%99%8D%E7%BA%A7"><span class="nav-text">服务降级</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%89%E5%85%A8%E6%80%A7"><span class="nav-text">安全性</span></a></li></ol></li></ol></li></ol>
+
+    </div>
+</div>
+        </div>
+    
+</div>
+
+
+
+                
+
+            </div>
+
+            
+
+        </div>
+
+        <div class="main-content-footer">
+            <footer class="footer mt-5 py-5 h-auto text-base text-third-text-color relative border-t-2 border-t-border-color">
+    <div class="info-container py-3 text-center">
+        
+        <div class="text-center">
+            &copy;
+            
+              <span>1970</span>
+              -
+            
+            2023&nbsp;&nbsp;<i class="fa-solid fa-heart fa-beat" style="--fa-animation-duration: 0.5s; color: #f54545"></i>&nbsp;&nbsp;<a href="/">郑亚凯</a>
+        </div>
+        
+        <div class="relative text-center lg:absolute lg:left-[20px] lg:top-1/2 lg:-translate-y-1/2 lg:text-left">
+            <span class="lg:block text-sm">POWERED BY <?xml version="1.0" encoding="utf-8"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd"><svg class="relative top-[2px] inline-block align-baseline" version="1.1" id="圖層_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="1rem" height="1rem" viewBox="0 0 512 512" enable-background="new 0 0 512 512" xml:space="preserve"><path fill="#0E83CD" d="M256.4,25.8l-200,115.5L56,371.5l199.6,114.7l200-115.5l0.4-230.2L256.4,25.8z M349,354.6l-18.4,10.7l-18.6-11V275H200v79.6l-18.4,10.7l-18.6-11v-197l18.5-10.6l18.5,10.8V237h112v-79.6l18.5-10.6l18.5,10.8V354.6z"/></svg><a target="_blank" class="text-base" href="https://hexo.io">Hexo</a></span>
+            <span class="text-sm lg:block">THEME&nbsp;<a class="text-base" target="_blank" href="https://github.com/EvanNotFound/hexo-theme-redefine">Redefine v2.5.2</a></span>
+        </div>
+        
+        
+            <div>
+                Blog up for <span class="odometer" id="runtime_days" ></span> days <span class="odometer" id="runtime_hours"></span> hrs <span class="odometer" id="runtime_minutes"></span> Min <span class="odometer" id="runtime_seconds"></span> Sec
+            </div>
+        
+        
+            <script data-swup-reload-script>
+                try {
+                    function odometer_init() {
+                    const elements = document.querySelectorAll('.odometer');
+                    elements.forEach(el => {
+                        new Odometer({
+                            el,
+                            format: '( ddd).dd',
+                            duration: 200
+                        });
+                    });
+                    }
+                    odometer_init();
+                } catch (error) {}
+            </script>
+        
+        
+        
+    </div>  
+</footer>
+        </div>
+    </div>
+
+    
+        <div class="post-tools">
+            <div class="post-tools-container">
+    <ul class="article-tools-list">
+        <!-- TOC aside toggle -->
+        
+            <li class="right-bottom-tools page-aside-toggle">
+                <i class="fa-regular fa-outdent"></i>
+            </li>
+        
+
+        <!-- go comment -->
+        
+    </ul>
+</div>
+
+        </div>
+    
+
+    <div class="right-side-tools-container">
+        <div class="side-tools-container">
+    <ul class="hidden-tools-list">
+        <li class="right-bottom-tools tool-font-adjust-plus flex justify-center items-center">
+            <i class="fa-regular fa-magnifying-glass-plus"></i>
+        </li>
+
+        <li class="right-bottom-tools tool-font-adjust-minus flex justify-center items-center">
+            <i class="fa-regular fa-magnifying-glass-minus"></i>
+        </li>
+
+        <li class="right-bottom-tools tool-dark-light-toggle flex justify-center items-center">
+            <i class="fa-regular fa-moon"></i>
+        </li>
+
+        <!-- rss -->
+        
+
+        
+
+        <li class="right-bottom-tools tool-scroll-to-bottom flex justify-center items-center">
+            <i class="fa-regular fa-arrow-down"></i>
+        </li>
+    </ul>
+
+    <ul class="visible-tools-list">
+        <li class="right-bottom-tools toggle-tools-list flex justify-center items-center">
+            <i class="fa-regular fa-cog fa-spin"></i>
+        </li>
+        
+            <li class="right-bottom-tools tool-scroll-to-top flex justify-center items-center">
+                <i class="arrow-up fas fa-arrow-up"></i>
+                <span class="percent"></span>
+            </li>
+        
+        
+    </ul>
+</div>
+
+    </div>
+
+    <div class="image-viewer-container">
+    <img src="">
+</div>
+
+
+    
+        <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+          <span class="search-input-field-pre">
+            <i class="fa-solid fa-keyboard"></i>
+          </span>
+            <div class="search-input-container">
+                <input autocomplete="off"
+                       autocorrect="off"
+                       autocapitalize="off"
+                       placeholder="Search..."
+                       spellcheck="false"
+                       type="search"
+                       class="search-input"
+                >
+            </div>
+            <span class="popup-btn-close">
+                <i class="fa-solid fa-times"></i>
+            </span>
+        </div>
+        <div id="search-result">
+            <div id="no-result">
+                <i class="fa-solid fa-spinner fa-spin-pulse fa-5x fa-fw"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+
+</main>
+
+
+    
+<script src="/js/libs/Swup.min.js"></script>
+
+<script src="/js/libs/SwupSlideTheme.min.js"></script>
+
+<script src="/js/libs/SwupScriptsPlugin.min.js"></script>
+
+<script src="/js/libs/SwupProgressPlugin.min.js"></script>
+
+<script src="/js/libs/SwupScrollPlugin.min.js"></script>
+
+<script src="/js/libs/SwupPreloadPlugin.min.js"></script>
+
+<script>
+    const swup = new Swup({
+        plugins: [
+            new SwupScriptsPlugin({
+                optin: true,
+            }),
+            new SwupProgressPlugin(),
+            new SwupScrollPlugin({
+                offset: 80,
+            }),
+            new SwupSlideTheme({
+                mainElement: ".main-content-body",
+            }),
+            new SwupPreloadPlugin(),
+        ],
+        containers: ["#swup"],
+    });
+</script>
+
+
+
+
+
+
+
+<script src="/js/tools/imageViewer.js" type="module"></script>
+
+<script src="/js/utils.js" type="module"></script>
+
+<script src="/js/main.js" type="module"></script>
+
+<script src="/js/layouts/navbarShrink.js" type="module"></script>
+
+<script src="/js/tools/scrollTopBottom.js" type="module"></script>
+
+<script src="/js/tools/lightDarkSwitch.js" type="module"></script>
+
+<script src="/js/layouts/categoryList.js" type="module"></script>
+
+
+
+    
+<script src="/js/tools/localSearch.js" type="module"></script>
+
+
+
+
+    
+<script src="/js/tools/codeBlock.js" type="module"></script>
+
+
+
+
+    
+<script src="/js/layouts/lazyload.js" type="module"></script>
+
+
+
+
+    
+<script src="/js/tools/runtime.js"></script>
+
+    
+<script src="/js/libs/odometer.min.js"></script>
+
+    
+<link rel="stylesheet" href="/assets/odometer-theme-minimal.css">
+
+
+
+
+  
+<script src="/js/libs/Typed.min.js"></script>
+
+  
+<script src="/js/plugins/typed.js" type="module"></script>
+
+
+
+
+
+
+
+<div class="post-scripts" data-swup-reload-script>
+    
+        
+<script src="/js/libs/anime.min.js"></script>
+
+        
+<script src="/js/tools/tocToggle.js" type="module"></script>
+
+<script src="/js/layouts/toc.js" type="module"></script>
+
+<script src="/js/plugins/tabs.js" type="module"></script>
+
+    
+</div>
+
+
+</body>
+</html>

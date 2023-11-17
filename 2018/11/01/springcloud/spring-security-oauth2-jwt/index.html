@@ -1,0 +1,976 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="keywords" content="Hexo Theme Redefine">
+    
+    <meta name="author" content="郑亚凯">
+    <!-- preconnect -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    
+    <!--- Seo Part-->
+    
+    <link rel="canonical" href="http://example.com/2018/11/01/springcloud/spring-security-oauth2-jwt/"/>
+    <meta name="robots" content="index,follow">
+    <meta name="googlebot" content="index,follow">
+    <meta name="revisit-after" content="1 days">
+    
+        <meta name="description" content="前言在很多微服务分布式项目架构中，一般都会有一个独立的认证中心服务，负责用户身份认证和授权，正好近期公司的一个项目用到了，记录总结下。 在此之前，先了解一些概念。 第三方认证互联网项目经常需要访问外部资源，同样本地系统也经常需要访问外部资源，比如用户使用我们的 APP，但是用户嫌手机号 + 验证码方式注册登录太麻烦，为了用户体验，集成了QQ，微信授权登录。 流程如下：  由图可知，微信不属于我们的">
+<meta property="og:type" content="article">
+<meta property="og:title" content="用 Spring Security Oauth2 + JWT 搭建一个认证中心">
+<meta property="og:url" content="http://example.com/2018/11/01/springcloud/spring-security-oauth2-jwt/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="前言在很多微服务分布式项目架构中，一般都会有一个独立的认证中心服务，负责用户身份认证和授权，正好近期公司的一个项目用到了，记录总结下。 在此之前，先了解一些概念。 第三方认证互联网项目经常需要访问外部资源，同样本地系统也经常需要访问外部资源，比如用户使用我们的 APP，但是用户嫌手机号 + 验证码方式注册登录太麻烦，为了用户体验，集成了QQ，微信授权登录。 流程如下：  由图可知，微信不属于我们的">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://www.zhengyk.cn/images/wx-auth-example.jpg?v=1">
+<meta property="og:image" content="https://www.zhengyk.cn/images/wx-auth-process.jpg?v=1">
+<meta property="og:image" content="https://www.zhengyk.cn/images/oauth2-process.jpg">
+<meta property="og:image" content="https://www.zhengyk.cn/images/oauth2-tables.jpg">
+<meta property="og:image" content="https://www.zhengyk.cn/images/oauth_client_details.jpg">
+<meta property="og:image" content="https://www.zhengyk.cn/images/code-login.jpg">
+<meta property="og:image" content="https://www.zhengyk.cn/images/is_auth.jpg">
+<meta property="og:image" content="https://www.zhengyk.cn/images/getcode.jpg">
+<meta property="og:image" content="https://www.zhengyk.cn/images/post-code-1.png">
+<meta property="og:image" content="https://www.zhengyk.cn/images/post-code-2.png">
+<meta property="og:image" content="https://www.zhengyk.cn/images/post-code-3.png">
+<meta property="og:image" content="https://www.zhengyk.cn/images/post-code-4.png">
+<meta property="og:image" content="https://www.zhengyk.cn/images/post-password.jpg?v=1">
+<meta property="article:published_time" content="2018-11-01T05:20:16.000Z">
+<meta property="article:modified_time" content="2023-11-17T11:37:36.969Z">
+<meta property="article:author" content="John Doe">
+<meta property="article:tag" content="springcloud">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://www.zhengyk.cn/images/wx-auth-example.jpg?v=1">
+    
+    
+    <!--- Icon Part-->
+    <link rel="icon" type="image/png" href="https://www.zhengyk.cn/images/portrait.jpg" sizes="192x192">
+    <link rel="apple-touch-icon" sizes="180x180" href="https://www.zhengyk.cn/images/portrait.jpg">
+    <meta name="theme-color" content="#A31F34">
+    <link rel="shortcut icon" href="https://www.zhengyk.cn/images/portrait.jpg">
+    <!--- Page Info-->
+    
+    <title>
+        
+            用 Spring Security Oauth2 + JWT 搭建一个认证中心 -
+        
+        薛定谔的汪
+    </title>
+    
+<link rel="stylesheet" href="/css/style.css">
+
+
+    
+        
+<link rel="stylesheet" href="/assets/build/styles.css">
+
+    
+
+    
+<link rel="stylesheet" href="/fonts/fonts.css">
+
+    
+<link rel="stylesheet" href="/fonts/Satoshi/satoshi.css">
+
+    
+<link rel="stylesheet" href="/fonts/Chillax/chillax.css">
+
+    <!--- Font Part-->
+    
+    
+    
+    
+
+    <!--- Inject Part-->
+    
+    <script id="hexo-configurations">
+    window.config = {"hostname":"example.com","root":"/","language":"en"};
+    window.theme = {"articles":{"style":{"font_size":"16px","line_height":1.5,"image_border_radius":"14px","image_alignment":"center","image_caption":false,"link_icon":true,"title_alignment":"left"},"word_count":{"enable":true,"count":true,"min2read":true},"author_label":{"enable":false,"auto":false,"list":[]},"code_block":{"copy":true,"style":"mac","font":{"enable":false,"family":null,"url":null}},"toc":{"enable":true,"max_depth":3,"number":false,"expand":true,"init_open":true},"copyright":{"enable":true,"default":"cc_by_nc_sa"},"lazyload":true,"recommendation":{"enable":false,"title":"推荐阅读","limit":3,"mobile_limit":2,"placeholder":"/images/wallhaven-wqery6-light.webp","skip_dirs":[]}},"colors":{"primary":"#A31F34","secondary":null},"global":{"fonts":{"chinese":{"enable":false,"family":null,"url":null},"english":{"enable":false,"family":null,"url":null}},"content_max_width":"1000px","sidebar_width":"210px","hover":{"shadow":true,"scale":false},"scroll_progress":{"bar":false,"percentage":true},"website_counter":{"url":"https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js","enable":false,"site_pv":false,"site_uv":false,"post_pv":false},"single_page":true,"open_graph":true,"google_analytics":{"enable":false,"id":null}},"home_banner":{"enable":true,"style":"fixed","image":{"light":"https://www.zhengyk.cn/images/wallhaven-wqery6-light.png","dark":"https://www.zhengyk.cn/images/wallhaven-wqery6-dark.png"},"title":"学习技术 | 分享生活","subtitle":{"text":[],"hitokoto":{"enable":false,"api":"https://v1.hitokoto.cn"},"typing_speed":100,"backing_speed":80,"starting_delay":500,"backing_delay":1500,"loop":true,"smart_backspace":true},"text_color":{"light":"#fff","dark":"#d1d1b6"},"text_style":{"title_size":"2.8rem","subtitle_size":"1.5rem","line_height":1.2},"custom_font":{"enable":false,"family":null,"url":null},"social_links":{"enable":false,"links":{"github":"https://github.com/zhengyakai","instagram":null,"zhihu":null,"twitter":null,"email":null},"qrs":{"weixin":null}}},"plugins":{"feed":{"enable":false},"aplayer":{"enable":false,"type":"fixed","audios":[{"name":null,"artist":null,"url":null,"cover":null}]},"mermaid":{"enable":false,"version":"9.3.0"}},"version":"2.5.2","navbar":{"auto_hide":false,"color":{"left":"#f78736","right":"#367df7","transparency":35},"links":{"Home":{"path":"/","icon":"fa-regular fa-house"},"主页":{"path":"/","icon":"fa-regular fa-house"},"文章":{"path":"/archives","icon":"fa-regular fa-archive"},"关于":{"path":"/about","icon":"fa-regular fa-folder"}},"search":{"enable":true,"preload":true}},"page_templates":{"friends_column":2,"tags_style":"blur"},"home":{"sidebar":{"enable":true,"position":"left","first_item":"menu","announcement":null,"links":{"文章":{"path":"/archives","icon":"fa-regular fa-archive"}}},"article_date_format":"auto","categories":{"enable":true,"limit":10},"tags":{"enable":true,"limit":10}},"footerStart":2017};
+    window.lang_ago = {"second":"%s seconds ago","minute":"%s minutes ago","hour":"%s hours ago","day":"%s days ago","week":"%s weeks ago","month":"%s months ago","year":"%s years ago"};
+    window.data = {"masonry":false};
+  </script>
+    
+    <!--- Fontawesome Part-->
+    
+<link rel="stylesheet" href="/fontawesome/fontawesome.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/brands.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/solid.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/regular.min.css">
+
+    
+    
+    
+    
+<meta name="generator" content="Hexo 7.0.0"><link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+</head>
+
+
+<body>
+<div class="progress-bar-container">
+    
+
+    
+        <span class="pjax-progress-bar"></span>
+        <span class="swup-progress-icon">
+            <i class="fa-solid fa-circle-notch fa-spin"></i>
+        </span>
+    
+</div>
+
+
+<main class="page-container" id="swup">
+
+    
+
+    <div class="main-content-container">
+
+
+        <div class="main-content-header">
+            <header class="navbar-container">
+    
+    <div class="navbar-content">
+        <div class="left">
+            
+            <a class="logo-title" href="/">
+                
+                薛定谔的汪
+                
+            </a>
+        </div>
+
+        <div class="right">
+            <!-- PC -->
+            <div class="desktop">
+                <ul class="navbar-list">
+                    
+                        
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class="" 
+                                    href="/"  >
+                                    
+                                        
+                                            <i class="fa-regular fa-house"></i>
+                                        
+                                        HOME
+                                    
+                                </a>
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                        
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class="" 
+                                    href="/"  >
+                                    
+                                        
+                                            <i class="fa-regular fa-house"></i>
+                                        
+                                        主页
+                                    
+                                </a>
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                        
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class="" 
+                                    href="/archives"  >
+                                    
+                                        
+                                            <i class="fa-regular fa-archive"></i>
+                                        
+                                        文章
+                                    
+                                </a>
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                        
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class="" 
+                                    href="/about"  >
+                                    
+                                        
+                                            <i class="fa-regular fa-folder"></i>
+                                        
+                                        关于
+                                    
+                                </a>
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                    
+                        <li class="navbar-item search search-popup-trigger">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                        </li>
+                    
+                </ul>
+            </div>
+            <!-- Mobile -->
+            <div class="mobile">
+                
+                    <div class="icon-item search search-popup-trigger"><i class="fa-solid fa-magnifying-glass"></i></div>
+                
+                <div class="icon-item navbar-bar">
+                    <div class="navbar-bar-middle"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile drawer -->
+    <div class="navbar-drawer w-full absolute top-0 left-0 bg-background-color">
+        <ul class="drawer-navbar-list flex flex-col justify-start items-center">
+            
+                
+                    <li class="drawer-navbar-item text-base my-1.5 flex justify-center items-center">
+                        <a class="rounded-3xl py-1.5 px-5 hover:border hover:!text-primary active:!text-primary group " 
+                        href="/"  >
+                             
+                                
+                                    <i class="fa-regular fa-house"></i>
+                                
+                                HOME
+                            
+                        </a>
+                    </li>
+                    <!-- Submenu -->
+                    
+            
+                
+                    <li class="drawer-navbar-item text-base my-1.5 flex justify-center items-center">
+                        <a class="rounded-3xl py-1.5 px-5 hover:border hover:!text-primary active:!text-primary group " 
+                        href="/"  >
+                             
+                                
+                                    <i class="fa-regular fa-house"></i>
+                                
+                                主页
+                            
+                        </a>
+                    </li>
+                    <!-- Submenu -->
+                    
+            
+                
+                    <li class="drawer-navbar-item text-base my-1.5 flex justify-center items-center">
+                        <a class="rounded-3xl py-1.5 px-5 hover:border hover:!text-primary active:!text-primary group " 
+                        href="/archives"  >
+                             
+                                
+                                    <i class="fa-regular fa-archive"></i>
+                                
+                                文章
+                            
+                        </a>
+                    </li>
+                    <!-- Submenu -->
+                    
+            
+                
+                    <li class="drawer-navbar-item text-base my-1.5 flex justify-center items-center">
+                        <a class="rounded-3xl py-1.5 px-5 hover:border hover:!text-primary active:!text-primary group " 
+                        href="/about"  >
+                             
+                                
+                                    <i class="fa-regular fa-folder"></i>
+                                
+                                关于
+                            
+                        </a>
+                    </li>
+                    <!-- Submenu -->
+                    
+            
+
+        </ul>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+        </div>
+
+        <div class="main-content-body">
+
+            
+
+            <div class="main-content">
+
+                
+                    <div class="post-page-container">
+    <div class="article-content-container">
+
+        <div class="article-title relative w-full">
+            
+                
+                
+                <img src="https://www.zhengyk.cn/images/2018-11-01.jpg" alt="用 Spring Security Oauth2 + JWT 搭建一个认证中心" class="w-full h-60 sm:h-72 md:h-80 object-cover sm:rounded-t-large dark:brightness-75"/>
+                
+                <div class="w-full flex items-center absolute bottom-0 justify-start">
+                    <h1 class="article-title-cover text-center mx-6 my-6 text-second-text-color bg-background-color-transparent px-4 py-3 text-3xl sm:text-4xl md:text-5xl font-bold backdrop-blur-lg rounded-xl border border-border-color ">用 Spring Security Oauth2 + JWT 搭建一个认证中心</h1>
+                </div>
+            
+            </div>
+
+        
+            <div class="article-header flex flex-row gap-2 items-center px-2 sm:px-6 md:px-8">
+                <div class="avatar w-[46px] h-[46px] flex-shrink-0 rounded-medium border border-border-color p-[1px]">
+                    <img src="https://www.zhengyk.cn/images/portrait.jpg">
+                </div>
+                <div class="info flex flex-col justify-between">
+                    <div class="author flex items-center">
+                        <span class="name text-default-text-color text-lg font-semibold">郑亚凯</span>
+                        
+                    </div>
+                    <div class="meta-info">
+                        <div class="article-meta-info">
+    <span class="article-date article-meta-item">
+        <i class="fa-regular fa-pen-fancy"></i>&nbsp;
+        <span class="desktop">2018-11-01 13:20:16</span>
+        <span class="mobile">2018-11-01 13:20:16</span>
+        <span class="hover-info">Created</span>
+    </span>
+    
+        <span class="article-date article-meta-item">
+            <i class="fa-regular fa-wrench"></i>&nbsp;
+            <span class="desktop">2023-11-17 19:37:36</span>
+            <span class="mobile">2023-11-17 19:37:36</span>
+            <span class="hover-info">Updated</span>
+        </span>
+    
+
+    
+        <span class="article-categories article-meta-item">
+            <i class="fa-regular fa-folders"></i>&nbsp;
+            <ul>
+                
+                
+                    
+                        
+                        <li>
+                            <a href="/categories/Java%E6%A1%86%E6%9E%B6/">Java框架</a>&nbsp;
+                        </li>
+                    
+                    
+                
+            </ul>
+        </span>
+    
+    
+        <span class="article-tags article-meta-item">
+            <i class="fa-regular fa-tags"></i>&nbsp;
+            <ul>
+                
+                    <li>
+                        <a href="/tags/springcloud/">springcloud</a>&nbsp;
+                    </li>
+                
+            </ul>
+        </span>
+    
+
+    
+    
+    
+    
+</div>
+
+                    </div>
+                </div>
+            </div>
+        
+
+        
+
+
+        <div class="article-content markdown-body px-2 sm:px-6 md:px-8 pb-8">
+            <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>在很多微服务分布式项目架构中，一般都会有一个独立的认证中心服务，负责用户身份认证和授权，正好近期公司的一个项目用到了，记录总结下。</p>
+<p>在此之前，先了解一些概念。</p>
+<h1 id="第三方认证"><a href="#第三方认证" class="headerlink" title="第三方认证"></a>第三方认证</h1><p>互联网项目经常需要访问外部资源，同样本地系统也经常需要访问外部资源，比如用户使用我们的 APP，但是用户嫌手机号 + 验证码方式注册登录太麻烦，为了用户体验，集成了QQ，微信授权登录。</p>
+<p>流程如下：</p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="https://www.zhengyk.cn/images/wx-auth-example.jpg?v=1"
+                      alt="image-20190214165228781"
+                ></p>
+<p>由图可知，微信不属于我们的系统，我们没有存储用户的账号、密码等信息，我们的系统想要获取用户相关信息需要通过微信的认证，认证通过后可以获得用户的昵称、头像等基本信息，之后该用户就可以在我们的系统登录使用了。</p>
+<p>上述过程就是第三方认证。</p>
+<h1 id="认证技术方案"><a href="#认证技术方案" class="headerlink" title="认证技术方案"></a>认证技术方案</h1><h2 id="单点登录"><a href="#单点登录" class="headerlink" title="单点登录"></a>单点登录</h2><p>单点登录，英文SSO，在分布式系统要实现单点登录，通常将认证系统抽取出来作为一个认证中心，用户认证通过后，给用户发放 token，并且将用户身份 token 单独存储（通常是 Redis）这样每次用户访问其他系统时判断 Redis 中是否有合适的 token。</p>
+<p>特点：</p>
+<ol>
+<li>认证系统独立</li>
+<li>各子系统与认证系统通信，完成身份认证。</li>
+<li>用户 token 存储在 Redis 中。</li>
+</ol>
+<p>单点登录框架（不借助框架，自己也能实现）：</p>
+<blockquote>
+<p>CAS</p>
+</blockquote>
+<blockquote>
+<p>Spring Security CAS</p>
+</blockquote>
+<h2 id="OAuth2-认证"><a href="#OAuth2-认证" class="headerlink" title="OAuth2 认证"></a>OAuth2 认证</h2><p>第三方认证技术方案最主要是解决认证协议的通用标准 问题，因为要实现 跨系统认证，各系统之间要遵循一定的接口协议，OAuth2 协议为用户资源的授权提供了一个安全的、开放而又简易的标准。</p>
+<h2 id="微信认证流程"><a href="#微信认证流程" class="headerlink" title="微信认证流程"></a>微信认证流程</h2><p>微信认证、授权也是基于 OAuth2 的，流程如下：</p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="https://www.zhengyk.cn/images/wx-auth-process.jpg?v=1"
+                      alt="image-20190214172414903"
+                ></p>
+<h3 id="Oauth2-认证流程"><a href="#Oauth2-认证流程" class="headerlink" title="Oauth2 认证流程"></a>Oauth2 认证流程</h3><p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="https://www.zhengyk.cn/images/oauth2-process.jpg"
+                      alt="image-20190214172748291"
+                ></p>
+<p>Oauth2 包括以下角色：</p>
+<blockquote>
+<p>客户端：本身不存储资源，需要通过资源拥有者的授权去请求资源服务器的资源。</p>
+<p>资源拥有者：通常为用户，也可以是应用程序，即该资源的拥有者。</p>
+<p>认证授权服务器：用来对资源拥有的身份进行认证、对访问资源进行授权。客户端要想访问资源需要通过认证服务器由资源拥有者授权后方可访问。</p>
+<p>资源服务器：存储资源的服务器，比如我们的系统存储了用户、业务相关信息，微信存储了用户的头像、昵称信息。客户端最终访问资源服务器获取资源信息。</p>
+</blockquote>
+<h3 id="Oauth2-在我们项目中的应用"><a href="#Oauth2-在我们项目中的应用" class="headerlink" title="Oauth2 在我们项目中的应用"></a>Oauth2 在我们项目中的应用</h3><ol>
+<li>使用微信登录，获取用户的昵称、头像等基本信息。</li>
+<li>系统客户端访问服务端资源需要请求认证中心获取 token。</li>
+<li>服务端微服务之间的相互访问。</li>
+</ol>
+<h1 id="Spring-Security-Oauth2"><a href="#Spring-Security-Oauth2" class="headerlink" title="Spring Security Oauth2"></a>Spring Security Oauth2</h1><p>我们使用 Spring Security Oauth2 进行构建认证服务，并在其基础上做了扩展，Spring Security Oauth2 生成的 token 功能不够强大，所以在此基础上整合了 JWT 令牌。</p>
+<h2 id="搭建认证中心服务器"><a href="#搭建认证中心服务器" class="headerlink" title="搭建认证中心服务器"></a>搭建认证中心服务器</h2><ol>
+<li>创建 Spring Security Oauth2 需要的数据库表，如图：</li>
+</ol>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="https://www.zhengyk.cn/images/oauth2-tables.jpg"
+                      alt="image-20190214174144904"
+                ></p>
+<p>sql：<a class="link"   target="_blank" rel="noopener" href="https://www.zhengyk.cn/images/oauth2.sql" >https://www.zhengyk.cn/images/oauth2.sql <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></p>
+<p>主要关注 “oauth_client_details” 表：</p>
+<blockquote>
+<p>client_id：客户端id</p>
+<p>resource_id：资源id（暂时不用）</p>
+<p>client_secret：客户端密码</p>
+<p>scop：范围</p>
+<p>access_token_validity：访问token的有效期(秒) </p>
+<p>refresh_token_validity：刷新token的有效期(秒)</p>
+<p> authorized_grant_type：授权类型，authorization_code,password,refresh_token,client_credentials</p>
+</blockquote>
+<ol start="2">
+<li>认证中心代码：<a class="link"   target="_blank" rel="noopener" href="https://github.com/zhengyakai/auth-center" >https://github.com/zhengyakai/auth-center <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></li>
+</ol>
+<h2 id="Oauth2-授权类型"><a href="#Oauth2-授权类型" class="headerlink" title="Oauth2 授权类型"></a>Oauth2 授权类型</h2><p>authorized_grant_type 为 Oauth2 的授权模式，其中授权码（authorization_code）和密码（password）模式应用的比较多，可配置多个，英文逗号分隔：</p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="https://www.zhengyk.cn/images/oauth_client_details.jpg"
+                      alt="image-20190214200534516"
+                ></p>
+<h2 id="Oauth2-授权码模式"><a href="#Oauth2-授权码模式" class="headerlink" title="Oauth2 授权码模式"></a>Oauth2 授权码模式</h2><p>上面画的微信认证授权流程其实就是授权码模式。</p>
+<h3 id="申请授权码"><a href="#申请授权码" class="headerlink" title="申请授权码"></a>申请授权码</h3><p>启动认证中心服务，发送 Get 请求：</p>
+<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">localhost:8080/auth/oauth/authorize?client_id=app&amp;response_type=code&amp;scope=app&amp;redirect_uri=http://localhost</span><br><span class="line"></span><br></pre></td></tr></table></figure></div>
+
+<blockquote>
+<p>client_id：客户端id，和数据库中授权配置类中设置的客户端id一致。</p>
+<p>response_type：授权码模式固定为code，数据库中配置为 authorization_code</p>
+<p>scope：客户端范围，和授权配置类中设置的 scope 一致。 </p>
+<p>redirect_uri：跳转uri，当授权码申请成功后会跳转到此地址，并在后边带上code参数(授权码)。</p>
+</blockquote>
+<p>首先跳转到登录界面：</p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="https://www.zhengyk.cn/images/code-login.jpg"
+                      alt="image-20190214201008510"
+                ></p>
+<p>这个账户密码是请求认证服务器的时需要输入的 client_id 和 client_secret</p>
+<p>输入后提示是否授权</p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="https://www.zhengyk.cn/images/is_auth.jpg"
+                      alt="image-20190214201244318"
+                ></p>
+<p>点击 “Authorize” 获得授权码 code：</p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="https://www.zhengyk.cn/images/getcode.jpg"
+                      alt="image-20190214201334875"
+                ></p>
+<h3 id="申请令牌"><a href="#申请令牌" class="headerlink" title="申请令牌"></a>申请令牌</h3><p>post请求：<a class="link"   target="_blank" rel="noopener" href="http://localhost:8080/auth/oauth/token" >http://localhost:8080/auth/oauth/token <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></p>
+<blockquote>
+<p>grant_type：授权类型，填写 authorization_code，表示授权码模式</p>
+<p>code：授权码，就是刚刚获取的授权码，注意:授权码只使用一次就无效了，需要重新申请。</p>
+<p>redirect_uri：申请授权码时的跳转url，一定和申请授权码时用的redirect_uri一致。</p>
+</blockquote>
+<p>需要使用 Basic 认证：http 协议定义的一种认证方式，将客户端id和客户端密码按照“客户端ID:客户端密码”的格式拼接，并用 base64 编码，放在 header 中 Authorization 请求服务端，认证失败返回401错误。</p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="https://www.zhengyk.cn/images/post-code-1.png"
+                      alt="image-20190214201941157"
+                ></p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="https://www.zhengyk.cn/images/post-code-2.png"
+                      alt="image-20190214202014705"
+                ></p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="https://www.zhengyk.cn/images/post-code-3.png"
+                      alt="image-20190214202045278"
+                ></p>
+<p>获取到 token：</p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="https://www.zhengyk.cn/images/post-code-4.png"
+                      alt="image-20190214202107104"
+                ></p>
+<blockquote>
+<p>access_token：访问令牌，携带此令牌访问资源</p>
+<p>token_type：token 类型，Oauth2 建议使用 bearer</p>
+<p>refresh_token：刷新令牌，使用此令牌可以延长访问令牌的过期时间（这样可以不需要用户重新登录）</p>
+<p>expires_in：过期时间，单位为秒。</p>
+<p>scope：范围，与定义的客户端范围一致。</p>
+<p>jti：access_token 和 refresh_token 的唯一标识。</p>
+</blockquote>
+<h2 id="Oauth2-密码模式"><a href="#Oauth2-密码模式" class="headerlink" title="Oauth2 密码模式"></a>Oauth2 密码模式</h2><p>与授权码模式区别是申请令牌不再使用授权码，而是直接通过用户名和密码即可申请令牌</p>
+<p>测试如下: </p>
+<p>post请求：<a class="link"   target="_blank" rel="noopener" href="http://localhost:8080/auth/oauth/token" >http://localhost:8080/auth/oauth/token <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></p>
+<p>参数:</p>
+<blockquote>
+<p>grant_type：密码模式授权填写 password </p>
+<p>username：用户注册的账号</p>
+<p>password：用户注册的密码</p>
+</blockquote>
+<p>与授权码模式一样，也是需要 Http Basic 认证。</p>
+<p>如图：</p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="https://www.zhengyk.cn/images/post-password.jpg?v=1"
+                      alt="image-20190214202748091"
+                ></p>
+<h2 id="刷新令牌"><a href="#刷新令牌" class="headerlink" title="刷新令牌"></a>刷新令牌</h2><p>当用户申请的 access_token 令牌快过期时，要重新生成一个令牌，这是有两种选择：</p>
+<blockquote>
+<p>用户重新登录，再获取 access_token</p>
+<p>使用 refresh_token 刷新一个新令牌</p>
+</blockquote>
+<p>使用刷新令牌的方式的好处是不需要用户重新登录即可获得新的令牌，具体采用哪种方式视具体业务来定。</p>
+<p>测试：post: <a class="link"   target="_blank" rel="noopener" href="http://localhost:40400/auth/oauth/token" >http://localhost:40400/auth/oauth/token <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></p>
+<blockquote>
+<p>grant_type:：固定为 refresh_token</p>
+<p>refresh_token：申请令牌时获得的 access_token</p>
+</blockquote>
+<h1 id="JWT"><a href="#JWT" class="headerlink" title="JWT"></a>JWT</h1><h2 id="什么是JWT"><a href="#什么是JWT" class="headerlink" title="什么是JWT?"></a>什么是JWT?</h2><p>JSON Web Token(JWT)是一个开放的行业标准(RFC 7519)，它定义了一种简介的、自包含的协议格式，用于 在通信双方传递json对象，传递的信息经过数字签名可以被验证和信任。JWT可以使用HMAC算法或使用RSA的公 钥&#x2F;私钥对来签名，防止被篡改。</p>
+<p>官网:<a class="link"   target="_blank" rel="noopener" href="https://jwt.io/" >https://jwt.io/ <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></p>
+<h2 id="JWT令牌的优点"><a href="#JWT令牌的优点" class="headerlink" title="JWT令牌的优点:"></a>JWT令牌的优点:</h2><blockquote>
+<p>jwt基于json，非常方便解析。</p>
+<p>可以在令牌中自定义丰富的内容（如用户权限），易扩展。 </p>
+<p>通过非对称加密算法及数字签名技术，JWT防止篡改，安全性高。 </p>
+<p>资源服务使用 JWT 可不依赖认证服务即可完成授权。</p>
+</blockquote>
+<p>缺点:</p>
+<blockquote>
+<p>JWT令牌较长，占存储空间比较大。</p>
+</blockquote>
+<p>Spring Security 整合了 JWT，上述示例中返回的 token 就是 JWT 令牌，具体实现细节可参考官方文档。</p>
+<p>至此，一个微服务中简易版的认证中心的搭建和核心接口测试已完成， 可在此基础上进行扩展自己的业务。</p>
+
+        </div>
+
+        
+            <div class="post-copyright-info px-2 sm:px-6 md:px-8">
+                <div class="article-copyright-info-container">
+    <ul>
+        <li><strong>Title:</strong> 用 Spring Security Oauth2 + JWT 搭建一个认证中心</li>
+        <li><strong>Author:</strong> 郑亚凯</li>
+        <li><strong>Created at
+                :</strong> 2018-11-01 13:20:16</li>
+        
+            <li>
+                <strong>Updated at
+                    :</strong> 2023-11-17 19:37:36
+            </li>
+        
+        <li>
+            <strong>Link:</strong> https://www.zhengyk.cn/2018/11/01/springcloud/spring-security-oauth2-jwt/
+        </li>
+        <li>
+            <strong>
+                License:
+            </strong>
+            
+
+            
+                This work is licensed under <a class="license" target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0">CC BY-NC-SA 4.0</a>.
+            
+        </li>
+    </ul>
+</div>
+
+            </div>
+        
+
+        
+            <ul class="post-tags-box">
+                
+                    <li class="tag-item">
+                        <a href="/tags/springcloud/">#springcloud</a>&nbsp;
+                    </li>
+                
+            </ul>
+        
+
+        
+
+        
+            <div class="article-nav my-8 flex justify-between items-center px-2 sm:px-6 md:px-8">
+                
+                    <div class="article-prev border-border-color shadow-redefine-flat shadow-shadow-color-2 rounded-medium px-4 py-2 hover:shadow-redefine-flat-hover hover:shadow-shadow-color-2">
+                        <a class="prev"
+                        rel="prev"
+                        href="/2018/11/15/mq/kafka/kafka-note/"
+                        >
+                            <span class="left arrow-icon flex justify-center items-center">
+                                <i class="fa-solid fa-chevron-left"></i>
+                            </span>
+                            <span class="title flex justify-center items-center">
+                                <span class="post-nav-title-item">Kafka 笔记整理</span>
+                                <span class="post-nav-item">Prev posts</span>
+                            </span>
+                        </a>
+                    </div>
+                
+                
+                    <div class="article-next border-border-color shadow-redefine-flat shadow-shadow-color-2 rounded-medium px-4 py-2 hover:shadow-redefine-flat-hover hover:shadow-shadow-color-2">
+                        <a class="next"
+                        rel="next"
+                        href="/2018/10/20/springcloud/fegin-interceptor/"
+                        >
+                            <span class="title flex justify-center items-center">
+                                <span class="post-nav-title-item">配置 Fegin 拦截器解决微服务之间需要认证才能访问得问题</span>
+                                <span class="post-nav-item">Next posts</span>
+                            </span>
+                            <span class="right arrow-icon flex justify-center items-center">
+                                <i class="fa-solid fa-chevron-right"></i>
+                            </span>
+                        </a>
+                    </div>
+                
+            </div>
+        
+
+
+        
+    </div>
+
+    
+        <div class="toc-content-container">
+            <div class="post-toc-wrap">
+    <div class="post-toc">
+        <div class="toc-title">On this page</div>
+        <div class="page-title">用 Spring Security Oauth2 + JWT 搭建一个认证中心</div>
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC%E4%B8%89%E6%96%B9%E8%AE%A4%E8%AF%81"><span class="nav-text">第三方认证</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%AE%A4%E8%AF%81%E6%8A%80%E6%9C%AF%E6%96%B9%E6%A1%88"><span class="nav-text">认证技术方案</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8D%95%E7%82%B9%E7%99%BB%E5%BD%95"><span class="nav-text">单点登录</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#OAuth2-%E8%AE%A4%E8%AF%81"><span class="nav-text">OAuth2 认证</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BE%AE%E4%BF%A1%E8%AE%A4%E8%AF%81%E6%B5%81%E7%A8%8B"><span class="nav-text">微信认证流程</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Oauth2-%E8%AE%A4%E8%AF%81%E6%B5%81%E7%A8%8B"><span class="nav-text">Oauth2 认证流程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Oauth2-%E5%9C%A8%E6%88%91%E4%BB%AC%E9%A1%B9%E7%9B%AE%E4%B8%AD%E7%9A%84%E5%BA%94%E7%94%A8"><span class="nav-text">Oauth2 在我们项目中的应用</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Spring-Security-Oauth2"><span class="nav-text">Spring Security Oauth2</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%90%AD%E5%BB%BA%E8%AE%A4%E8%AF%81%E4%B8%AD%E5%BF%83%E6%9C%8D%E5%8A%A1%E5%99%A8"><span class="nav-text">搭建认证中心服务器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Oauth2-%E6%8E%88%E6%9D%83%E7%B1%BB%E5%9E%8B"><span class="nav-text">Oauth2 授权类型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Oauth2-%E6%8E%88%E6%9D%83%E7%A0%81%E6%A8%A1%E5%BC%8F"><span class="nav-text">Oauth2 授权码模式</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%94%B3%E8%AF%B7%E6%8E%88%E6%9D%83%E7%A0%81"><span class="nav-text">申请授权码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%94%B3%E8%AF%B7%E4%BB%A4%E7%89%8C"><span class="nav-text">申请令牌</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Oauth2-%E5%AF%86%E7%A0%81%E6%A8%A1%E5%BC%8F"><span class="nav-text">Oauth2 密码模式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%B7%E6%96%B0%E4%BB%A4%E7%89%8C"><span class="nav-text">刷新令牌</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#JWT"><span class="nav-text">JWT</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AFJWT"><span class="nav-text">什么是JWT?</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#JWT%E4%BB%A4%E7%89%8C%E7%9A%84%E4%BC%98%E7%82%B9"><span class="nav-text">JWT令牌的优点:</span></a></li></ol></li></ol>
+
+    </div>
+</div>
+        </div>
+    
+</div>
+
+
+
+                
+
+            </div>
+
+            
+
+        </div>
+
+        <div class="main-content-footer">
+            <footer class="footer mt-5 py-5 h-auto text-base text-third-text-color relative border-t-2 border-t-border-color">
+    <div class="info-container py-3 text-center">
+        
+        <div class="text-center">
+            &copy;
+            
+              <span>1970</span>
+              -
+            
+            2023&nbsp;&nbsp;<i class="fa-solid fa-heart fa-beat" style="--fa-animation-duration: 0.5s; color: #f54545"></i>&nbsp;&nbsp;<a href="/">郑亚凯</a>
+        </div>
+        
+        <div class="relative text-center lg:absolute lg:left-[20px] lg:top-1/2 lg:-translate-y-1/2 lg:text-left">
+            <span class="lg:block text-sm">POWERED BY <?xml version="1.0" encoding="utf-8"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd"><svg class="relative top-[2px] inline-block align-baseline" version="1.1" id="圖層_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="1rem" height="1rem" viewBox="0 0 512 512" enable-background="new 0 0 512 512" xml:space="preserve"><path fill="#0E83CD" d="M256.4,25.8l-200,115.5L56,371.5l199.6,114.7l200-115.5l0.4-230.2L256.4,25.8z M349,354.6l-18.4,10.7l-18.6-11V275H200v79.6l-18.4,10.7l-18.6-11v-197l18.5-10.6l18.5,10.8V237h112v-79.6l18.5-10.6l18.5,10.8V354.6z"/></svg><a target="_blank" class="text-base" href="https://hexo.io">Hexo</a></span>
+            <span class="text-sm lg:block">THEME&nbsp;<a class="text-base" target="_blank" href="https://github.com/EvanNotFound/hexo-theme-redefine">Redefine v2.5.2</a></span>
+        </div>
+        
+        
+            <div>
+                Blog up for <span class="odometer" id="runtime_days" ></span> days <span class="odometer" id="runtime_hours"></span> hrs <span class="odometer" id="runtime_minutes"></span> Min <span class="odometer" id="runtime_seconds"></span> Sec
+            </div>
+        
+        
+            <script data-swup-reload-script>
+                try {
+                    function odometer_init() {
+                    const elements = document.querySelectorAll('.odometer');
+                    elements.forEach(el => {
+                        new Odometer({
+                            el,
+                            format: '( ddd).dd',
+                            duration: 200
+                        });
+                    });
+                    }
+                    odometer_init();
+                } catch (error) {}
+            </script>
+        
+        
+        
+    </div>  
+</footer>
+        </div>
+    </div>
+
+    
+        <div class="post-tools">
+            <div class="post-tools-container">
+    <ul class="article-tools-list">
+        <!-- TOC aside toggle -->
+        
+            <li class="right-bottom-tools page-aside-toggle">
+                <i class="fa-regular fa-outdent"></i>
+            </li>
+        
+
+        <!-- go comment -->
+        
+    </ul>
+</div>
+
+        </div>
+    
+
+    <div class="right-side-tools-container">
+        <div class="side-tools-container">
+    <ul class="hidden-tools-list">
+        <li class="right-bottom-tools tool-font-adjust-plus flex justify-center items-center">
+            <i class="fa-regular fa-magnifying-glass-plus"></i>
+        </li>
+
+        <li class="right-bottom-tools tool-font-adjust-minus flex justify-center items-center">
+            <i class="fa-regular fa-magnifying-glass-minus"></i>
+        </li>
+
+        <li class="right-bottom-tools tool-dark-light-toggle flex justify-center items-center">
+            <i class="fa-regular fa-moon"></i>
+        </li>
+
+        <!-- rss -->
+        
+
+        
+
+        <li class="right-bottom-tools tool-scroll-to-bottom flex justify-center items-center">
+            <i class="fa-regular fa-arrow-down"></i>
+        </li>
+    </ul>
+
+    <ul class="visible-tools-list">
+        <li class="right-bottom-tools toggle-tools-list flex justify-center items-center">
+            <i class="fa-regular fa-cog fa-spin"></i>
+        </li>
+        
+            <li class="right-bottom-tools tool-scroll-to-top flex justify-center items-center">
+                <i class="arrow-up fas fa-arrow-up"></i>
+                <span class="percent"></span>
+            </li>
+        
+        
+    </ul>
+</div>
+
+    </div>
+
+    <div class="image-viewer-container">
+    <img src="">
+</div>
+
+
+    
+        <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+          <span class="search-input-field-pre">
+            <i class="fa-solid fa-keyboard"></i>
+          </span>
+            <div class="search-input-container">
+                <input autocomplete="off"
+                       autocorrect="off"
+                       autocapitalize="off"
+                       placeholder="Search..."
+                       spellcheck="false"
+                       type="search"
+                       class="search-input"
+                >
+            </div>
+            <span class="popup-btn-close">
+                <i class="fa-solid fa-times"></i>
+            </span>
+        </div>
+        <div id="search-result">
+            <div id="no-result">
+                <i class="fa-solid fa-spinner fa-spin-pulse fa-5x fa-fw"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+
+</main>
+
+
+    
+<script src="/js/libs/Swup.min.js"></script>
+
+<script src="/js/libs/SwupSlideTheme.min.js"></script>
+
+<script src="/js/libs/SwupScriptsPlugin.min.js"></script>
+
+<script src="/js/libs/SwupProgressPlugin.min.js"></script>
+
+<script src="/js/libs/SwupScrollPlugin.min.js"></script>
+
+<script src="/js/libs/SwupPreloadPlugin.min.js"></script>
+
+<script>
+    const swup = new Swup({
+        plugins: [
+            new SwupScriptsPlugin({
+                optin: true,
+            }),
+            new SwupProgressPlugin(),
+            new SwupScrollPlugin({
+                offset: 80,
+            }),
+            new SwupSlideTheme({
+                mainElement: ".main-content-body",
+            }),
+            new SwupPreloadPlugin(),
+        ],
+        containers: ["#swup"],
+    });
+</script>
+
+
+
+
+
+
+
+<script src="/js/tools/imageViewer.js" type="module"></script>
+
+<script src="/js/utils.js" type="module"></script>
+
+<script src="/js/main.js" type="module"></script>
+
+<script src="/js/layouts/navbarShrink.js" type="module"></script>
+
+<script src="/js/tools/scrollTopBottom.js" type="module"></script>
+
+<script src="/js/tools/lightDarkSwitch.js" type="module"></script>
+
+<script src="/js/layouts/categoryList.js" type="module"></script>
+
+
+
+    
+<script src="/js/tools/localSearch.js" type="module"></script>
+
+
+
+
+    
+<script src="/js/tools/codeBlock.js" type="module"></script>
+
+
+
+
+    
+<script src="/js/layouts/lazyload.js" type="module"></script>
+
+
+
+
+    
+<script src="/js/tools/runtime.js"></script>
+
+    
+<script src="/js/libs/odometer.min.js"></script>
+
+    
+<link rel="stylesheet" href="/assets/odometer-theme-minimal.css">
+
+
+
+
+  
+<script src="/js/libs/Typed.min.js"></script>
+
+  
+<script src="/js/plugins/typed.js" type="module"></script>
+
+
+
+
+
+
+
+<div class="post-scripts" data-swup-reload-script>
+    
+        
+<script src="/js/libs/anime.min.js"></script>
+
+        
+<script src="/js/tools/tocToggle.js" type="module"></script>
+
+<script src="/js/layouts/toc.js" type="module"></script>
+
+<script src="/js/plugins/tabs.js" type="module"></script>
+
+    
+</div>
+
+
+</body>
+</html>

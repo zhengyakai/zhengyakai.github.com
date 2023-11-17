@@ -1,0 +1,1086 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="keywords" content="Hexo Theme Redefine">
+    
+    <meta name="author" content="郑亚凯">
+    <!-- preconnect -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    
+    <!--- Seo Part-->
+    
+    <link rel="canonical" href="http://example.com/2018/01/21/linux/linux-command/"/>
+    <meta name="robots" content="index,follow">
+    <meta name="googlebot" content="index,follow">
+    <meta name="revisit-after" content="1 days">
+    
+        <meta name="description" content="小舅子刚上大学，他最近对linux感兴趣，所以总结些常用、还有我开发中会用到的linux命令，希望能帮到他，同时也是对自己的一个总结。 服务器版的Linux安装完毕了，但没有图形化界面，我们只能通过控制台去操作系统，我们就要使用类似DOS命令的Linux命令去操作系统，那么下面我们就进行Linux的命令的学习。Linux命令成百上千，不能一一涉及，也没有必要，根据日常工作中的需求，总结如下几种。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="linux基本操作命令">
+<meta property="og:url" content="http://example.com/2018/01/21/linux/Linux-Command/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="小舅子刚上大学，他最近对linux感兴趣，所以总结些常用、还有我开发中会用到的linux命令，希望能帮到他，同时也是对自己的一个总结。 服务器版的Linux安装完毕了，但没有图形化界面，我们只能通过控制台去操作系统，我们就要使用类似DOS命令的Linux命令去操作系统，那么下面我们就进行Linux的命令的学习。Linux命令成百上千，不能一一涉及，也没有必要，根据日常工作中的需求，总结如下几种。">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://www.zhengyk.cn/images/linux_command_1.jpg">
+<meta property="og:image" content="https://www.zhengyk.cn/images/linux_command_2.jpg">
+<meta property="og:image" content="https://www.zhengyk.cn/images/linux_command_3.jpg">
+<meta property="og:image" content="https://www.zhengyk.cn/images/linux_command_4.jpg">
+<meta property="og:image" content="https://www.zhengyk.cn/images/linux_command_5.jpg">
+<meta property="og:image" content="https://www.zhengyk.cn/images/linux_command_6.jpg">
+<meta property="og:image" content="https://www.zhengyk.cn/images/linux_command_7.jpg">
+<meta property="og:image" content="https://www.zhengyk.cn/images/linux_command_8.jpg">
+<meta property="og:image" content="https://www.zhengyk.cn/images/linux_command_9.jpg">
+<meta property="og:image" content="https://www.zhengyk.cn/images/linux_command_10.jpg">
+<meta property="og:image" content="https://www.zhengyk.cn/images/linux_command_11.jpg">
+<meta property="og:image" content="https://www.zhengyk.cn/images/linux_command_12.jpg">
+<meta property="og:image" content="https://www.zhengyk.cn/images/linux_command_13.jpg">
+<meta property="og:image" content="https://www.zhengyk.cn/images/linux_command_14.jpg">
+<meta property="og:image" content="https://www.zhengyk.cn/images/linux_command_15.jpg">
+<meta property="og:image" content="https://www.zhengyk.cn/images/linux_command_16.jpg">
+<meta property="og:image" content="https://www.zhengyk.cn/images/linux_command_17.jpg">
+<meta property="og:image" content="https://www.zhengyk.cn/images/linux_command_18.jpg">
+<meta property="og:image" content="https://www.zhengyk.cn/images/linux_command_19.jpg">
+<meta property="og:image" content="https://www.zhengyk.cn/images/linux_command_20.jpg">
+<meta property="og:image" content="https://www.zhengyk.cn/images/linux_command_21.jpg">
+<meta property="og:image" content="https://www.zhengyk.cn/images/linux_command_22.jpg">
+<meta property="og:image" content="https://www.zhengyk.cn/images/linux_command_23.jpg">
+<meta property="og:image" content="https://www.zhengyk.cn/images/linux_command_24.jpg">
+<meta property="og:image" content="https://www.zhengyk.cn/images/linux_command_25.jpg">
+<meta property="og:image" content="https://www.zhengyk.cn/images/linux_command_26.jpg">
+<meta property="og:image" content="https://www.zhengyk.cn/images/linux_command_27.jpg">
+<meta property="og:image" content="https://www.zhengyk.cn/images/linux_command_28.jpg">
+<meta property="og:image" content="https://www.zhengyk.cn/images/linux_command_28.jpg">
+<meta property="og:image" content="https://www.zhengyk.cn/images/linux_command_30.jpg">
+<meta property="og:image" content="https://www.zhengyk.cn/images/linux_command_32.jpg">
+<meta property="og:image" content="https://www.zhengyk.cn/images/linux_command_31.jpg">
+<meta property="article:published_time" content="2018-01-21T00:58:02.000Z">
+<meta property="article:modified_time" content="2023-11-17T11:37:37.349Z">
+<meta property="article:author" content="John Doe">
+<meta property="article:tag" content="linux">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://www.zhengyk.cn/images/linux_command_1.jpg">
+    
+    
+    <!--- Icon Part-->
+    <link rel="icon" type="image/png" href="https://www.zhengyk.cn/images/portrait.jpg" sizes="192x192">
+    <link rel="apple-touch-icon" sizes="180x180" href="https://www.zhengyk.cn/images/portrait.jpg">
+    <meta name="theme-color" content="#A31F34">
+    <link rel="shortcut icon" href="https://www.zhengyk.cn/images/portrait.jpg">
+    <!--- Page Info-->
+    
+    <title>
+        
+            linux基本操作命令 -
+        
+        薛定谔的汪
+    </title>
+    
+<link rel="stylesheet" href="/css/style.css">
+
+
+    
+        
+<link rel="stylesheet" href="/assets/build/styles.css">
+
+    
+
+    
+<link rel="stylesheet" href="/fonts/fonts.css">
+
+    
+<link rel="stylesheet" href="/fonts/Satoshi/satoshi.css">
+
+    
+<link rel="stylesheet" href="/fonts/Chillax/chillax.css">
+
+    <!--- Font Part-->
+    
+    
+    
+    
+
+    <!--- Inject Part-->
+    
+    <script id="hexo-configurations">
+    window.config = {"hostname":"example.com","root":"/","language":"en"};
+    window.theme = {"articles":{"style":{"font_size":"16px","line_height":1.5,"image_border_radius":"14px","image_alignment":"center","image_caption":false,"link_icon":true,"title_alignment":"left"},"word_count":{"enable":true,"count":true,"min2read":true},"author_label":{"enable":false,"auto":false,"list":[]},"code_block":{"copy":true,"style":"mac","font":{"enable":false,"family":null,"url":null}},"toc":{"enable":true,"max_depth":3,"number":false,"expand":true,"init_open":true},"copyright":{"enable":true,"default":"cc_by_nc_sa"},"lazyload":true,"recommendation":{"enable":false,"title":"推荐阅读","limit":3,"mobile_limit":2,"placeholder":"/images/wallhaven-wqery6-light.webp","skip_dirs":[]}},"colors":{"primary":"#A31F34","secondary":null},"global":{"fonts":{"chinese":{"enable":false,"family":null,"url":null},"english":{"enable":false,"family":null,"url":null}},"content_max_width":"1000px","sidebar_width":"210px","hover":{"shadow":true,"scale":false},"scroll_progress":{"bar":false,"percentage":true},"website_counter":{"url":"https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js","enable":false,"site_pv":false,"site_uv":false,"post_pv":false},"single_page":true,"open_graph":true,"google_analytics":{"enable":false,"id":null}},"home_banner":{"enable":true,"style":"fixed","image":{"light":"https://www.zhengyk.cn/images/wallhaven-wqery6-light.png","dark":"https://www.zhengyk.cn/images/wallhaven-wqery6-dark.png"},"title":"学习技术 | 分享生活","subtitle":{"text":[],"hitokoto":{"enable":false,"api":"https://v1.hitokoto.cn"},"typing_speed":100,"backing_speed":80,"starting_delay":500,"backing_delay":1500,"loop":true,"smart_backspace":true},"text_color":{"light":"#fff","dark":"#d1d1b6"},"text_style":{"title_size":"2.8rem","subtitle_size":"1.5rem","line_height":1.2},"custom_font":{"enable":false,"family":null,"url":null},"social_links":{"enable":false,"links":{"github":"https://github.com/zhengyakai","instagram":null,"zhihu":null,"twitter":null,"email":null},"qrs":{"weixin":null}}},"plugins":{"feed":{"enable":false},"aplayer":{"enable":false,"type":"fixed","audios":[{"name":null,"artist":null,"url":null,"cover":null}]},"mermaid":{"enable":false,"version":"9.3.0"}},"version":"2.5.2","navbar":{"auto_hide":false,"color":{"left":"#f78736","right":"#367df7","transparency":35},"links":{"Home":{"path":"/","icon":"fa-regular fa-house"},"主页":{"path":"/","icon":"fa-regular fa-house"},"文章":{"path":"/archives","icon":"fa-regular fa-archive"},"关于":{"path":"/about","icon":"fa-regular fa-folder"}},"search":{"enable":true,"preload":true}},"page_templates":{"friends_column":2,"tags_style":"blur"},"home":{"sidebar":{"enable":true,"position":"left","first_item":"menu","announcement":null,"links":{"文章":{"path":"/archives","icon":"fa-regular fa-archive"}}},"article_date_format":"auto","categories":{"enable":true,"limit":10},"tags":{"enable":true,"limit":10}},"footerStart":2017};
+    window.lang_ago = {"second":"%s seconds ago","minute":"%s minutes ago","hour":"%s hours ago","day":"%s days ago","week":"%s weeks ago","month":"%s months ago","year":"%s years ago"};
+    window.data = {"masonry":false};
+  </script>
+    
+    <!--- Fontawesome Part-->
+    
+<link rel="stylesheet" href="/fontawesome/fontawesome.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/brands.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/solid.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/regular.min.css">
+
+    
+    
+    
+    
+<meta name="generator" content="Hexo 7.0.0"><link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+</head>
+
+
+<body>
+<div class="progress-bar-container">
+    
+
+    
+        <span class="pjax-progress-bar"></span>
+        <span class="swup-progress-icon">
+            <i class="fa-solid fa-circle-notch fa-spin"></i>
+        </span>
+    
+</div>
+
+
+<main class="page-container" id="swup">
+
+    
+
+    <div class="main-content-container">
+
+
+        <div class="main-content-header">
+            <header class="navbar-container">
+    
+    <div class="navbar-content">
+        <div class="left">
+            
+            <a class="logo-title" href="/">
+                
+                薛定谔的汪
+                
+            </a>
+        </div>
+
+        <div class="right">
+            <!-- PC -->
+            <div class="desktop">
+                <ul class="navbar-list">
+                    
+                        
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class="" 
+                                    href="/"  >
+                                    
+                                        
+                                            <i class="fa-regular fa-house"></i>
+                                        
+                                        HOME
+                                    
+                                </a>
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                        
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class="" 
+                                    href="/"  >
+                                    
+                                        
+                                            <i class="fa-regular fa-house"></i>
+                                        
+                                        主页
+                                    
+                                </a>
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                        
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class="" 
+                                    href="/archives"  >
+                                    
+                                        
+                                            <i class="fa-regular fa-archive"></i>
+                                        
+                                        文章
+                                    
+                                </a>
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                        
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class="" 
+                                    href="/about"  >
+                                    
+                                        
+                                            <i class="fa-regular fa-folder"></i>
+                                        
+                                        关于
+                                    
+                                </a>
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                    
+                        <li class="navbar-item search search-popup-trigger">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                        </li>
+                    
+                </ul>
+            </div>
+            <!-- Mobile -->
+            <div class="mobile">
+                
+                    <div class="icon-item search search-popup-trigger"><i class="fa-solid fa-magnifying-glass"></i></div>
+                
+                <div class="icon-item navbar-bar">
+                    <div class="navbar-bar-middle"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile drawer -->
+    <div class="navbar-drawer w-full absolute top-0 left-0 bg-background-color">
+        <ul class="drawer-navbar-list flex flex-col justify-start items-center">
+            
+                
+                    <li class="drawer-navbar-item text-base my-1.5 flex justify-center items-center">
+                        <a class="rounded-3xl py-1.5 px-5 hover:border hover:!text-primary active:!text-primary group " 
+                        href="/"  >
+                             
+                                
+                                    <i class="fa-regular fa-house"></i>
+                                
+                                HOME
+                            
+                        </a>
+                    </li>
+                    <!-- Submenu -->
+                    
+            
+                
+                    <li class="drawer-navbar-item text-base my-1.5 flex justify-center items-center">
+                        <a class="rounded-3xl py-1.5 px-5 hover:border hover:!text-primary active:!text-primary group " 
+                        href="/"  >
+                             
+                                
+                                    <i class="fa-regular fa-house"></i>
+                                
+                                主页
+                            
+                        </a>
+                    </li>
+                    <!-- Submenu -->
+                    
+            
+                
+                    <li class="drawer-navbar-item text-base my-1.5 flex justify-center items-center">
+                        <a class="rounded-3xl py-1.5 px-5 hover:border hover:!text-primary active:!text-primary group " 
+                        href="/archives"  >
+                             
+                                
+                                    <i class="fa-regular fa-archive"></i>
+                                
+                                文章
+                            
+                        </a>
+                    </li>
+                    <!-- Submenu -->
+                    
+            
+                
+                    <li class="drawer-navbar-item text-base my-1.5 flex justify-center items-center">
+                        <a class="rounded-3xl py-1.5 px-5 hover:border hover:!text-primary active:!text-primary group " 
+                        href="/about"  >
+                             
+                                
+                                    <i class="fa-regular fa-folder"></i>
+                                
+                                关于
+                            
+                        </a>
+                    </li>
+                    <!-- Submenu -->
+                    
+            
+
+        </ul>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+        </div>
+
+        <div class="main-content-body">
+
+            
+
+            <div class="main-content">
+
+                
+                    <div class="post-page-container">
+    <div class="article-content-container">
+
+        <div class="article-title relative w-full">
+            
+                
+                
+                <img src="https://www.zhengyk.cn/images/winter-02-22.jpg" alt="linux基本操作命令" class="w-full h-60 sm:h-72 md:h-80 object-cover sm:rounded-t-large dark:brightness-75"/>
+                
+                <div class="w-full flex items-center absolute bottom-0 justify-start">
+                    <h1 class="article-title-cover text-center mx-6 my-6 text-second-text-color bg-background-color-transparent px-4 py-3 text-3xl sm:text-4xl md:text-5xl font-bold backdrop-blur-lg rounded-xl border border-border-color ">linux基本操作命令</h1>
+                </div>
+            
+            </div>
+
+        
+            <div class="article-header flex flex-row gap-2 items-center px-2 sm:px-6 md:px-8">
+                <div class="avatar w-[46px] h-[46px] flex-shrink-0 rounded-medium border border-border-color p-[1px]">
+                    <img src="https://www.zhengyk.cn/images/portrait.jpg">
+                </div>
+                <div class="info flex flex-col justify-between">
+                    <div class="author flex items-center">
+                        <span class="name text-default-text-color text-lg font-semibold">郑亚凯</span>
+                        
+                    </div>
+                    <div class="meta-info">
+                        <div class="article-meta-info">
+    <span class="article-date article-meta-item">
+        <i class="fa-regular fa-pen-fancy"></i>&nbsp;
+        <span class="desktop">2018-01-21 08:58:02</span>
+        <span class="mobile">2018-01-21 08:58:02</span>
+        <span class="hover-info">Created</span>
+    </span>
+    
+        <span class="article-date article-meta-item">
+            <i class="fa-regular fa-wrench"></i>&nbsp;
+            <span class="desktop">2023-11-17 19:37:37</span>
+            <span class="mobile">2023-11-17 19:37:37</span>
+            <span class="hover-info">Updated</span>
+        </span>
+    
+
+    
+        <span class="article-categories article-meta-item">
+            <i class="fa-regular fa-folders"></i>&nbsp;
+            <ul>
+                
+                
+                    
+                        
+                        <li>
+                            <a href="/categories/Linux%E6%8A%80%E6%9C%AF/">Linux技术</a>&nbsp;
+                        </li>
+                    
+                    
+                
+            </ul>
+        </span>
+    
+    
+        <span class="article-tags article-meta-item">
+            <i class="fa-regular fa-tags"></i>&nbsp;
+            <ul>
+                
+                    <li>
+                        <a href="/tags/linux/">linux</a>&nbsp;
+                    </li>
+                
+            </ul>
+        </span>
+    
+
+    
+    
+    
+    
+</div>
+
+                    </div>
+                </div>
+            </div>
+        
+
+        
+
+
+        <div class="article-content markdown-body px-2 sm:px-6 md:px-8 pb-8">
+            <p>小舅子刚上大学，他最近对linux感兴趣，所以总结些常用、还有我开发中会用到的linux命令，希望能帮到他，同时也是对自己的一个总结。</p>
+<p>服务器版的Linux安装完毕了，但没有图形化界面，我们只能通过控制台去操作系统，我们就要使用类似DOS命令的Linux命令去操作系统，那么下面我们就进行Linux的命令的学习。Linux命令成百上千，不能一一涉及，也没有必要，根据日常工作中的需求，总结如下几种。</p>
+<span id="more"></span>
+
+<h3 id="目录切换命令"><a href="#目录切换命令" class="headerlink" title="目录切换命令"></a>目录切换命令</h3><p>window中通过图形化界面和鼠标可以任意切换需要进入的目录，但Linux必须通过cd命令切换目录。但在学习cd命令之前，我们有必要分清Linux的目录结构</p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="https://www.zhengyk.cn/images/linux_command_1.jpg"
+                      alt="img"
+                ></p>
+<p>cd usr 切换到该目录下usr目录	</p>
+<p><code>cd ../</code>   切换到上一层目录	</p>
+<p><code>cd /</code>	    切换到系统根目录	</p>
+<p><code>cd ~</code>	    切换到用户主目录	</p>
+<p><code>cd -</code>	    切换到上一个所在目录</p>
+<h3 id="目录的操作命令（增删改查）"><a href="#目录的操作命令（增删改查）" class="headerlink" title="目录的操作命令（增删改查）"></a>目录的操作命令（增删改查）</h3><p>linux的命令遵循结构：命令 -[参数]</p>
+<h4 id="增加目录操作（增）"><a href="#增加目录操作（增）" class="headerlink" title="增加目录操作（增）"></a>增加目录操作（增）</h4><p>命令：</p>
+<p><code>mkdir </code>目录名称 </p>
+<p><code>mkdir -p </code>目录名称  父目录也会创建  如：mkdir &#x2F;mysoft&#x2F;jdk   </p>
+<p>示例：在根目录 &#x2F; 下 mkdir test，就会在根目录 &#x2F; 下产生一个test问目录<img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="https://www.zhengyk.cn/images/linux_command_2.jpg"
+                      alt="img"
+                ></p>
+<h4 id="查看目录（查）"><a href="#查看目录（查）" class="headerlink" title="查看目录（查）"></a>查看目录（查）</h4><p>命令：<code>ls [-al]</code> 父目录</p>
+<p>示例：在根目录 &#x2F; 下使用ls，可以看到该目录下的所有的目录和文件<img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="https://www.zhengyk.cn/images/linux_command_3.jpg"
+                      alt="img"
+                ></p>
+<p>示例：在根目录 &#x2F; 下使用ls -a，可以看到该目录下的所有文件和目录，包括隐藏的 <img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="https://www.zhengyk.cn/images/linux_command_4.jpg"
+                      alt="img"
+                > </p>
+<p>示例：在根目录 &#x2F; 下使用ls -l，可以看到该目录下的所有目录和文件的详细信息 <img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="https://www.zhengyk.cn/images/linux_command_5.jpg"
+                      alt="img"
+                ></p>
+<p><strong>注意：ls -l 可以缩写成ll</strong></p>
+<h4 id="搜索目录（查）"><a href="#搜索目录（查）" class="headerlink" title="搜索目录（查）"></a>搜索目录（查）</h4><p>命令：<code>find</code> 目录 参数 文件名称</p>
+<p>示例：</p>
+<p><code>find / -name ‘test*’</code>查找“&#x2F;”目录下的 test文件</p>
+<p><code>find . -name &quot;*.xml&quot;</code> 递归查找所有的xml文件</p>
+<p><code>find . -name &quot;*.xml&quot; |xargs grep &quot;hello world&quot;</code> 递归查找所有文件内容中包含hello world的xml文件</p>
+<p><code>ls -l | grep &#39;.jar&#39;</code> 查找当前目录中的所有jar文件</p>
+<h4 id="修改目录的名称（改）"><a href="#修改目录的名称（改）" class="headerlink" title="修改目录的名称（改）"></a>修改目录的名称（改）</h4><p>命令：<code>mv</code> 目录名称 新目录名称</p>
+<p>示例：test目录下有一个oldTest目录，使用<code>mv oldTest newTest</code>命令修改<img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="https://www.zhengyk.cn/images/linux_command_6.jpg"
+                      alt="img"
+                > </p>
+<p><strong>注意：mv的语法不仅可以对目录进行重命名而且也可以对各种文件，压缩包等进行重命名的操作</strong></p>
+<h4 id="移动目录的位置—剪切（改）"><a href="#移动目录的位置—剪切（改）" class="headerlink" title="移动目录的位置—剪切（改）"></a>移动目录的位置—剪切（改）</h4><p>命令：<code>mv</code> 目录名称 目录的新位置</p>
+<p>示例：在test下将newTest目录剪切到 &#x2F;usr下面，使用<code>mv newTest /usr</code><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="https://www.zhengyk.cn/images/linux_command_7.jpg"
+                      alt="img"
+                > </p>
+<p><strong>注意：mv语法不仅可以对目录进行剪切操作，对文件和压缩包等都可执行剪切操作</strong>****</p>
+<h4 id="拷贝目录（改）"><a href="#拷贝目录（改）" class="headerlink" title="拷贝目录（改）"></a>拷贝目录（改）</h4><p>命令：<code>cp -r</code> 目录名称 目录拷贝的目标位置 —–r代表递归</p>
+<p>示例：将&#x2F;usr下的newTest拷贝到根目录下的test中，使用<code>cp -r /usr/newTest /test </code><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="https://www.zhengyk.cn/images/linux_command_8.jpg"
+                      alt="img"
+                > </p>
+<p><strong>注意：cp命令不仅可以拷贝目录还可以拷贝文件，压缩包等，拷贝文件和压缩包时不用写-r递归</strong></p>
+<h4 id="删除目录（删）"><a href="#删除目录（删）" class="headerlink" title="删除目录（删）"></a>删除目录（删）</h4><p>命令：<code>rm [-rf]</code> 目录</p>
+<p>示例：删除&#x2F;usr下的newTest，进入&#x2F;usr下使用rm -r newTest<img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="https://www.zhengyk.cn/images/linux_command_9.jpg"
+                      alt="img"
+                > </p>
+<p>示例：删除&#x2F;test下的newTest而不需要询问强制删除，在&#x2F;test下使用rm -rf newTest  <img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="https://www.zhengyk.cn/images/linux_command_10.jpg"
+                      alt="img"
+                > </p>
+<p><strong>注意：rm不仅可以删除目录，也可以删除其他文件或压缩包，为了方便大家的记忆，无论删除任何目录或文件，都直接使用rm -rf 目录&#x2F;文件&#x2F;压缩包</strong></p>
+<h3 id="文件的操作命令（增删改查）"><a href="#文件的操作命令（增删改查）" class="headerlink" title="文件的操作命令（增删改查）"></a>文件的操作命令（增删改查）</h3><h4 id="文件的创建（增）"><a href="#文件的创建（增）" class="headerlink" title="文件的创建（增）"></a>文件的创建（增）</h4><p>命令：<code>touch</code> 文件名称  —– 空文件</p>
+<p>示例：在test目录下创建一个空文件 <code>touch aaa.txt</code>  <img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="https://www.zhengyk.cn/images/linux_command_11.jpg"
+                      alt="img"
+                > </p>
+<h4 id="文件的查看（查）"><a href="#文件的查看（查）" class="headerlink" title="文件的查看（查）"></a>文件的查看（查）</h4><p>命令：cat&#x2F;more&#x2F;less&#x2F;tail 文件</p>
+<p>示例：使用cat查看&#x2F;etc&#x2F;sudo.conf文件，只能显示最后一屏内容  <img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="https://www.zhengyk.cn/images/linux_command_12.jpg"
+                      alt="img"
+                > </p>
+<p>示例：使用more查看&#x2F;etc&#x2F;sudo.conf文件，可以显示百分比，回车可以向下一行，	空格可以向下一页，q可以退出查看</p>
+<p>  <img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="https://www.zhengyk.cn/images/linux_command_13.jpg"
+                      alt="img"
+                > </p>
+<p>示例：使用less查看&#x2F;etc&#x2F;sudo.conf文件，可以使用键盘上的PgUp和PgDn向上	和向下翻页，q结束查看  <img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="https://www.zhengyk.cn/images/linux_command_14.jpg"
+                      alt="img"
+                > </p>
+<p>示例：使用tail -10 查看&#x2F;etc&#x2F;sudo.conf文件的后10行，Ctrl+C结束  <img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="https://www.zhengyk.cn/images/linux_command_15.jpg"
+                      alt="img"
+                > </p>
+<p>**注意：命令 tail -f 文件 可以对某个文件进行动态监控，例如tomcat的日志文件，会随着程序的运行，日志会变化，可以使用tail -f catalina-2016-11-11.log 监控文件的变化 **</p>
+<p><code>grep &#39;test&#39; d*</code> 显示所有以d开头的文件中包含test的行。</p>
+<p><code>grep &#39;test&#39; aa bb cc</code> 显示在aa，bb，cc文件中匹配test的行。</p>
+<p><code>grep &#39;[a-z]\&#123;5\&#125;&#39; aa</code> 显示所有包含每个字符串至少有5个连续小写字符的字符串的行。</p>
+<h4 id="修改文件的内容（改）"><a href="#修改文件的内容（改）" class="headerlink" title="修改文件的内容（改）"></a>修改文件的内容（改）</h4><p>命令：<code>vim</code>文件</p>
+<p>示例：编辑&#x2F;test下的aaa.txt文件，使用vim aaa.txt  <img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="https://www.zhengyk.cn/images/linux_command_16.jpg"
+                      alt="img"
+                > </p>
+<p>但此时并不能编辑，因为此时处于命令模式，点击键盘i&#x2F;a&#x2F;o进入编辑模式，可以	编辑文件<img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="https://www.zhengyk.cn/images/linux_command_17.jpg"
+                      alt="img"
+                > </p>
+<p>编辑完成后，按下Esc，退回命令模式  </p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="https://www.zhengyk.cn/images/linux_command_18.jpg"
+                      alt="img"
+                > </p>
+<p>此时文件虽然已经编辑完成，但是没有保存，需输入冒号：进入底行模式，在底行模	式下输入wq代表写入内容并退出，即保存；输入q!代表强制退出不保存。  <img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="https://www.zhengyk.cn/images/linux_command_19.jpg"
+                      alt="img"
+                > </p>
+<p><strong>总结：</strong></p>
+<p>vim编辑器是Linux中的强大组件，是vi编辑器的加强版，vim编辑器的命令和快捷方式有很多，但此处不一一阐述，大家也无需研究的很透彻，使用vim编辑修改文件的方式基本会使用就可以了。</p>
+<p>关于vim使用过程：</p>
+<p>vim 文件——–&gt;命令模式———&gt;输入i———-&gt;编辑模式———–&gt;编辑文件———–&gt;按下Esc———&gt;命令模式———&gt;按下：———-&gt;底行模式———–&gt;输入wq保存并退出&#x2F;q！强制退出不保存</p>
+<h4 id="删除文件（删）"><a href="#删除文件（删）" class="headerlink" title="删除文件（删）"></a>删除文件（删）</h4><p>同目录删除：熟记<code>rm -rf</code>文件 即可</p>
+<h3 id="压缩文件的操作命令"><a href="#压缩文件的操作命令" class="headerlink" title="压缩文件的操作命令"></a>压缩文件的操作命令</h3><h4 id="打包并压缩文件"><a href="#打包并压缩文件" class="headerlink" title="打包并压缩文件"></a>打包并压缩文件</h4><p>Windows的压缩文件的扩展名  .zip&#x2F;.rar</p>
+<p>linux中的打包文件：.tar</p>
+<p>linux中的压缩文件：.gz</p>
+<p>linux中打包并压缩的文件：.tar.gz</p>
+<p>Linux中的打包文件一般是以.tar结尾的，压缩的命令一般是以.gz结尾的。</p>
+<p>而一般情况下打包和压缩是一起进行的，打包并压缩后的文件的后缀名一般.tar.gz。</p>
+<p>命令：<code>tar -zcvf </code>打包压缩后的文件名 要打包的文件</p>
+<p>其中：z：调用gzip压缩命令进行压缩</p>
+<p>  c：打包文件</p>
+<p>  v：显示运行过程</p>
+<p>  f：指定文件名</p>
+<p>示例：打包并压缩&#x2F;test下的所有文件 压缩后的压缩包指定名称为xxx.tar.gz</p>
+<p><code>tar -zcvf xxx.tar.gz aaa.txt bbb.txt ccc.txt</code></p>
+<p>或：tar -zcvf xxx.tar.gz &#x2F;test&#x2F;* <img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="https://www.zhengyk.cn/images/linux_command_20.jpg"
+                      alt="img"
+                > </p>
+<h4 id="解压压缩包（重点）"><a href="#解压压缩包（重点）" class="headerlink" title="解压压缩包（重点）"></a>解压压缩包<strong>（重点）</strong></h4><p>命令：<code>tar [-xvf]</code> 压缩文件</p>
+<p>其中：x：代表解压</p>
+<p>示例：将&#x2F;test下的xxx.tar.gz解压到当前目录下</p>
+<p>tar -xvf xxx.tar.gz    <img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="https://www.zhengyk.cn/images/linux_command_21.jpg"
+                      alt="img"
+                ></p>
+<p>示例：将&#x2F;test下的xxx.tar.gz解压到根目录&#x2F;usr下</p>
+<p><strong>tar -xvf xxx.tar.gz -C &#x2F;usr——C代表指定解压的位置</strong>  <img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="https://www.zhengyk.cn/images/linux_command_22.jpg"
+                      alt="img"
+                > </p>
+<h3 id="其他命令"><a href="#其他命令" class="headerlink" title="其他命令"></a>其他命令</h3><h4 id="显示工作目录"><a href="#显示工作目录" class="headerlink" title="显示工作目录"></a>显示工作目录</h4><p>命令：<code>pwd</code></p>
+<h4 id="查看进程"><a href="#查看进程" class="headerlink" title="查看进程"></a>查看进程</h4><p>命令：ps -ef  —显示所有的进程</p>
+<p><code>ps –ef|grep tomcat</code> 查看所有有关tomcat的进程</p>
+<p><code>ps -ef|grep --color java</code> 高亮要查询的关键字</p>
+<h4 id="kill命令"><a href="#kill命令" class="headerlink" title="kill命令"></a>kill命令</h4><p>命令：<code>kill -9 pid</code>（pid是进程的id）</p>
+<h4 id="搜索命令"><a href="#搜索命令" class="headerlink" title="搜索命令"></a>搜索命令</h4><p>命令：<code>grep</code> 要搜索的字符串 要搜索的文件</p>
+<p>示例：搜索&#x2F;usr&#x2F;sudu.conf文件中包含字符串to的行<img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="https://www.zhengyk.cn/images/linux_command_23.jpg"
+                      alt="img"
+                > </p>
+<p>示例：搜索&#x2F;usr&#x2F;sudu.conf文件中包含字符串to的行 to要高亮显示  <img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="https://www.zhengyk.cn/images/linux_command_24.jpg"
+                      alt="img"
+                > </p>
+<h4 id="管道命令"><a href="#管道命令" class="headerlink" title="管道命令"></a>管道命令</h4><p>命令：|   将前一个命令的输出作为本次目录的输入</p>
+<p>示例：查看当前系统中所有的进程中包括system字符串的进程  <img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="https://www.zhengyk.cn/images/linux_command_25.jpg"
+                      alt="img"
+                > </p>
+<h4 id="网络通信命令"><a href="#网络通信命令" class="headerlink" title="网络通信命令"></a>网络通信命令</h4><p>查看当前系统的网卡信息：<code>ifconfig  </code><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="https://www.zhengyk.cn/images/linux_command_26.jpg"
+                      alt="img"
+                > </p>
+<p>查看与某台机器的连接情况：<code>ping </code><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="https://www.zhengyk.cn/images/linux_command_27.jpg"
+                      alt="img"
+                > </p>
+<p>查看当前系统的端口使用：<code>netstat -an</code>  <img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="https://www.zhengyk.cn/images/linux_command_28.jpg"
+                      alt="img"
+                > </p>
+<p>查看端口占用情况</p>
+<p><code>netstat -tln | grep 8080</code> 查看端口8080的使用情况</p>
+<p>查看端口属于哪个程序</p>
+<p><code>lsof -i :8080</code></p>
+<p>查看本机外网 IP地址</p>
+<p><code>curl ifconfig.me</code></p>
+<h4 id="关机命令"><a href="#关机命令" class="headerlink" title="关机命令"></a>关机命令</h4><p>重启命令：<code>reboot</code></p>
+<p>立即关机：<code>halt</code></p>
+<h4 id="查看系统运行情况"><a href="#查看系统运行情况" class="headerlink" title="查看系统运行情况"></a>查看系统运行情况</h4><p><code>top -H -p pid</code> 查看某个 pid 进程的所有线程占用情况。可以根据里面的线程 id 转为16进制再到 java 的 jstack里面对比，找出哪个线程有问题。</p>
+<h4 id="查看内存使用情况"><a href="#查看内存使用情况" class="headerlink" title="查看内存使用情况"></a>查看内存使用情况</h4><p><code>free -m</code></p>
+<h4 id="远程复制"><a href="#远程复制" class="headerlink" title="远程复制"></a>远程复制</h4><h5 id="从远程服务器上复制到本地"><a href="#从远程服务器上复制到本地" class="headerlink" title="从远程服务器上复制到本地"></a>从远程服务器上复制到本地</h5><p><code>scp -r  remote_username@remote_ip:remote_path  local_path</code><br><code>scp -r root@192.168.100.49:/home/test /root</code> 将服务器地址为192.168.100.49的&#x2F;home&#x2F;test 文件夹下的所有文件复制到本服务器的&#x2F;root</p>
+<h5 id="从本地复制到远程服务器"><a href="#从本地复制到远程服务器" class="headerlink" title="从本地复制到远程服务器"></a>从本地复制到远程服务器</h5><p><code>scp -r local_path remote_username@remote_ip:remote_path</code></p>
+<h4 id="打印信息："><a href="#打印信息：" class="headerlink" title="打印信息："></a>打印信息：</h4><p><code>echo $JAVA_HOME</code></p>
+<p>打印 java home 的环境变量</p>
+<h4 id="远程登录"><a href="#远程登录" class="headerlink" title="远程登录"></a>远程登录</h4><p><code>ssh username@ip</code></p>
+<h3 id="Linux的权限命令"><a href="#Linux的权限命令" class="headerlink" title="Linux的权限命令"></a>Linux的权限命令</h3><p>权限是Linux中的重要概念，每个文件&#x2F;目录等都具有权限，通过ls -l命令我们可以	查看某个目录下的文件或目录的权限</p>
+<p>示例：在随意某个目录下ls -l  <img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="https://www.zhengyk.cn/images/linux_command_28.jpg"
+                      alt="img"
+                > </p>
+<p>第一列的内容的信息解释如下：<img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="https://www.zhengyk.cn/images/linux_command_30.jpg"
+                      alt="img"
+                > </p>
+<p>文件的类型：</p>
+<p>d：代表目录</p>
+<p>-：代表文件</p>
+<p>l：代表链接（可以认为是window中的快捷方式）</p>
+<p>后面的9位分为3组，每3位置一组，分别代表属主的权限，与当前用户同组的	用户的权限，其他用户的权限</p>
+<p>r：代表权限是可读，r也可以用数字4表示</p>
+<p>w：代表权限是可写，w也可以用数字2表示</p>
+<p>x：代表权限是可执行，x也可以用数字1表示<img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="https://www.zhengyk.cn/images/linux_command_32.jpg"
+                     
+                ></p>
+<p>修改文件&#x2F;目录的权限的命令：<code>chmod</code></p>
+<p>示例：修改&#x2F;test下的aaa.txt的权限为属主有全部权限，属主所在的组有读写权限，</p>
+<p>其他用户只有读的权限</p>
+<p><code>chmod u=rwx,g=rw,o=r aaa.txt  </code><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="https://www.zhengyk.cn/images/linux_command_31.jpg"
+                      alt="img"
+                > </p>
+<p>上述示例还可以使用数字表示：</p>
+<p><code>chmod 764 aaa.txt</code></p>
+
+        </div>
+
+        
+            <div class="post-copyright-info px-2 sm:px-6 md:px-8">
+                <div class="article-copyright-info-container">
+    <ul>
+        <li><strong>Title:</strong> linux基本操作命令</li>
+        <li><strong>Author:</strong> 郑亚凯</li>
+        <li><strong>Created at
+                :</strong> 2018-01-21 08:58:02</li>
+        
+            <li>
+                <strong>Updated at
+                    :</strong> 2023-11-17 19:37:37
+            </li>
+        
+        <li>
+            <strong>Link:</strong> https://www.zhengyk.cn/2018/01/21/linux/Linux-Command/
+        </li>
+        <li>
+            <strong>
+                License:
+            </strong>
+            
+
+            
+                This work is licensed under <a class="license" target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0">CC BY-NC-SA 4.0</a>.
+            
+        </li>
+    </ul>
+</div>
+
+            </div>
+        
+
+        
+            <ul class="post-tags-box">
+                
+                    <li class="tag-item">
+                        <a href="/tags/linux/">#linux</a>&nbsp;
+                    </li>
+                
+            </ul>
+        
+
+        
+
+        
+            <div class="article-nav my-8 flex justify-between items-center px-2 sm:px-6 md:px-8">
+                
+                    <div class="article-prev border-border-color shadow-redefine-flat shadow-shadow-color-2 rounded-medium px-4 py-2 hover:shadow-redefine-flat-hover hover:shadow-shadow-color-2">
+                        <a class="prev"
+                        rel="prev"
+                        href="/2018/03/08/server/Nginx-File-Server/"
+                        >
+                            <span class="left arrow-icon flex justify-center items-center">
+                                <i class="fa-solid fa-chevron-left"></i>
+                            </span>
+                            <span class="title flex justify-center items-center">
+                                <span class="post-nav-title-item">使用nginx搭建我的文件服务器</span>
+                                <span class="post-nav-item">Prev posts</span>
+                            </span>
+                        </a>
+                    </div>
+                
+                
+                    <div class="article-next border-border-color shadow-redefine-flat shadow-shadow-color-2 rounded-medium px-4 py-2 hover:shadow-redefine-flat-hover hover:shadow-shadow-color-2">
+                        <a class="next"
+                        rel="next"
+                        href="/2018/01/02/other/git-Hooks/"
+                        >
+                            <span class="title flex justify-center items-center">
+                                <span class="post-nav-title-item">云服务器搭建git环境并实现自动同步站点目录</span>
+                                <span class="post-nav-item">Next posts</span>
+                            </span>
+                            <span class="right arrow-icon flex justify-center items-center">
+                                <i class="fa-solid fa-chevron-right"></i>
+                            </span>
+                        </a>
+                    </div>
+                
+            </div>
+        
+
+
+        
+    </div>
+
+    
+        <div class="toc-content-container">
+            <div class="post-toc-wrap">
+    <div class="post-toc">
+        <div class="toc-title">On this page</div>
+        <div class="page-title">linux基本操作命令</div>
+        <ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%9B%AE%E5%BD%95%E5%88%87%E6%8D%A2%E5%91%BD%E4%BB%A4"><span class="nav-text">目录切换命令</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%9B%AE%E5%BD%95%E7%9A%84%E6%93%8D%E4%BD%9C%E5%91%BD%E4%BB%A4%EF%BC%88%E5%A2%9E%E5%88%A0%E6%94%B9%E6%9F%A5%EF%BC%89"><span class="nav-text">目录的操作命令（增删改查）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%96%87%E4%BB%B6%E7%9A%84%E6%93%8D%E4%BD%9C%E5%91%BD%E4%BB%A4%EF%BC%88%E5%A2%9E%E5%88%A0%E6%94%B9%E6%9F%A5%EF%BC%89"><span class="nav-text">文件的操作命令（增删改查）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8E%8B%E7%BC%A9%E6%96%87%E4%BB%B6%E7%9A%84%E6%93%8D%E4%BD%9C%E5%91%BD%E4%BB%A4"><span class="nav-text">压缩文件的操作命令</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%B6%E4%BB%96%E5%91%BD%E4%BB%A4"><span class="nav-text">其他命令</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Linux%E7%9A%84%E6%9D%83%E9%99%90%E5%91%BD%E4%BB%A4"><span class="nav-text">Linux的权限命令</span></a></li></ol>
+
+    </div>
+</div>
+        </div>
+    
+</div>
+
+
+
+                
+
+            </div>
+
+            
+
+        </div>
+
+        <div class="main-content-footer">
+            <footer class="footer mt-5 py-5 h-auto text-base text-third-text-color relative border-t-2 border-t-border-color">
+    <div class="info-container py-3 text-center">
+        
+        <div class="text-center">
+            &copy;
+            
+              <span>1970</span>
+              -
+            
+            2023&nbsp;&nbsp;<i class="fa-solid fa-heart fa-beat" style="--fa-animation-duration: 0.5s; color: #f54545"></i>&nbsp;&nbsp;<a href="/">郑亚凯</a>
+        </div>
+        
+        <div class="relative text-center lg:absolute lg:left-[20px] lg:top-1/2 lg:-translate-y-1/2 lg:text-left">
+            <span class="lg:block text-sm">POWERED BY <?xml version="1.0" encoding="utf-8"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd"><svg class="relative top-[2px] inline-block align-baseline" version="1.1" id="圖層_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="1rem" height="1rem" viewBox="0 0 512 512" enable-background="new 0 0 512 512" xml:space="preserve"><path fill="#0E83CD" d="M256.4,25.8l-200,115.5L56,371.5l199.6,114.7l200-115.5l0.4-230.2L256.4,25.8z M349,354.6l-18.4,10.7l-18.6-11V275H200v79.6l-18.4,10.7l-18.6-11v-197l18.5-10.6l18.5,10.8V237h112v-79.6l18.5-10.6l18.5,10.8V354.6z"/></svg><a target="_blank" class="text-base" href="https://hexo.io">Hexo</a></span>
+            <span class="text-sm lg:block">THEME&nbsp;<a class="text-base" target="_blank" href="https://github.com/EvanNotFound/hexo-theme-redefine">Redefine v2.5.2</a></span>
+        </div>
+        
+        
+            <div>
+                Blog up for <span class="odometer" id="runtime_days" ></span> days <span class="odometer" id="runtime_hours"></span> hrs <span class="odometer" id="runtime_minutes"></span> Min <span class="odometer" id="runtime_seconds"></span> Sec
+            </div>
+        
+        
+            <script data-swup-reload-script>
+                try {
+                    function odometer_init() {
+                    const elements = document.querySelectorAll('.odometer');
+                    elements.forEach(el => {
+                        new Odometer({
+                            el,
+                            format: '( ddd).dd',
+                            duration: 200
+                        });
+                    });
+                    }
+                    odometer_init();
+                } catch (error) {}
+            </script>
+        
+        
+        
+    </div>  
+</footer>
+        </div>
+    </div>
+
+    
+        <div class="post-tools">
+            <div class="post-tools-container">
+    <ul class="article-tools-list">
+        <!-- TOC aside toggle -->
+        
+            <li class="right-bottom-tools page-aside-toggle">
+                <i class="fa-regular fa-outdent"></i>
+            </li>
+        
+
+        <!-- go comment -->
+        
+    </ul>
+</div>
+
+        </div>
+    
+
+    <div class="right-side-tools-container">
+        <div class="side-tools-container">
+    <ul class="hidden-tools-list">
+        <li class="right-bottom-tools tool-font-adjust-plus flex justify-center items-center">
+            <i class="fa-regular fa-magnifying-glass-plus"></i>
+        </li>
+
+        <li class="right-bottom-tools tool-font-adjust-minus flex justify-center items-center">
+            <i class="fa-regular fa-magnifying-glass-minus"></i>
+        </li>
+
+        <li class="right-bottom-tools tool-dark-light-toggle flex justify-center items-center">
+            <i class="fa-regular fa-moon"></i>
+        </li>
+
+        <!-- rss -->
+        
+
+        
+
+        <li class="right-bottom-tools tool-scroll-to-bottom flex justify-center items-center">
+            <i class="fa-regular fa-arrow-down"></i>
+        </li>
+    </ul>
+
+    <ul class="visible-tools-list">
+        <li class="right-bottom-tools toggle-tools-list flex justify-center items-center">
+            <i class="fa-regular fa-cog fa-spin"></i>
+        </li>
+        
+            <li class="right-bottom-tools tool-scroll-to-top flex justify-center items-center">
+                <i class="arrow-up fas fa-arrow-up"></i>
+                <span class="percent"></span>
+            </li>
+        
+        
+    </ul>
+</div>
+
+    </div>
+
+    <div class="image-viewer-container">
+    <img src="">
+</div>
+
+
+    
+        <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+          <span class="search-input-field-pre">
+            <i class="fa-solid fa-keyboard"></i>
+          </span>
+            <div class="search-input-container">
+                <input autocomplete="off"
+                       autocorrect="off"
+                       autocapitalize="off"
+                       placeholder="Search..."
+                       spellcheck="false"
+                       type="search"
+                       class="search-input"
+                >
+            </div>
+            <span class="popup-btn-close">
+                <i class="fa-solid fa-times"></i>
+            </span>
+        </div>
+        <div id="search-result">
+            <div id="no-result">
+                <i class="fa-solid fa-spinner fa-spin-pulse fa-5x fa-fw"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+
+</main>
+
+
+    
+<script src="/js/libs/Swup.min.js"></script>
+
+<script src="/js/libs/SwupSlideTheme.min.js"></script>
+
+<script src="/js/libs/SwupScriptsPlugin.min.js"></script>
+
+<script src="/js/libs/SwupProgressPlugin.min.js"></script>
+
+<script src="/js/libs/SwupScrollPlugin.min.js"></script>
+
+<script src="/js/libs/SwupPreloadPlugin.min.js"></script>
+
+<script>
+    const swup = new Swup({
+        plugins: [
+            new SwupScriptsPlugin({
+                optin: true,
+            }),
+            new SwupProgressPlugin(),
+            new SwupScrollPlugin({
+                offset: 80,
+            }),
+            new SwupSlideTheme({
+                mainElement: ".main-content-body",
+            }),
+            new SwupPreloadPlugin(),
+        ],
+        containers: ["#swup"],
+    });
+</script>
+
+
+
+
+
+
+
+<script src="/js/tools/imageViewer.js" type="module"></script>
+
+<script src="/js/utils.js" type="module"></script>
+
+<script src="/js/main.js" type="module"></script>
+
+<script src="/js/layouts/navbarShrink.js" type="module"></script>
+
+<script src="/js/tools/scrollTopBottom.js" type="module"></script>
+
+<script src="/js/tools/lightDarkSwitch.js" type="module"></script>
+
+<script src="/js/layouts/categoryList.js" type="module"></script>
+
+
+
+    
+<script src="/js/tools/localSearch.js" type="module"></script>
+
+
+
+
+    
+<script src="/js/tools/codeBlock.js" type="module"></script>
+
+
+
+
+    
+<script src="/js/layouts/lazyload.js" type="module"></script>
+
+
+
+
+    
+<script src="/js/tools/runtime.js"></script>
+
+    
+<script src="/js/libs/odometer.min.js"></script>
+
+    
+<link rel="stylesheet" href="/assets/odometer-theme-minimal.css">
+
+
+
+
+  
+<script src="/js/libs/Typed.min.js"></script>
+
+  
+<script src="/js/plugins/typed.js" type="module"></script>
+
+
+
+
+
+
+
+<div class="post-scripts" data-swup-reload-script>
+    
+        
+<script src="/js/libs/anime.min.js"></script>
+
+        
+<script src="/js/tools/tocToggle.js" type="module"></script>
+
+<script src="/js/layouts/toc.js" type="module"></script>
+
+<script src="/js/plugins/tabs.js" type="module"></script>
+
+    
+</div>
+
+
+</body>
+</html>

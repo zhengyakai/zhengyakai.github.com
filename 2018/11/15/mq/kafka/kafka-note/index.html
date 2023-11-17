@@ -1,0 +1,833 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="keywords" content="Hexo Theme Redefine">
+    
+    <meta name="author" content="郑亚凯">
+    <!-- preconnect -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    
+    <!--- Seo Part-->
+    
+    <link rel="canonical" href="http://example.com/2018/11/15/mq/kafka/kafka-note/"/>
+    <meta name="robots" content="index,follow">
+    <meta name="googlebot" content="index,follow">
+    <meta name="revisit-after" content="1 days">
+    
+        <meta name="description" content="前言前阵子做了个车联网的项目，用到了kafka，今晚回来的早，写一篇对 Kafka 的笔记整理和总结吧。 Kafka 概述Kafka 是一个由 Scala 语言实现的开源、轻量、分布式、具有分区和副本能力的，基于 ZK 实现分布式协调的高性能，高吞吐的分布式消息订阅消息中间件。与传统的消息队列相比，Kafka 可以更好地处理活跃的流数据。可处理每秒几十万、上百万的请求，非常适用于行为跟踪、日志搜集">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Kafka 笔记整理">
+<meta property="og:url" content="http://example.com/2018/11/15/mq/kafka/kafka-note/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="前言前阵子做了个车联网的项目，用到了kafka，今晚回来的早，写一篇对 Kafka 的笔记整理和总结吧。 Kafka 概述Kafka 是一个由 Scala 语言实现的开源、轻量、分布式、具有分区和副本能力的，基于 ZK 实现分布式协调的高性能，高吞吐的分布式消息订阅消息中间件。与传统的消息队列相比，Kafka 可以更好地处理活跃的流数据。可处理每秒几十万、上百万的请求，非常适用于行为跟踪、日志搜集">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://www.zhengyk.cn/images/kafka-framework.jpg">
+<meta property="article:published_time" content="2018-11-15T10:01:54.000Z">
+<meta property="article:modified_time" content="2023-11-17T11:37:37.420Z">
+<meta property="article:author" content="John Doe">
+<meta property="article:tag" content="Kafka">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://www.zhengyk.cn/images/kafka-framework.jpg">
+    
+    
+    <!--- Icon Part-->
+    <link rel="icon" type="image/png" href="https://www.zhengyk.cn/images/portrait.jpg" sizes="192x192">
+    <link rel="apple-touch-icon" sizes="180x180" href="https://www.zhengyk.cn/images/portrait.jpg">
+    <meta name="theme-color" content="#A31F34">
+    <link rel="shortcut icon" href="https://www.zhengyk.cn/images/portrait.jpg">
+    <!--- Page Info-->
+    
+    <title>
+        
+            Kafka 笔记整理 -
+        
+        薛定谔的汪
+    </title>
+    
+<link rel="stylesheet" href="/css/style.css">
+
+
+    
+        
+<link rel="stylesheet" href="/assets/build/styles.css">
+
+    
+
+    
+<link rel="stylesheet" href="/fonts/fonts.css">
+
+    
+<link rel="stylesheet" href="/fonts/Satoshi/satoshi.css">
+
+    
+<link rel="stylesheet" href="/fonts/Chillax/chillax.css">
+
+    <!--- Font Part-->
+    
+    
+    
+    
+
+    <!--- Inject Part-->
+    
+    <script id="hexo-configurations">
+    window.config = {"hostname":"example.com","root":"/","language":"en"};
+    window.theme = {"articles":{"style":{"font_size":"16px","line_height":1.5,"image_border_radius":"14px","image_alignment":"center","image_caption":false,"link_icon":true,"title_alignment":"left"},"word_count":{"enable":true,"count":true,"min2read":true},"author_label":{"enable":false,"auto":false,"list":[]},"code_block":{"copy":true,"style":"mac","font":{"enable":false,"family":null,"url":null}},"toc":{"enable":true,"max_depth":3,"number":false,"expand":true,"init_open":true},"copyright":{"enable":true,"default":"cc_by_nc_sa"},"lazyload":true,"recommendation":{"enable":false,"title":"推荐阅读","limit":3,"mobile_limit":2,"placeholder":"/images/wallhaven-wqery6-light.webp","skip_dirs":[]}},"colors":{"primary":"#A31F34","secondary":null},"global":{"fonts":{"chinese":{"enable":false,"family":null,"url":null},"english":{"enable":false,"family":null,"url":null}},"content_max_width":"1000px","sidebar_width":"210px","hover":{"shadow":true,"scale":false},"scroll_progress":{"bar":false,"percentage":true},"website_counter":{"url":"https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js","enable":false,"site_pv":false,"site_uv":false,"post_pv":false},"single_page":true,"open_graph":true,"google_analytics":{"enable":false,"id":null}},"home_banner":{"enable":true,"style":"fixed","image":{"light":"https://www.zhengyk.cn/images/wallhaven-wqery6-light.png","dark":"https://www.zhengyk.cn/images/wallhaven-wqery6-dark.png"},"title":"学习技术 | 分享生活","subtitle":{"text":[],"hitokoto":{"enable":false,"api":"https://v1.hitokoto.cn"},"typing_speed":100,"backing_speed":80,"starting_delay":500,"backing_delay":1500,"loop":true,"smart_backspace":true},"text_color":{"light":"#fff","dark":"#d1d1b6"},"text_style":{"title_size":"2.8rem","subtitle_size":"1.5rem","line_height":1.2},"custom_font":{"enable":false,"family":null,"url":null},"social_links":{"enable":false,"links":{"github":"https://github.com/zhengyakai","instagram":null,"zhihu":null,"twitter":null,"email":null},"qrs":{"weixin":null}}},"plugins":{"feed":{"enable":false},"aplayer":{"enable":false,"type":"fixed","audios":[{"name":null,"artist":null,"url":null,"cover":null}]},"mermaid":{"enable":false,"version":"9.3.0"}},"version":"2.5.2","navbar":{"auto_hide":false,"color":{"left":"#f78736","right":"#367df7","transparency":35},"links":{"Home":{"path":"/","icon":"fa-regular fa-house"},"主页":{"path":"/","icon":"fa-regular fa-house"},"文章":{"path":"/archives","icon":"fa-regular fa-archive"},"关于":{"path":"/about","icon":"fa-regular fa-folder"}},"search":{"enable":true,"preload":true}},"page_templates":{"friends_column":2,"tags_style":"blur"},"home":{"sidebar":{"enable":true,"position":"left","first_item":"menu","announcement":null,"links":{"文章":{"path":"/archives","icon":"fa-regular fa-archive"}}},"article_date_format":"auto","categories":{"enable":true,"limit":10},"tags":{"enable":true,"limit":10}},"footerStart":2017};
+    window.lang_ago = {"second":"%s seconds ago","minute":"%s minutes ago","hour":"%s hours ago","day":"%s days ago","week":"%s weeks ago","month":"%s months ago","year":"%s years ago"};
+    window.data = {"masonry":false};
+  </script>
+    
+    <!--- Fontawesome Part-->
+    
+<link rel="stylesheet" href="/fontawesome/fontawesome.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/brands.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/solid.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/regular.min.css">
+
+    
+    
+    
+    
+<meta name="generator" content="Hexo 7.0.0"><link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+</head>
+
+
+<body>
+<div class="progress-bar-container">
+    
+
+    
+        <span class="pjax-progress-bar"></span>
+        <span class="swup-progress-icon">
+            <i class="fa-solid fa-circle-notch fa-spin"></i>
+        </span>
+    
+</div>
+
+
+<main class="page-container" id="swup">
+
+    
+
+    <div class="main-content-container">
+
+
+        <div class="main-content-header">
+            <header class="navbar-container">
+    
+    <div class="navbar-content">
+        <div class="left">
+            
+            <a class="logo-title" href="/">
+                
+                薛定谔的汪
+                
+            </a>
+        </div>
+
+        <div class="right">
+            <!-- PC -->
+            <div class="desktop">
+                <ul class="navbar-list">
+                    
+                        
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class="" 
+                                    href="/"  >
+                                    
+                                        
+                                            <i class="fa-regular fa-house"></i>
+                                        
+                                        HOME
+                                    
+                                </a>
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                        
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class="" 
+                                    href="/"  >
+                                    
+                                        
+                                            <i class="fa-regular fa-house"></i>
+                                        
+                                        主页
+                                    
+                                </a>
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                        
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class="" 
+                                    href="/archives"  >
+                                    
+                                        
+                                            <i class="fa-regular fa-archive"></i>
+                                        
+                                        文章
+                                    
+                                </a>
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                        
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class="" 
+                                    href="/about"  >
+                                    
+                                        
+                                            <i class="fa-regular fa-folder"></i>
+                                        
+                                        关于
+                                    
+                                </a>
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                    
+                        <li class="navbar-item search search-popup-trigger">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                        </li>
+                    
+                </ul>
+            </div>
+            <!-- Mobile -->
+            <div class="mobile">
+                
+                    <div class="icon-item search search-popup-trigger"><i class="fa-solid fa-magnifying-glass"></i></div>
+                
+                <div class="icon-item navbar-bar">
+                    <div class="navbar-bar-middle"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile drawer -->
+    <div class="navbar-drawer w-full absolute top-0 left-0 bg-background-color">
+        <ul class="drawer-navbar-list flex flex-col justify-start items-center">
+            
+                
+                    <li class="drawer-navbar-item text-base my-1.5 flex justify-center items-center">
+                        <a class="rounded-3xl py-1.5 px-5 hover:border hover:!text-primary active:!text-primary group " 
+                        href="/"  >
+                             
+                                
+                                    <i class="fa-regular fa-house"></i>
+                                
+                                HOME
+                            
+                        </a>
+                    </li>
+                    <!-- Submenu -->
+                    
+            
+                
+                    <li class="drawer-navbar-item text-base my-1.5 flex justify-center items-center">
+                        <a class="rounded-3xl py-1.5 px-5 hover:border hover:!text-primary active:!text-primary group " 
+                        href="/"  >
+                             
+                                
+                                    <i class="fa-regular fa-house"></i>
+                                
+                                主页
+                            
+                        </a>
+                    </li>
+                    <!-- Submenu -->
+                    
+            
+                
+                    <li class="drawer-navbar-item text-base my-1.5 flex justify-center items-center">
+                        <a class="rounded-3xl py-1.5 px-5 hover:border hover:!text-primary active:!text-primary group " 
+                        href="/archives"  >
+                             
+                                
+                                    <i class="fa-regular fa-archive"></i>
+                                
+                                文章
+                            
+                        </a>
+                    </li>
+                    <!-- Submenu -->
+                    
+            
+                
+                    <li class="drawer-navbar-item text-base my-1.5 flex justify-center items-center">
+                        <a class="rounded-3xl py-1.5 px-5 hover:border hover:!text-primary active:!text-primary group " 
+                        href="/about"  >
+                             
+                                
+                                    <i class="fa-regular fa-folder"></i>
+                                
+                                关于
+                            
+                        </a>
+                    </li>
+                    <!-- Submenu -->
+                    
+            
+
+        </ul>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+        </div>
+
+        <div class="main-content-body">
+
+            
+
+            <div class="main-content">
+
+                
+                    <div class="post-page-container">
+    <div class="article-content-container">
+
+        <div class="article-title relative w-full">
+            
+                
+                
+                <img src="https://www.zhengyk.cn/images/2018-11-15.jpg" alt="Kafka 笔记整理" class="w-full h-60 sm:h-72 md:h-80 object-cover sm:rounded-t-large dark:brightness-75"/>
+                
+                <div class="w-full flex items-center absolute bottom-0 justify-start">
+                    <h1 class="article-title-cover text-center mx-6 my-6 text-second-text-color bg-background-color-transparent px-4 py-3 text-3xl sm:text-4xl md:text-5xl font-bold backdrop-blur-lg rounded-xl border border-border-color ">Kafka 笔记整理</h1>
+                </div>
+            
+            </div>
+
+        
+            <div class="article-header flex flex-row gap-2 items-center px-2 sm:px-6 md:px-8">
+                <div class="avatar w-[46px] h-[46px] flex-shrink-0 rounded-medium border border-border-color p-[1px]">
+                    <img src="https://www.zhengyk.cn/images/portrait.jpg">
+                </div>
+                <div class="info flex flex-col justify-between">
+                    <div class="author flex items-center">
+                        <span class="name text-default-text-color text-lg font-semibold">郑亚凯</span>
+                        
+                    </div>
+                    <div class="meta-info">
+                        <div class="article-meta-info">
+    <span class="article-date article-meta-item">
+        <i class="fa-regular fa-pen-fancy"></i>&nbsp;
+        <span class="desktop">2018-11-15 18:01:54</span>
+        <span class="mobile">2018-11-15 18:01:54</span>
+        <span class="hover-info">Created</span>
+    </span>
+    
+        <span class="article-date article-meta-item">
+            <i class="fa-regular fa-wrench"></i>&nbsp;
+            <span class="desktop">2023-11-17 19:37:37</span>
+            <span class="mobile">2023-11-17 19:37:37</span>
+            <span class="hover-info">Updated</span>
+        </span>
+    
+
+    
+        <span class="article-categories article-meta-item">
+            <i class="fa-regular fa-folders"></i>&nbsp;
+            <ul>
+                
+                
+                    
+                        
+                        <li>
+                            <a href="/categories/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97/">消息队列</a>&nbsp;
+                        </li>
+                    
+                    
+                
+            </ul>
+        </span>
+    
+    
+        <span class="article-tags article-meta-item">
+            <i class="fa-regular fa-tags"></i>&nbsp;
+            <ul>
+                
+                    <li>
+                        <a href="/tags/Kafka/">Kafka</a>&nbsp;
+                    </li>
+                
+            </ul>
+        </span>
+    
+
+    
+    
+    
+    
+</div>
+
+                    </div>
+                </div>
+            </div>
+        
+
+        
+
+
+        <div class="article-content markdown-body px-2 sm:px-6 md:px-8 pb-8">
+            <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>前阵子做了个车联网的项目，用到了kafka，今晚回来的早，写一篇对 Kafka 的笔记整理和总结吧。</p>
+<h2 id="Kafka-概述"><a href="#Kafka-概述" class="headerlink" title="Kafka 概述"></a>Kafka 概述</h2><p>Kafka 是一个由 Scala 语言实现的开源、轻量、分布式、具有分区和副本能力的，基于 ZK 实现分布式协调的高性能，高吞吐的分布式消息订阅消息中间件。与传统的消息队列相比，Kafka 可以更好地处理活跃的流数据。可处理每秒几十万、上百万的请求，非常适用于行为跟踪、日志搜集。</p>
+<h3 id="Pull-or-Push？"><a href="#Pull-or-Push？" class="headerlink" title="Pull or Push？"></a>Pull or Push？</h3><p>Kafka 是消费者主动去获得消息（pull 模式）。</p>
+<h2 id="kafka-架构"><a href="#kafka-架构" class="headerlink" title="kafka 架构"></a>kafka 架构</h2><p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="https://www.zhengyk.cn/images/kafka-framework.jpg"
+                      alt="image-20181121153854001"
+                ></p>
+<h2 id="Kafka-基本概念"><a href="#Kafka-基本概念" class="headerlink" title="Kafka 基本概念"></a>Kafka 基本概念</h2><h3 id="主题："><a href="#主题：" class="headerlink" title="主题："></a>主题：</h3><p>​	Kafka 将一组消息抽象成一个主题，也就是说，一个主题就是对消息的一个分类，生产者将消息发到topic，消费者通过订阅 topic 或者 topic 的某些分区进行消费。</p>
+<h3 id="消息："><a href="#消息：" class="headerlink" title="消息："></a>消息：</h3><p>​	消息 Message 是 Kafka 的基本通信单元，由固定长度的消息头和可变长度的消息体组成。</p>
+<h3 id="分区："><a href="#分区：" class="headerlink" title="分区："></a>分区：</h3><p>​	每个 Topic 可以进行分区（Partition），每个分区是一个有序队列，用于存储消息。分区在物理上对应一个文件夹，编号从0开始，依次递增，默认有 50 个分区，可配置。</p>
+<h4 id="分区的作用？"><a href="#分区的作用？" class="headerlink" title="分区的作用？"></a>分区的作用？</h4><p>若没有分区，一个topic对应的消息集在分布式集群服务组中，就会分布不均匀，即可能导致某台服务器A记录当前topic的消息集很多，若此topic的消息压力很大的情况下，服务器A就可能导致压力很大，吞吐也容易导致瓶颈。</p>
+<p>分区使得 Kafka 在并发处理上变得更加容易，理论上来说，分区越多吞吐量越高，但这要根据实际集群环境和业务场景而定。同时，分区也是 Kafka 保证消息被顺序消费以及对消息进行负载均衡的基础。</p>
+<p>为了保证分区的均匀分布，建议创建的分区数是节点数的整数倍。</p>
+<p>Kafka 只能保证一个分区内的消息有序性，不能保证跨分区消息的有序性，每条消息被追加到相应的分区中，是顺序写入磁盘（<a class="link"   target="_blank" rel="noopener" href="https://www.zhihu.com/question/26028619/answer/32932317" >为什么顺序写入磁盘速度比随机写入磁盘快？ <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a>），因此效率非常高，是 Kafka 高吞吐的重要保证。</p>
+<p>Kafka 不会立即删除已被消费的消息，也不会一直被存储，Kafka 提供了两种删除老数据的策略，一是基于消息已存储时间，二是基于分区大小，可通过配置文件配置。</p>
+<h3 id="副本："><a href="#副本：" class="headerlink" title="副本："></a>副本：</h3><p>每个分区可以有一到多个副本（Replica）,分区的副本在集群的不同节点上，用以高可用。</p>
+<p>副本在逻辑上抽象为 Log 对象，即分区的副本与日志对象是对应的。 </p>
+<h3 id="Leader-副本和-Follower-副本："><a href="#Leader-副本和-Follower-副本：" class="headerlink" title="Leader 副本和 Follower 副本："></a>Leader 副本和 Follower 副本：</h3><p>每个分区可以有多个副本，这就需要保证分区多个副本之间的数据一致性，Kafka 会选举该分区的某个副本为 Leader 副本，而该分区其他副本为 Follower 副本，只有 Leader 副本才负责处理客户端的读写请求，Follower 副本从 Leader 副本同步数据（如果没有 Leader，那么所有的副本都进行读写，数据同步就太复杂、麻烦）。</p>
+<p>Leader 和 Follower 不固定，如果 Leader 失效，会重新选举另一个 Leader。</p>
+<p><em><strong>注意：分区数可以大于节点数，副本数不能大于节点数，因为副本需要分布在不同节点上，这样才能达到备份的目的</strong></em></p>
+<h3 id="偏移量"><a href="#偏移量" class="headerlink" title="偏移量"></a>偏移量</h3><p>任何发布到分区的消息会被直接追加到日志文件（.log）的尾部，每条消息在文件内部对一个偏移量，消费者通过控制偏移量来对消息进行消费。</p>
+<h3 id="日志段"><a href="#日志段" class="headerlink" title="日志段"></a>日志段</h3><p>一个日志又被划分为一个个日志段，LogSegment，是一个逻辑概念，对应一个.log文件和两个 .index文件。</p>
+<h3 id="代理"><a href="#代理" class="headerlink" title="代理"></a>代理</h3><p>Kafka 集群中每个节点可称为一个代理（Broker），每个代理具有唯一标识 id，在集群中，每增加一台代理就要为其配置i唯一标识id，</p>
+<p>Kafka支持异步发送消息	kafka1.0以后默认支持异步发送,发送后会有一个回调</p>
+<p>Kafka消息自动持久化，一般保存7天。</p>
+<h4 id="消息组的概念："><a href="#消息组的概念：" class="headerlink" title="消息组的概念："></a>消息组的概念：</h4><p>每个消费者属于特定的消费者组，每个消费者组有一个 groupId，消费者的默认消费者组是test-consumer-group，可以为消费者指定消费者组。</p>
+<p>每个消费者有特定的唯一id，如果不指定，Kafka 会给消费者默认生成一个全局唯一 Id，消息存储到分区的算法默认是先计算出 groupId 的 hash 值，然后对分区数（默认50）进行取模得到的值就是消息要存储的目标分区。</p>
+<p>同一个消费组内的消费者存在消息竞争关系，同一个组内的消费者消费完某条消息且 commit后不可以重复消费了，但是其他消费组内的消费者如果还未消费该消息，仍然可以继续消费。</p>
+<p>消费者组是 Kafka 用来实现广播和单播的手段，实现消息广播要让消费者数据不同的消费者组，实现单播要让消费者属于相同的消费者组。</p>
+<p>对比 RabbitMQ，Kafka 没有 Queue 的概念，但是通过 groupId，同样实现了 RabbitMQ 中 Queue 的作用。</p>
+<h5 id="AUTO-OFFSET-RESET-CONFIG-参数"><a href="#AUTO-OFFSET-RESET-CONFIG-参数" class="headerlink" title="AUTO_OFFSET_RESET_CONFIG 参数"></a>AUTO_OFFSET_RESET_CONFIG 参数</h5><p>对于新的 groupid：</p>
+<blockquote>
+<p>如果设置为 earlist，那么他会从最早的消息开始消费（默认）。</p>
+<p>如果设置为 latest，那么已经消费最大的 offset。</p>
+<p>如果设置为 none，如果没有消息，会抛出异常。</p>
+</blockquote>
+<h3 id="ISR"><a href="#ISR" class="headerlink" title="ISR"></a>ISR</h3><p>Kafka 在 Zookeeper 中维护了 一个 ISR(In-sync Replica)，保存同步的副本列表，该列表保存的是与 Leader 副本保持消息同步的所有副本所在代理的唯一标识id，如果某个 Follower 宕机，则该 Follower 代理 id 将从 ISR 中移除。</p>
+<h4 id="如何判断节点是否在同步状态中（Kafka-存活）？"><a href="#如何判断节点是否在同步状态中（Kafka-存活）？" class="headerlink" title="如何判断节点是否在同步状态中（Kafka 存活）？"></a>如何判断节点是否在同步状态中（Kafka 存活）？</h4><p>必须满足两个条件：</p>
+<ol>
+<li>一个存活的节点必须与 ZK 保持连接，这个主要通过 ZK 的心跳机制实现。</li>
+<li>如果一个节点是 Follower 副本，那么该副本必须能及时与 Leader 副本保持消息同步，不能落后太多。</li>
+</ol>
+<h3 id="Zookeeper"><a href="#Zookeeper" class="headerlink" title="Zookeeper"></a>Zookeeper</h3><p>ZK 负责存储 Kafka 的元数据信息，并协调 Kafka 集群。通过 ZK，可以很方便地对 Kafka 集群进行管理、水平扩展或数据迁移。</p>
+<h2 id="Kafka-特性"><a href="#Kafka-特性" class="headerlink" title="Kafka 特性"></a>Kafka 特性</h2><h3 id="消息持久化"><a href="#消息持久化" class="headerlink" title="消息持久化"></a>消息持久化</h3><p>文件系统、磁盘存储、B树</p>
+<p>RabbitMQ 有开启、关闭持久化的操作，Kafka 本身就是把消息顺序写入到磁盘。</p>
+<h3 id="高吞吐量"><a href="#高吞吐量" class="headerlink" title="高吞吐量"></a>高吞吐量</h3><p>顺序存储，零拷贝（避免缓冲区），主题可分区</p>
+<h3 id="高扩展性"><a href="#高扩展性" class="headerlink" title="高扩展性"></a>高扩展性</h3><p>Zookeeper对 Kafka 进行协调管理</p>
+<h3 id="多客户端支持"><a href="#多客户端支持" class="headerlink" title="多客户端支持"></a>多客户端支持</h3><p>Kafka 采用 Scala 开发，但 Kafka 支持多种语言的客户端</p>
+<h3 id="轻量级"><a href="#轻量级" class="headerlink" title="轻量级"></a>轻量级</h3><h3 id="消息压缩"><a href="#消息压缩" class="headerlink" title="消息压缩"></a>消息压缩</h3><p>Kafka 支持Gzip、Snappy、LZ4 三种压缩协议。通常把多条消息组成 MessageSet，然后把 MessageSet放到一条消息里面去，从而提高压缩比率进而提高吞吐量（批量发送），但是代价是降低了实时性。</p>
+<h2 id="Kafka-应用场景"><a href="#Kafka-应用场景" class="headerlink" title="Kafka 应用场景"></a>Kafka 应用场景</h2><h3 id="消息队列"><a href="#消息队列" class="headerlink" title="消息队列"></a>消息队列</h3><h3 id="应用监控"><a href="#应用监控" class="headerlink" title="应用监控"></a>应用监控</h3><h3 id="网站用户行为跟踪"><a href="#网站用户行为跟踪" class="headerlink" title="网站用户行为跟踪"></a>网站用户行为跟踪</h3><h3 id="流处理"><a href="#流处理" class="headerlink" title="流处理"></a>流处理</h3><h3 id="日志处理"><a href="#日志处理" class="headerlink" title="日志处理"></a>日志处理</h3><h2 id="Kafka-如何保证消息的可靠性传输？"><a href="#Kafka-如何保证消息的可靠性传输？" class="headerlink" title="Kafka 如何保证消息的可靠性传输？"></a>Kafka 如何保证消息的可靠性传输？</h2><h3 id="消费端丢失数据"><a href="#消费端丢失数据" class="headerlink" title="消费端丢失数据"></a>消费端丢失数据</h3><p>当消费者消费到消息时，默认情况下，会自动提交此消息的 offset 给 Kafka，为了保证消息的可靠性，可以设置手动提交 offset，即关闭自动提交，当消费者正常消费完后，再手动提交 offset（和 RabbitMQ 手动回执一个 ack 原理类似）。</p>
+<p>这样可能会有消息重复消费的问题，如消费完消息后，在手动后提交 offset 之前，消费者自己挂了，那么下次还会消费此消息，所以还需要在应用层保证幂等性。</p>
+<p>相关参数：ENABLE_AUTO_COMMIT</p>
+<h3 id="Kafka-数据丢失"><a href="#Kafka-数据丢失" class="headerlink" title="Kafka 数据丢失"></a>Kafka 数据丢失</h3><p>Kafka 某个 broker 宕机，然后重新选举 partition 的 leader。此时其他的 follower 的数据还没同步完成，造成数据丢失。</p>
+<p>可以设置如下 2 个参数：</p>
+<ul>
+<li>给 topic 设置 <code>replication.factor</code> 参数：这个值必须大于 1，要求每个 partition 至少 2 个副本。</li>
+<li>设置 <code>min.insync.replicas</code> ：最小 ISR，这个值必须大于 1，要求一个 leader 至少感知到有至少一个正常的 follower ，确保 leader 挂了后有一个 follower 能顶替。</li>
+</ul>
+<h3 id="生产者数据丢失"><a href="#生产者数据丢失" class="headerlink" title="生产者数据丢失"></a>生产者数据丢失</h3><p>Kafka 1.0 版本以后，生产者发送消息默认是异步发送。发送成功后，会给生产者一个回调 CallBack，我们可以写一个回调函数来判断消息是否发送成功。</p>
+<p>再配置两个参数：</p>
+<ul>
+<li>在 producer 端设置 <code>acks=all</code>：这个是要求每条数据，必须是<strong>写入所有 replica 之后，才能认为是写成功了</strong>。</li>
+<li>在 producer 端设置 <code>retries=MAX</code>（很大很大很大的一个值，无限次重试的意思）：这个是**要求一旦写入失败，就无限重试</li>
+</ul>
+
+        </div>
+
+        
+            <div class="post-copyright-info px-2 sm:px-6 md:px-8">
+                <div class="article-copyright-info-container">
+    <ul>
+        <li><strong>Title:</strong> Kafka 笔记整理</li>
+        <li><strong>Author:</strong> 郑亚凯</li>
+        <li><strong>Created at
+                :</strong> 2018-11-15 18:01:54</li>
+        
+            <li>
+                <strong>Updated at
+                    :</strong> 2023-11-17 19:37:37
+            </li>
+        
+        <li>
+            <strong>Link:</strong> https://www.zhengyk.cn/2018/11/15/mq/kafka/kafka-note/
+        </li>
+        <li>
+            <strong>
+                License:
+            </strong>
+            
+
+            
+                This work is licensed under <a class="license" target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0">CC BY-NC-SA 4.0</a>.
+            
+        </li>
+    </ul>
+</div>
+
+            </div>
+        
+
+        
+            <ul class="post-tags-box">
+                
+                    <li class="tag-item">
+                        <a href="/tags/Kafka/">#Kafka</a>&nbsp;
+                    </li>
+                
+            </ul>
+        
+
+        
+
+        
+            <div class="article-nav my-8 flex justify-between items-center px-2 sm:px-6 md:px-8">
+                
+                    <div class="article-prev border-border-color shadow-redefine-flat shadow-shadow-color-2 rounded-medium px-4 py-2 hover:shadow-redefine-flat-hover hover:shadow-shadow-color-2">
+                        <a class="prev"
+                        rel="prev"
+                        href="/2018/11/30/mq/mqtt/mqtt/"
+                        >
+                            <span class="left arrow-icon flex justify-center items-center">
+                                <i class="fa-solid fa-chevron-left"></i>
+                            </span>
+                            <span class="title flex justify-center items-center">
+                                <span class="post-nav-title-item">MQTT 协议学习</span>
+                                <span class="post-nav-item">Prev posts</span>
+                            </span>
+                        </a>
+                    </div>
+                
+                
+                    <div class="article-next border-border-color shadow-redefine-flat shadow-shadow-color-2 rounded-medium px-4 py-2 hover:shadow-redefine-flat-hover hover:shadow-shadow-color-2">
+                        <a class="next"
+                        rel="next"
+                        href="/2018/11/01/springcloud/spring-security-oauth2-jwt/"
+                        >
+                            <span class="title flex justify-center items-center">
+                                <span class="post-nav-title-item">用 Spring Security Oauth2 + JWT 搭建一个认证中心</span>
+                                <span class="post-nav-item">Next posts</span>
+                            </span>
+                            <span class="right arrow-icon flex justify-center items-center">
+                                <i class="fa-solid fa-chevron-right"></i>
+                            </span>
+                        </a>
+                    </div>
+                
+            </div>
+        
+
+
+        
+    </div>
+
+    
+        <div class="toc-content-container">
+            <div class="post-toc-wrap">
+    <div class="post-toc">
+        <div class="toc-title">On this page</div>
+        <div class="page-title">Kafka 笔记整理</div>
+        <ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Kafka-%E6%A6%82%E8%BF%B0"><span class="nav-text">Kafka 概述</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Pull-or-Push%EF%BC%9F"><span class="nav-text">Pull or Push？</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#kafka-%E6%9E%B6%E6%9E%84"><span class="nav-text">kafka 架构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Kafka-%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5"><span class="nav-text">Kafka 基本概念</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%BB%E9%A2%98%EF%BC%9A"><span class="nav-text">主题：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B6%88%E6%81%AF%EF%BC%9A"><span class="nav-text">消息：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%86%E5%8C%BA%EF%BC%9A"><span class="nav-text">分区：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%89%AF%E6%9C%AC%EF%BC%9A"><span class="nav-text">副本：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Leader-%E5%89%AF%E6%9C%AC%E5%92%8C-Follower-%E5%89%AF%E6%9C%AC%EF%BC%9A"><span class="nav-text">Leader 副本和 Follower 副本：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%81%8F%E7%A7%BB%E9%87%8F"><span class="nav-text">偏移量</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%97%A5%E5%BF%97%E6%AE%B5"><span class="nav-text">日志段</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BB%A3%E7%90%86"><span class="nav-text">代理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ISR"><span class="nav-text">ISR</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Zookeeper"><span class="nav-text">Zookeeper</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Kafka-%E7%89%B9%E6%80%A7"><span class="nav-text">Kafka 特性</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B6%88%E6%81%AF%E6%8C%81%E4%B9%85%E5%8C%96"><span class="nav-text">消息持久化</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%AB%98%E5%90%9E%E5%90%90%E9%87%8F"><span class="nav-text">高吞吐量</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%AB%98%E6%89%A9%E5%B1%95%E6%80%A7"><span class="nav-text">高扩展性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A4%9A%E5%AE%A2%E6%88%B7%E7%AB%AF%E6%94%AF%E6%8C%81"><span class="nav-text">多客户端支持</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%BD%BB%E9%87%8F%E7%BA%A7"><span class="nav-text">轻量级</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B6%88%E6%81%AF%E5%8E%8B%E7%BC%A9"><span class="nav-text">消息压缩</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Kafka-%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="nav-text">Kafka 应用场景</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97"><span class="nav-text">消息队列</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BA%94%E7%94%A8%E7%9B%91%E6%8E%A7"><span class="nav-text">应用监控</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BD%91%E7%AB%99%E7%94%A8%E6%88%B7%E8%A1%8C%E4%B8%BA%E8%B7%9F%E8%B8%AA"><span class="nav-text">网站用户行为跟踪</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B5%81%E5%A4%84%E7%90%86"><span class="nav-text">流处理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%97%A5%E5%BF%97%E5%A4%84%E7%90%86"><span class="nav-text">日志处理</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Kafka-%E5%A6%82%E4%BD%95%E4%BF%9D%E8%AF%81%E6%B6%88%E6%81%AF%E7%9A%84%E5%8F%AF%E9%9D%A0%E6%80%A7%E4%BC%A0%E8%BE%93%EF%BC%9F"><span class="nav-text">Kafka 如何保证消息的可靠性传输？</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B6%88%E8%B4%B9%E7%AB%AF%E4%B8%A2%E5%A4%B1%E6%95%B0%E6%8D%AE"><span class="nav-text">消费端丢失数据</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Kafka-%E6%95%B0%E6%8D%AE%E4%B8%A2%E5%A4%B1"><span class="nav-text">Kafka 数据丢失</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%94%9F%E4%BA%A7%E8%80%85%E6%95%B0%E6%8D%AE%E4%B8%A2%E5%A4%B1"><span class="nav-text">生产者数据丢失</span></a></li></ol></li></ol>
+
+    </div>
+</div>
+        </div>
+    
+</div>
+
+
+
+                
+
+            </div>
+
+            
+
+        </div>
+
+        <div class="main-content-footer">
+            <footer class="footer mt-5 py-5 h-auto text-base text-third-text-color relative border-t-2 border-t-border-color">
+    <div class="info-container py-3 text-center">
+        
+        <div class="text-center">
+            &copy;
+            
+              <span>1970</span>
+              -
+            
+            2023&nbsp;&nbsp;<i class="fa-solid fa-heart fa-beat" style="--fa-animation-duration: 0.5s; color: #f54545"></i>&nbsp;&nbsp;<a href="/">郑亚凯</a>
+        </div>
+        
+        <div class="relative text-center lg:absolute lg:left-[20px] lg:top-1/2 lg:-translate-y-1/2 lg:text-left">
+            <span class="lg:block text-sm">POWERED BY <?xml version="1.0" encoding="utf-8"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd"><svg class="relative top-[2px] inline-block align-baseline" version="1.1" id="圖層_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="1rem" height="1rem" viewBox="0 0 512 512" enable-background="new 0 0 512 512" xml:space="preserve"><path fill="#0E83CD" d="M256.4,25.8l-200,115.5L56,371.5l199.6,114.7l200-115.5l0.4-230.2L256.4,25.8z M349,354.6l-18.4,10.7l-18.6-11V275H200v79.6l-18.4,10.7l-18.6-11v-197l18.5-10.6l18.5,10.8V237h112v-79.6l18.5-10.6l18.5,10.8V354.6z"/></svg><a target="_blank" class="text-base" href="https://hexo.io">Hexo</a></span>
+            <span class="text-sm lg:block">THEME&nbsp;<a class="text-base" target="_blank" href="https://github.com/EvanNotFound/hexo-theme-redefine">Redefine v2.5.2</a></span>
+        </div>
+        
+        
+            <div>
+                Blog up for <span class="odometer" id="runtime_days" ></span> days <span class="odometer" id="runtime_hours"></span> hrs <span class="odometer" id="runtime_minutes"></span> Min <span class="odometer" id="runtime_seconds"></span> Sec
+            </div>
+        
+        
+            <script data-swup-reload-script>
+                try {
+                    function odometer_init() {
+                    const elements = document.querySelectorAll('.odometer');
+                    elements.forEach(el => {
+                        new Odometer({
+                            el,
+                            format: '( ddd).dd',
+                            duration: 200
+                        });
+                    });
+                    }
+                    odometer_init();
+                } catch (error) {}
+            </script>
+        
+        
+        
+    </div>  
+</footer>
+        </div>
+    </div>
+
+    
+        <div class="post-tools">
+            <div class="post-tools-container">
+    <ul class="article-tools-list">
+        <!-- TOC aside toggle -->
+        
+            <li class="right-bottom-tools page-aside-toggle">
+                <i class="fa-regular fa-outdent"></i>
+            </li>
+        
+
+        <!-- go comment -->
+        
+    </ul>
+</div>
+
+        </div>
+    
+
+    <div class="right-side-tools-container">
+        <div class="side-tools-container">
+    <ul class="hidden-tools-list">
+        <li class="right-bottom-tools tool-font-adjust-plus flex justify-center items-center">
+            <i class="fa-regular fa-magnifying-glass-plus"></i>
+        </li>
+
+        <li class="right-bottom-tools tool-font-adjust-minus flex justify-center items-center">
+            <i class="fa-regular fa-magnifying-glass-minus"></i>
+        </li>
+
+        <li class="right-bottom-tools tool-dark-light-toggle flex justify-center items-center">
+            <i class="fa-regular fa-moon"></i>
+        </li>
+
+        <!-- rss -->
+        
+
+        
+
+        <li class="right-bottom-tools tool-scroll-to-bottom flex justify-center items-center">
+            <i class="fa-regular fa-arrow-down"></i>
+        </li>
+    </ul>
+
+    <ul class="visible-tools-list">
+        <li class="right-bottom-tools toggle-tools-list flex justify-center items-center">
+            <i class="fa-regular fa-cog fa-spin"></i>
+        </li>
+        
+            <li class="right-bottom-tools tool-scroll-to-top flex justify-center items-center">
+                <i class="arrow-up fas fa-arrow-up"></i>
+                <span class="percent"></span>
+            </li>
+        
+        
+    </ul>
+</div>
+
+    </div>
+
+    <div class="image-viewer-container">
+    <img src="">
+</div>
+
+
+    
+        <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+          <span class="search-input-field-pre">
+            <i class="fa-solid fa-keyboard"></i>
+          </span>
+            <div class="search-input-container">
+                <input autocomplete="off"
+                       autocorrect="off"
+                       autocapitalize="off"
+                       placeholder="Search..."
+                       spellcheck="false"
+                       type="search"
+                       class="search-input"
+                >
+            </div>
+            <span class="popup-btn-close">
+                <i class="fa-solid fa-times"></i>
+            </span>
+        </div>
+        <div id="search-result">
+            <div id="no-result">
+                <i class="fa-solid fa-spinner fa-spin-pulse fa-5x fa-fw"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+
+</main>
+
+
+    
+<script src="/js/libs/Swup.min.js"></script>
+
+<script src="/js/libs/SwupSlideTheme.min.js"></script>
+
+<script src="/js/libs/SwupScriptsPlugin.min.js"></script>
+
+<script src="/js/libs/SwupProgressPlugin.min.js"></script>
+
+<script src="/js/libs/SwupScrollPlugin.min.js"></script>
+
+<script src="/js/libs/SwupPreloadPlugin.min.js"></script>
+
+<script>
+    const swup = new Swup({
+        plugins: [
+            new SwupScriptsPlugin({
+                optin: true,
+            }),
+            new SwupProgressPlugin(),
+            new SwupScrollPlugin({
+                offset: 80,
+            }),
+            new SwupSlideTheme({
+                mainElement: ".main-content-body",
+            }),
+            new SwupPreloadPlugin(),
+        ],
+        containers: ["#swup"],
+    });
+</script>
+
+
+
+
+
+
+
+<script src="/js/tools/imageViewer.js" type="module"></script>
+
+<script src="/js/utils.js" type="module"></script>
+
+<script src="/js/main.js" type="module"></script>
+
+<script src="/js/layouts/navbarShrink.js" type="module"></script>
+
+<script src="/js/tools/scrollTopBottom.js" type="module"></script>
+
+<script src="/js/tools/lightDarkSwitch.js" type="module"></script>
+
+<script src="/js/layouts/categoryList.js" type="module"></script>
+
+
+
+    
+<script src="/js/tools/localSearch.js" type="module"></script>
+
+
+
+
+    
+<script src="/js/tools/codeBlock.js" type="module"></script>
+
+
+
+
+    
+<script src="/js/layouts/lazyload.js" type="module"></script>
+
+
+
+
+    
+<script src="/js/tools/runtime.js"></script>
+
+    
+<script src="/js/libs/odometer.min.js"></script>
+
+    
+<link rel="stylesheet" href="/assets/odometer-theme-minimal.css">
+
+
+
+
+  
+<script src="/js/libs/Typed.min.js"></script>
+
+  
+<script src="/js/plugins/typed.js" type="module"></script>
+
+
+
+
+
+
+
+<div class="post-scripts" data-swup-reload-script>
+    
+        
+<script src="/js/libs/anime.min.js"></script>
+
+        
+<script src="/js/tools/tocToggle.js" type="module"></script>
+
+<script src="/js/layouts/toc.js" type="module"></script>
+
+<script src="/js/plugins/tabs.js" type="module"></script>
+
+    
+</div>
+
+
+</body>
+</html>

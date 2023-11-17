@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="keywords" content="Hexo Theme Redefine">
+    
+    <meta name="author" content="郑亚凯">
+    <!-- preconnect -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    
+    <!--- Seo Part-->
+    
+    <link rel="canonical" href="http://example.com/2019/03/15/go/three-mistakes/"/>
+    <meta name="robots" content="index,follow">
+    <meta name="googlebot" content="index,follow">
+    <meta name="revisit-after" content="1 days">
+    
+        <meta name="description" content="序言笔者学习并使用Golang已经有一个多月了，尽管Golang的特性少、语法简单且功能强大，但作为初学者，难免会犯一些大家都犯过的错误。笔者在实践的基础上，将初学者易犯的错误进行了简单梳理，暂时总结了三种错误，先分享给大家，希望对大家有一定的帮助。 资源关闭这里的资源包括文件、数据库连接和Socket连接等，我们以文件操作为例，说明一下常见的资源关闭错误。 文件操作的一个代码示例： 123456">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Golang初学者易犯的三种错误（转）">
+<meta property="og:url" content="http://example.com/2019/03/15/go/three-mistakes/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="序言笔者学习并使用Golang已经有一个多月了，尽管Golang的特性少、语法简单且功能强大，但作为初学者，难免会犯一些大家都犯过的错误。笔者在实践的基础上，将初学者易犯的错误进行了简单梳理，暂时总结了三种错误，先分享给大家，希望对大家有一定的帮助。 资源关闭这里的资源包括文件、数据库连接和Socket连接等，我们以文件操作为例，说明一下常见的资源关闭错误。 文件操作的一个代码示例： 123456">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2019-03-15T10:01:54.000Z">
+<meta property="article:modified_time" content="2023-11-17T11:37:37.007Z">
+<meta property="article:author" content="John Doe">
+<meta property="article:tag" content="Go">
+<meta name="twitter:card" content="summary">
+    
+    
+    <!--- Icon Part-->
+    <link rel="icon" type="image/png" href="https://www.zhengyk.cn/images/portrait.jpg" sizes="192x192">
+    <link rel="apple-touch-icon" sizes="180x180" href="https://www.zhengyk.cn/images/portrait.jpg">
+    <meta name="theme-color" content="#A31F34">
+    <link rel="shortcut icon" href="https://www.zhengyk.cn/images/portrait.jpg">
+    <!--- Page Info-->
+    
+    <title>
+        
+            Golang初学者易犯的三种错误（转） -
+        
+        薛定谔的汪
+    </title>
+    
+<link rel="stylesheet" href="/css/style.css">
+
+
+    
+        
+<link rel="stylesheet" href="/assets/build/styles.css">
+
+    
+
+    
+<link rel="stylesheet" href="/fonts/fonts.css">
+
+    
+<link rel="stylesheet" href="/fonts/Satoshi/satoshi.css">
+
+    
+<link rel="stylesheet" href="/fonts/Chillax/chillax.css">
+
+    <!--- Font Part-->
+    
+    
+    
+    
+
+    <!--- Inject Part-->
+    
+    <script id="hexo-configurations">
+    window.config = {"hostname":"example.com","root":"/","language":"en"};
+    window.theme = {"articles":{"style":{"font_size":"16px","line_height":1.5,"image_border_radius":"14px","image_alignment":"center","image_caption":false,"link_icon":true,"title_alignment":"left"},"word_count":{"enable":true,"count":true,"min2read":true},"author_label":{"enable":false,"auto":false,"list":[]},"code_block":{"copy":true,"style":"mac","font":{"enable":false,"family":null,"url":null}},"toc":{"enable":true,"max_depth":3,"number":false,"expand":true,"init_open":true},"copyright":{"enable":true,"default":"cc_by_nc_sa"},"lazyload":true,"recommendation":{"enable":false,"title":"推荐阅读","limit":3,"mobile_limit":2,"placeholder":"/images/wallhaven-wqery6-light.webp","skip_dirs":[]}},"colors":{"primary":"#A31F34","secondary":null},"global":{"fonts":{"chinese":{"enable":false,"family":null,"url":null},"english":{"enable":false,"family":null,"url":null}},"content_max_width":"1000px","sidebar_width":"210px","hover":{"shadow":true,"scale":false},"scroll_progress":{"bar":false,"percentage":true},"website_counter":{"url":"https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js","enable":false,"site_pv":false,"site_uv":false,"post_pv":false},"single_page":true,"open_graph":true,"google_analytics":{"enable":false,"id":null}},"home_banner":{"enable":true,"style":"fixed","image":{"light":"https://www.zhengyk.cn/images/wallhaven-wqery6-light.png","dark":"https://www.zhengyk.cn/images/wallhaven-wqery6-dark.png"},"title":"学习技术 | 分享生活","subtitle":{"text":[],"hitokoto":{"enable":false,"api":"https://v1.hitokoto.cn"},"typing_speed":100,"backing_speed":80,"starting_delay":500,"backing_delay":1500,"loop":true,"smart_backspace":true},"text_color":{"light":"#fff","dark":"#d1d1b6"},"text_style":{"title_size":"2.8rem","subtitle_size":"1.5rem","line_height":1.2},"custom_font":{"enable":false,"family":null,"url":null},"social_links":{"enable":false,"links":{"github":"https://github.com/zhengyakai","instagram":null,"zhihu":null,"twitter":null,"email":null},"qrs":{"weixin":null}}},"plugins":{"feed":{"enable":false},"aplayer":{"enable":false,"type":"fixed","audios":[{"name":null,"artist":null,"url":null,"cover":null}]},"mermaid":{"enable":false,"version":"9.3.0"}},"version":"2.5.2","navbar":{"auto_hide":false,"color":{"left":"#f78736","right":"#367df7","transparency":35},"links":{"Home":{"path":"/","icon":"fa-regular fa-house"},"主页":{"path":"/","icon":"fa-regular fa-house"},"文章":{"path":"/archives","icon":"fa-regular fa-archive"},"关于":{"path":"/about","icon":"fa-regular fa-folder"}},"search":{"enable":true,"preload":true}},"page_templates":{"friends_column":2,"tags_style":"blur"},"home":{"sidebar":{"enable":true,"position":"left","first_item":"menu","announcement":null,"links":{"文章":{"path":"/archives","icon":"fa-regular fa-archive"}}},"article_date_format":"auto","categories":{"enable":true,"limit":10},"tags":{"enable":true,"limit":10}},"footerStart":2017};
+    window.lang_ago = {"second":"%s seconds ago","minute":"%s minutes ago","hour":"%s hours ago","day":"%s days ago","week":"%s weeks ago","month":"%s months ago","year":"%s years ago"};
+    window.data = {"masonry":false};
+  </script>
+    
+    <!--- Fontawesome Part-->
+    
+<link rel="stylesheet" href="/fontawesome/fontawesome.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/brands.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/solid.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/regular.min.css">
+
+    
+    
+    
+    
+<meta name="generator" content="Hexo 7.0.0"><link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+</head>
+
+
+<body>
+<div class="progress-bar-container">
+    
+
+    
+        <span class="pjax-progress-bar"></span>
+        <span class="swup-progress-icon">
+            <i class="fa-solid fa-circle-notch fa-spin"></i>
+        </span>
+    
+</div>
+
+
+<main class="page-container" id="swup">
+
+    
+
+    <div class="main-content-container">
+
+
+        <div class="main-content-header">
+            <header class="navbar-container">
+    
+    <div class="navbar-content">
+        <div class="left">
+            
+            <a class="logo-title" href="/">
+                
+                薛定谔的汪
+                
+            </a>
+        </div>
+
+        <div class="right">
+            <!-- PC -->
+            <div class="desktop">
+                <ul class="navbar-list">
+                    
+                        
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class="" 
+                                    href="/"  >
+                                    
+                                        
+                                            <i class="fa-regular fa-house"></i>
+                                        
+                                        HOME
+                                    
+                                </a>
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                        
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class="" 
+                                    href="/"  >
+                                    
+                                        
+                                            <i class="fa-regular fa-house"></i>
+                                        
+                                        主页
+                                    
+                                </a>
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                        
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class="" 
+                                    href="/archives"  >
+                                    
+                                        
+                                            <i class="fa-regular fa-archive"></i>
+                                        
+                                        文章
+                                    
+                                </a>
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                        
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class="" 
+                                    href="/about"  >
+                                    
+                                        
+                                            <i class="fa-regular fa-folder"></i>
+                                        
+                                        关于
+                                    
+                                </a>
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                    
+                        <li class="navbar-item search search-popup-trigger">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                        </li>
+                    
+                </ul>
+            </div>
+            <!-- Mobile -->
+            <div class="mobile">
+                
+                    <div class="icon-item search search-popup-trigger"><i class="fa-solid fa-magnifying-glass"></i></div>
+                
+                <div class="icon-item navbar-bar">
+                    <div class="navbar-bar-middle"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile drawer -->
+    <div class="navbar-drawer w-full absolute top-0 left-0 bg-background-color">
+        <ul class="drawer-navbar-list flex flex-col justify-start items-center">
+            
+                
+                    <li class="drawer-navbar-item text-base my-1.5 flex justify-center items-center">
+                        <a class="rounded-3xl py-1.5 px-5 hover:border hover:!text-primary active:!text-primary group " 
+                        href="/"  >
+                             
+                                
+                                    <i class="fa-regular fa-house"></i>
+                                
+                                HOME
+                            
+                        </a>
+                    </li>
+                    <!-- Submenu -->
+                    
+            
+                
+                    <li class="drawer-navbar-item text-base my-1.5 flex justify-center items-center">
+                        <a class="rounded-3xl py-1.5 px-5 hover:border hover:!text-primary active:!text-primary group " 
+                        href="/"  >
+                             
+                                
+                                    <i class="fa-regular fa-house"></i>
+                                
+                                主页
+                            
+                        </a>
+                    </li>
+                    <!-- Submenu -->
+                    
+            
+                
+                    <li class="drawer-navbar-item text-base my-1.5 flex justify-center items-center">
+                        <a class="rounded-3xl py-1.5 px-5 hover:border hover:!text-primary active:!text-primary group " 
+                        href="/archives"  >
+                             
+                                
+                                    <i class="fa-regular fa-archive"></i>
+                                
+                                文章
+                            
+                        </a>
+                    </li>
+                    <!-- Submenu -->
+                    
+            
+                
+                    <li class="drawer-navbar-item text-base my-1.5 flex justify-center items-center">
+                        <a class="rounded-3xl py-1.5 px-5 hover:border hover:!text-primary active:!text-primary group " 
+                        href="/about"  >
+                             
+                                
+                                    <i class="fa-regular fa-folder"></i>
+                                
+                                关于
+                            
+                        </a>
+                    </li>
+                    <!-- Submenu -->
+                    
+            
+
+        </ul>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+        </div>
+
+        <div class="main-content-body">
+
+            
+
+            <div class="main-content">
+
+                
+                    <div class="post-page-container">
+    <div class="article-content-container">
+
+        <div class="article-title relative w-full">
+            
+                
+                
+                <img src="https://www.zhengyk.cn/images/2019-03-15.jpg" alt="Golang初学者易犯的三种错误（转）" class="w-full h-60 sm:h-72 md:h-80 object-cover sm:rounded-t-large dark:brightness-75"/>
+                
+                <div class="w-full flex items-center absolute bottom-0 justify-start">
+                    <h1 class="article-title-cover text-center mx-6 my-6 text-second-text-color bg-background-color-transparent px-4 py-3 text-3xl sm:text-4xl md:text-5xl font-bold backdrop-blur-lg rounded-xl border border-border-color ">Golang初学者易犯的三种错误（转）</h1>
+                </div>
+            
+            </div>
+
+        
+            <div class="article-header flex flex-row gap-2 items-center px-2 sm:px-6 md:px-8">
+                <div class="avatar w-[46px] h-[46px] flex-shrink-0 rounded-medium border border-border-color p-[1px]">
+                    <img src="https://www.zhengyk.cn/images/portrait.jpg">
+                </div>
+                <div class="info flex flex-col justify-between">
+                    <div class="author flex items-center">
+                        <span class="name text-default-text-color text-lg font-semibold">郑亚凯</span>
+                        
+                    </div>
+                    <div class="meta-info">
+                        <div class="article-meta-info">
+    <span class="article-date article-meta-item">
+        <i class="fa-regular fa-pen-fancy"></i>&nbsp;
+        <span class="desktop">2019-03-15 18:01:54</span>
+        <span class="mobile">2019-03-15 18:01:54</span>
+        <span class="hover-info">Created</span>
+    </span>
+    
+        <span class="article-date article-meta-item">
+            <i class="fa-regular fa-wrench"></i>&nbsp;
+            <span class="desktop">2023-11-17 19:37:37</span>
+            <span class="mobile">2023-11-17 19:37:37</span>
+            <span class="hover-info">Updated</span>
+        </span>
+    
+
+    
+        <span class="article-categories article-meta-item">
+            <i class="fa-regular fa-folders"></i>&nbsp;
+            <ul>
+                
+                
+                    
+                        
+                        <li>
+                            <a href="/categories/Go/">Go</a>&nbsp;
+                        </li>
+                    
+                    
+                
+            </ul>
+        </span>
+    
+    
+        <span class="article-tags article-meta-item">
+            <i class="fa-regular fa-tags"></i>&nbsp;
+            <ul>
+                
+                    <li>
+                        <a href="/tags/Go/">Go</a>&nbsp;
+                    </li>
+                
+            </ul>
+        </span>
+    
+
+    
+    
+    
+    
+</div>
+
+                    </div>
+                </div>
+            </div>
+        
+
+        
+
+
+        <div class="article-content markdown-body px-2 sm:px-6 md:px-8 pb-8">
+            <h2 id="序言"><a href="#序言" class="headerlink" title="序言"></a>序言</h2><p>笔者学习并使用Golang已经有一个多月了，尽管Golang的特性少、语法简单且功能强大，但作为初学者，难免会犯一些大家都犯过的错误。笔者在实践的基础上，将初学者易犯的错误进行了简单梳理，暂时总结了三种错误，先分享给大家，希望对大家有一定的帮助。</p>
+<h2 id="资源关闭"><a href="#资源关闭" class="headerlink" title="资源关闭"></a>资源关闭</h2><p>这里的资源包括文件、数据库连接和Socket连接等，我们以文件操作为例，说明一下常见的资源关闭错误。</p>
+<p>文件操作的一个代码示例：</p>
+<div class="highlight-container" data-rel="Go"><figure class="iseeu highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">file, err := os.Open(<span class="string">&quot;test.go&quot;</span>) </span><br><span class="line"><span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">    fmt.Println(<span class="string">&quot;open file failed:&quot;</span>, err)</span><br><span class="line">    <span class="keyword">return</span></span><br><span class="line">&#125;</span><br><span class="line">...</span><br></pre></td></tr></table></figure></div>
+
+<p>一些同学写到这就开始专注业务代码了，最后“忘记”了写关闭文件操作的代码。殊不知，这里埋下了一个祸根。在Linux中，一切皆文件，当打开的文件数过多时，就会触发”too many open files“的系统错误，从而让整个系统陷入崩溃。</p>
+<p>我们增加上关闭文件操作的代码，如下所示：</p>
+<div class="highlight-container" data-rel="Go"><figure class="iseeu highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">file, err := os.Open(<span class="string">&quot;test.go&quot;</span>)</span><br><span class="line"><span class="keyword">defer</span> file.Close()</span><br><span class="line"><span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">    fmt.Println(<span class="string">&quot;open file failed:&quot;</span>, err)</span><br><span class="line">    <span class="keyword">return</span></span><br><span class="line">&#125;</span><br><span class="line">...</span><br></pre></td></tr></table></figure></div>
+
+<p>Golang提供了一个很好用的关键字defer，defer语句的含义是不管程序是否出现异常，均在函数退出时自动执行相关代码。遗憾的是，上面的修改又引入了新问题，即如果文件打开错误，调用file.Close会导致程序抛出异常（panic），所以正确的修改应该将file.Close放到错误检查之后，如下：</p>
+<div class="highlight-container" data-rel="Go"><figure class="iseeu highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">file, err := os.Open(<span class="string">&quot;test.go&quot;</span>)</span><br><span class="line"><span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">    fmt.Println(<span class="string">&quot;open file failed:&quot;</span>, err)</span><br><span class="line">    <span class="keyword">return</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">defer</span> file.Close()</span><br><span class="line">...</span><br></pre></td></tr></table></figure></div>
+
+<h2 id="变量的大小写"><a href="#变量的大小写" class="headerlink" title="变量的大小写"></a>变量的大小写</h2><p>Golang对关键字的增加非常吝啬，其中没有private、protected和public这样的关键字。要使某个符号对其他包（package）可见（即可以访问），需要将该符号定义为以大写字母开头，这些符号包括接口，类型，函数和变量等。</p>
+<p>对于那些比较在意美感的程序员，尤其是工作在Linux平台上的C&#x2F;C++程序员，函数名或变量名以大写字母开头可能会让他们感觉不太适应，同时他们严格遵循最小可见性的原则，接口名和类名以小写字母开头也会让他们很纠结。在他们自己写代码的时候可能会顺手将函数名或变量名改成以小写字母开头，当与小写字母开头的接口名或类型名冲突时（包内可见性），还得费心的另外想一个名字。如果不小心，将包外可见性的符号rename成了以小写字母开头，则会遇到编译错误，即明明有符号却偏偏找不到，不过这对于有一些编程经验的程序员来说还是比较好解决的。</p>
+<p>下面的例子对于Golang的初学者，即使有一些编程经验，也较难排查，往往要花费稍微多一些的时间。</p>
+<div class="highlight-container" data-rel="Go"><figure class="iseeu highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> Position <span class="keyword">struct</span> &#123;</span><br><span class="line">    X <span class="type">int</span> </span><br><span class="line">    Y <span class="type">int</span></span><br><span class="line">    Z <span class="type">int</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> Student <span class="keyword">struct</span> &#123;</span><br><span class="line">    Name <span class="type">string</span></span><br><span class="line">    Sex <span class="type">string</span></span><br><span class="line">    Age <span class="type">int</span></span><br><span class="line">    position Position</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">    position1 := Position&#123;<span class="number">10</span>, <span class="number">20</span>, <span class="number">30</span>&#125;</span><br><span class="line">    student1 := Student&#123;<span class="string">&quot;zhangsan&quot;</span>, <span class="string">&quot;male&quot;</span>, <span class="number">20</span>, position1&#125;</span><br><span class="line">    position2 := Position&#123;<span class="number">15</span>, <span class="number">10</span>, <span class="number">20</span>&#125;</span><br><span class="line">    student2 := Student&#123;<span class="string">&quot;lisi&quot;</span>, <span class="string">&quot;female&quot;</span>, <span class="number">18</span>, position2&#125;    </span><br><span class="line"></span><br><span class="line">    <span class="keyword">var</span> srcSlice = <span class="built_in">make</span>([]Student, <span class="number">2</span>)</span><br><span class="line">    srcSlice[<span class="number">0</span>] = student1</span><br><span class="line">    srcSlice[<span class="number">1</span>] = student2</span><br><span class="line">    fmt.Printf(<span class="string">&quot;Init:srcSlice is : %v\n&quot;</span>, srcSlice)</span><br><span class="line">    data, err := json.Marshal(srcSlice)</span><br><span class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span>&#123;</span><br><span class="line">        fmt.Printf(<span class="string">&quot;Serialize:json.Marshal error! %v\n&quot;</span>, err)</span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">var</span> dstSliece = <span class="built_in">make</span>([]Student, <span class="number">2</span>)</span><br><span class="line">    err = json.Unmarshal(data, &amp;dstSliece)</span><br><span class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">        fmt.Printf(<span class="string">&quot;Deserialize: json.Unmarshal error! %v\n&quot;</span>, err)</span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line">    &#125;</span><br><span class="line">    fmt.Printf(<span class="string">&quot;Deserialize:dstSlice is : %v\n&quot;</span>, dstSliece)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
+
+<p>我们看一下打印结果：</p>
+<div class="highlight-container" data-rel="Go"><figure class="iseeu highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Init:srcSlice is : [&#123;zhangsan male <span class="number">20</span> &#123;<span class="number">10</span> <span class="number">20</span> <span class="number">30</span>&#125;&#125; &#123;lisi female <span class="number">18</span> &#123;<span class="number">15</span> <span class="number">10</span> <span class="number">20</span>&#125;&#125;]</span><br><span class="line">Deserialize:dstSliece is : [&#123;zhangsan male <span class="number">20</span> &#123;<span class="number">0</span> <span class="number">0</span> <span class="number">0</span>&#125;&#125; &#123;lisi female <span class="number">18</span> &#123;<span class="number">0</span> <span class="number">0</span> <span class="number">0</span>&#125;&#125;]</span><br></pre></td></tr></table></figure></div>
+
+<p>很意外的是，我们反序列化后获取的对象数据是错误的，而json.Unmarshal没有返回任何异常。<br> 为了进一步定位，我们将序列化后的json串打印出来：</p>
+<div class="highlight-container" data-rel="Go"><figure class="iseeu highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Serialize:data is : [&#123;<span class="string">&quot;Name&quot;</span>:<span class="string">&quot;zhangsan&quot;</span>,<span class="string">&quot;Sex&quot;</span>:<span class="string">&quot;male&quot;</span>,<span class="string">&quot;Age&quot;</span>:<span class="number">20</span>&#125;,&#123;<span class="string">&quot;Name&quot;</span>:<span class="string">&quot;lisi&quot;</span>,<span class="string">&quot;Sex&quot;</span>:<span class="string">&quot;female&quot;</span>,<span class="string">&quot;Age&quot;</span>:<span class="number">18</span>&#125;]</span><br></pre></td></tr></table></figure></div>
+
+<p>从打印结果可以看出，Position的数据丢了，这使得我们想到了可见性，即大写的符号在包外可见。通过走查代码，我们发现Student的定义中，Position的变量名是小写开始的：</p>
+<div class="highlight-container" data-rel="Go"><figure class="iseeu highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> Student <span class="keyword">struct</span> &#123;</span><br><span class="line">    Name <span class="type">string</span></span><br><span class="line">    Sex <span class="type">string</span></span><br><span class="line">    Age <span class="type">int</span></span><br><span class="line">    position Position</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
+
+<p>对于习惯写C&#x2F;C++&#x2F;Java代码的同学，修改这个变量的名字变得很纠结，以往“类名大写开头，对象名小写开头”的经验不再适用，不得不起一个不太顺溜的名字，比如缩写：</p>
+<div class="highlight-container" data-rel="Go"><figure class="iseeu highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> Student <span class="keyword">struct</span> &#123;</span><br><span class="line">    Name <span class="type">string</span></span><br><span class="line">    Sex <span class="type">string</span></span><br><span class="line">    Age <span class="type">int</span></span><br><span class="line">    Posi Position</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
+
+<p>再次运行程序，结果正常，打印如下：</p>
+<div class="highlight-container" data-rel="Go"><figure class="iseeu highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Init:srcSlice is : [&#123;zhangsan male <span class="number">20</span> &#123;<span class="number">10</span> <span class="number">20</span> <span class="number">30</span>&#125;&#125; &#123;lisi female <span class="number">18</span> &#123;<span class="number">15</span> <span class="number">10</span> <span class="number">20</span>&#125;&#125;]</span><br><span class="line">Serialize:data is : [&#123;<span class="string">&quot;Name&quot;</span>:<span class="string">&quot;zhangsan&quot;</span>,<span class="string">&quot;Sex&quot;</span>:<span class="string">&quot;male&quot;</span>,<span class="string">&quot;Age&quot;</span>:<span class="number">20</span>,<span class="string">&quot;Posi&quot;</span>:&#123;<span class="string">&quot;X&quot;</span>:<span class="number">10</span>,<span class="string">&quot;Y&quot;</span>:<span class="number">20</span>,<span class="string">&quot;Z&quot;</span>:<span class="number">30</span>&#125;&#125;,&#123;<span class="string">&quot;Name&quot;</span>:<span class="string">&quot;lisi&quot;</span>,<span class="string">&quot;Sex&quot;</span>:<span class="string">&quot;female&quot;</span>,<span class="string">&quot;Age&quot;</span>:<span class="number">18</span>,<span class="string">&quot;Posi&quot;</span>:&#123;<span class="string">&quot;X&quot;</span>:<span class="number">15</span>,<span class="string">&quot;Y&quot;</span>:<span class="number">10</span>,<span class="string">&quot;Z&quot;</span>:<span class="number">20</span>&#125;&#125;]</span><br><span class="line">Deserialize:dstSliece is : [&#123;zhangsan male <span class="number">20</span> &#123;<span class="number">10</span> <span class="number">20</span> <span class="number">30</span>&#125;&#125; &#123;lisi female <span class="number">18</span> &#123;<span class="number">15</span> <span class="number">10</span> <span class="number">20</span>&#125;&#125;]</span><br></pre></td></tr></table></figure></div>
+
+<p>对于json串，很多人喜欢全小写，对于大写开头的key感觉很刺眼，我们继续改进：</p>
+<div class="highlight-container" data-rel="Go"><figure class="iseeu highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> Position <span class="keyword">struct</span> &#123;</span><br><span class="line">    X <span class="type">int</span> <span class="string">`json:&quot;x&quot;`</span></span><br><span class="line">    Y <span class="type">int</span> <span class="string">`json:&quot;y&quot;`</span></span><br><span class="line">    Z <span class="type">int</span> <span class="string">`json:&quot;z&quot;`</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> Student <span class="keyword">struct</span> &#123;</span><br><span class="line">    Name <span class="type">string</span> <span class="string">`json:&quot;name&quot;`</span></span><br><span class="line">    Sex <span class="type">string</span> <span class="string">`json:&quot;sex&quot;`</span></span><br><span class="line">    Age <span class="type">int</span> <span class="string">`json:&quot;age&quot;`</span></span><br><span class="line">    Posi Position <span class="string">`json:&quot;position&quot;`</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
+
+<p>两个斜点之间的代码，比如<code>json:&quot;name&quot;</code>，作用是Name字段在从结构体实例编码到JSON数据格式的时候，使用name作为名字，这可以看作是一种重命名的方式。</p>
+<p>再次运行程序，结果是我们期望的，打印如下：</p>
+<div class="highlight-container" data-rel="Go"><figure class="iseeu highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Init:srcSlice is : [&#123;zhangsan male <span class="number">20</span> &#123;<span class="number">10</span> <span class="number">20</span> <span class="number">30</span>&#125;&#125; &#123;lisi female <span class="number">18</span> &#123;<span class="number">15</span> <span class="number">10</span> <span class="number">20</span>&#125;&#125;]</span><br><span class="line">Serialize:data is : [&#123;<span class="string">&quot;name&quot;</span>:<span class="string">&quot;zhangsan&quot;</span>,<span class="string">&quot;sex&quot;</span>:<span class="string">&quot;male&quot;</span>,<span class="string">&quot;age&quot;</span>:<span class="number">20</span>,<span class="string">&quot;position&quot;</span>:&#123;<span class="string">&quot;x&quot;</span>:<span class="number">10</span>,<span class="string">&quot;y&quot;</span>:<span class="number">20</span>,<span class="string">&quot;z&quot;</span>:<span class="number">30</span>&#125;&#125;,&#123;<span class="string">&quot;name&quot;</span>:<span class="string">&quot;lisi&quot;</span>,<span class="string">&quot;sex&quot;</span>:<span class="string">&quot;female&quot;</span>,<span class="string">&quot;age&quot;</span>:<span class="number">18</span>,<span class="string">&quot;position&quot;</span>:&#123;<span class="string">&quot;x&quot;</span>:<span class="number">15</span>,<span class="string">&quot;y&quot;</span>:<span class="number">10</span>,<span class="string">&quot;z&quot;</span>:<span class="number">20</span>&#125;&#125;]</span><br><span class="line">Deserialize:dstSliece is : [&#123;zhangsan male <span class="number">20</span> &#123;<span class="number">10</span> <span class="number">20</span> <span class="number">30</span>&#125;&#125; &#123;lisi female <span class="number">18</span> &#123;<span class="number">15</span> <span class="number">10</span> <span class="number">20</span>&#125;&#125;]</span><br></pre></td></tr></table></figure></div>
+
+<h2 id="局部变量初始化"><a href="#局部变量初始化" class="headerlink" title="局部变量初始化(:&#x3D;)"></a>局部变量初始化(:&#x3D;)</h2><p>Golang中有一种局部变量初始化方法，即使用冒号和等号的组合“:&#x3D;”来进行变量声明和初始化,这使得我们在使用局部变量时很方便。</p>
+<p>初始化一个局部变量的代码可以这样写：</p>
+<div class="highlight-container" data-rel="Go"><figure class="iseeu highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">v := <span class="number">10</span></span><br></pre></td></tr></table></figure></div>
+
+<p>指定类型已不再是必需的，Go编译器可以从初始化表达式的右值推导出该变量应该声明为哪种类型，这让Go语言看起来有点像动态类型语言，尽管Go语言实际上是不折不扣的强类型语言（静态类型语言）。</p>
+<p><strong>说明：感觉与C++11中auto关键字的作用有点类似</strong></p>
+<p>Golang中引入了一个关于错误处理的标准模式，即error接口，大家都太爱用了，以至于明显只有bool属性的返回值或变量都用error来修饰，我们看一个例子：</p>
+<div class="highlight-container" data-rel="Go"><figure class="iseeu highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">port, err := createPort()</span><br><span class="line"><span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">    <span class="keyword">return</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">veth, err := createVeth()</span><br><span class="line"><span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">    <span class="keyword">return</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">err = insert()</span><br><span class="line"><span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">    <span class="keyword">return</span></span><br><span class="line">&#125;</span><br><span class="line">...</span><br></pre></td></tr></table></figure></div>
+
+<p>这里的两个局部变量err是同一个变量吗？答案是肯定的</p>
+<p>通过冒号和等号的组合“:&#x3D;”来进行变量初始化有一个限制，即出现在“:&#x3D;”左侧的变量至少有一个是没有声明过的，否则编译失败。</p>
+<p>很多人不知道这个规则，则写出下面的代码:</p>
+<div class="highlight-container" data-rel="Go"><figure class="iseeu highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">port, errPort := createPort()</span><br><span class="line"><span class="keyword">if</span> errPort != <span class="literal">nil</span> &#123;</span><br><span class="line">    <span class="keyword">return</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">veth, errVeth := createVeth()</span><br><span class="line"><span class="keyword">if</span> errVeth != <span class="literal">nil</span> &#123;</span><br><span class="line">    <span class="keyword">return</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">errInsert := insert()</span><br><span class="line"><span class="keyword">if</span> errInsert != <span class="literal">nil</span> &#123;</span><br><span class="line">    <span class="keyword">return</span></span><br><span class="line">&#125;</span><br><span class="line">...</span><br></pre></td></tr></table></figure></div>
+
+<p>对于喜欢写简单优美代码的同学可能接受不了这样的命名，比如errPort, errVeth和errInsert等，所以对于error接口的变量命名，在笔者心中的baby names只有一个，那就是err。</p>
+<p>除过命名，另一个常见错误是局部变量有可能遮盖或隐藏全局变量，因为通过“:&#x3D;”方式初始化的局部变量看不到全局变量。</p>
+<p>我们先看一段代码：</p>
+<div class="highlight-container" data-rel="Go"><figure class="iseeu highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> n <span class="type">int</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">foo</span><span class="params">()</span></span> (<span class="type">int</span>, <span class="type">error</span>) &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">5</span>, <span class="literal">nil</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">bar</span><span class="params">()</span></span> &#123;</span><br><span class="line">    fmt.Println(<span class="string">&quot;bar n:&quot;</span>, n) </span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    n, err := foo()</span><br><span class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">        fmt.Println(err)</span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line">    &#125;</span><br><span class="line">    bar()</span><br><span class="line">    fmt.Println(<span class="string">&quot;main n:&quot;</span>, n)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
+
+<p>这段代码的原意是定义一个包内的全局变量n，用foo函数的返回值对n进行赋值，在bar函数中使用n。<br> 预期结果是bar()和main()中均输出5，但程序运行后的结果却不是我们期望的：</p>
+<div class="highlight-container" data-rel="Go"><figure class="iseeu highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">bar n: <span class="number">0</span></span><br><span class="line">main n: <span class="number">5</span></span><br></pre></td></tr></table></figure></div>
+
+<p>通过增加打印进一步定位，发现main函数中调用foo函数后的n的地址(0x201d2210)与全局变量的n的地址(0x56b4a4)并不一样，也就是说前者是一个局部变量，同时从bar函数中的打印来看，全局变量n在foo函数返回时并未被赋值为它的返回值5，仍然是初始的默认值0。</p>
+<p>最初对语句“n, err :&#x3D; foo()”的理解是，Golang会定义新变量err，n为初始定义的那个全局变量。但实际情况是，对于使用“:&#x3D;”定义的变量，如果新变量n与那个已同名定义的变量(这里就是那个全局变量n)不在一个作用域中时，那么Golang会新定义这个变量n，并遮盖或隐藏住大作用域的同名变量，这就是导致该问题的真凶。</p>
+<p>知道真凶后就很好解决了，即我们用“&#x3D;”代替“:&#x3D;”：</p>
+<div class="highlight-container" data-rel="Go"><figure class="iseeu highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="keyword">var</span> err <span class="type">error</span></span><br><span class="line">    n, err = foo()</span><br><span class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">        fmt.Println(err)</span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line">    &#125;</span><br><span class="line">    bar()</span><br><span class="line">    fmt.Println(<span class="string">&quot;main n:&quot;</span>, n)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
+
+<p>再次运行该程序，执行结果完全符合预期：</p>
+<div class="highlight-container" data-rel="Go"><figure class="iseeu highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">bar n: <span class="number">5</span></span><br><span class="line">main n: <span class="number">5</span></span><br></pre></td></tr></table></figure></div>
+
+<h2 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h2><p>本文总结了Golang初学者易犯的三种错误，包括资源关闭、符号的大小写和局部变量初始化，希望对像我一样的新手有一点帮助，从而在业务实现过程中少走一些弯路，更快更安全的面向业务编程，持续的向用户交付价值。</p>
+
+        </div>
+
+        
+            <div class="post-copyright-info px-2 sm:px-6 md:px-8">
+                <div class="article-copyright-info-container">
+    <ul>
+        <li><strong>Title:</strong> Golang初学者易犯的三种错误（转）</li>
+        <li><strong>Author:</strong> 郑亚凯</li>
+        <li><strong>Created at
+                :</strong> 2019-03-15 18:01:54</li>
+        
+            <li>
+                <strong>Updated at
+                    :</strong> 2023-11-17 19:37:37
+            </li>
+        
+        <li>
+            <strong>Link:</strong> https://www.zhengyk.cn/2019/03/15/go/three-mistakes/
+        </li>
+        <li>
+            <strong>
+                License:
+            </strong>
+            
+
+            
+                This work is licensed under <a class="license" target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0">CC BY-NC-SA 4.0</a>.
+            
+        </li>
+    </ul>
+</div>
+
+            </div>
+        
+
+        
+            <ul class="post-tags-box">
+                
+                    <li class="tag-item">
+                        <a href="/tags/Go/">#Go</a>&nbsp;
+                    </li>
+                
+            </ul>
+        
+
+        
+
+        
+            <div class="article-nav my-8 flex justify-between items-center px-2 sm:px-6 md:px-8">
+                
+                    <div class="article-prev border-border-color shadow-redefine-flat shadow-shadow-color-2 rounded-medium px-4 py-2 hover:shadow-redefine-flat-hover hover:shadow-shadow-color-2">
+                        <a class="prev"
+                        rel="prev"
+                        href="/2019/03/16/go/best-practice-for-handling-ex-error/"
+                        >
+                            <span class="left arrow-icon flex justify-center items-center">
+                                <i class="fa-solid fa-chevron-left"></i>
+                            </span>
+                            <span class="title flex justify-center items-center">
+                                <span class="post-nav-title-item">Golang错误和异常处理的正确姿势（转）</span>
+                                <span class="post-nav-item">Prev posts</span>
+                            </span>
+                        </a>
+                    </div>
+                
+                
+                    <div class="article-next border-border-color shadow-redefine-flat shadow-shadow-color-2 rounded-medium px-4 py-2 hover:shadow-redefine-flat-hover hover:shadow-shadow-color-2">
+                        <a class="next"
+                        rel="next"
+                        href="/2019/03/10/go/why-i-learn-go/"
+                        >
+                            <span class="title flex justify-center items-center">
+                                <span class="post-nav-title-item">为什么我学 Go？</span>
+                                <span class="post-nav-item">Next posts</span>
+                            </span>
+                            <span class="right arrow-icon flex justify-center items-center">
+                                <i class="fa-solid fa-chevron-right"></i>
+                            </span>
+                        </a>
+                    </div>
+                
+            </div>
+        
+
+
+        
+    </div>
+
+    
+        <div class="toc-content-container">
+            <div class="post-toc-wrap">
+    <div class="post-toc">
+        <div class="toc-title">On this page</div>
+        <div class="page-title">Golang初学者易犯的三种错误（转）</div>
+        <ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BA%8F%E8%A8%80"><span class="nav-text">序言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%B5%84%E6%BA%90%E5%85%B3%E9%97%AD"><span class="nav-text">资源关闭</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%98%E9%87%8F%E7%9A%84%E5%A4%A7%E5%B0%8F%E5%86%99"><span class="nav-text">变量的大小写</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B1%80%E9%83%A8%E5%8F%98%E9%87%8F%E5%88%9D%E5%A7%8B%E5%8C%96"><span class="nav-text">局部变量初始化(:&#x3D;)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B0%8F%E7%BB%93"><span class="nav-text">小结</span></a></li></ol>
+
+    </div>
+</div>
+        </div>
+    
+</div>
+
+
+
+                
+
+            </div>
+
+            
+
+        </div>
+
+        <div class="main-content-footer">
+            <footer class="footer mt-5 py-5 h-auto text-base text-third-text-color relative border-t-2 border-t-border-color">
+    <div class="info-container py-3 text-center">
+        
+        <div class="text-center">
+            &copy;
+            
+              <span>1970</span>
+              -
+            
+            2023&nbsp;&nbsp;<i class="fa-solid fa-heart fa-beat" style="--fa-animation-duration: 0.5s; color: #f54545"></i>&nbsp;&nbsp;<a href="/">郑亚凯</a>
+        </div>
+        
+        <div class="relative text-center lg:absolute lg:left-[20px] lg:top-1/2 lg:-translate-y-1/2 lg:text-left">
+            <span class="lg:block text-sm">POWERED BY <?xml version="1.0" encoding="utf-8"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd"><svg class="relative top-[2px] inline-block align-baseline" version="1.1" id="圖層_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="1rem" height="1rem" viewBox="0 0 512 512" enable-background="new 0 0 512 512" xml:space="preserve"><path fill="#0E83CD" d="M256.4,25.8l-200,115.5L56,371.5l199.6,114.7l200-115.5l0.4-230.2L256.4,25.8z M349,354.6l-18.4,10.7l-18.6-11V275H200v79.6l-18.4,10.7l-18.6-11v-197l18.5-10.6l18.5,10.8V237h112v-79.6l18.5-10.6l18.5,10.8V354.6z"/></svg><a target="_blank" class="text-base" href="https://hexo.io">Hexo</a></span>
+            <span class="text-sm lg:block">THEME&nbsp;<a class="text-base" target="_blank" href="https://github.com/EvanNotFound/hexo-theme-redefine">Redefine v2.5.2</a></span>
+        </div>
+        
+        
+            <div>
+                Blog up for <span class="odometer" id="runtime_days" ></span> days <span class="odometer" id="runtime_hours"></span> hrs <span class="odometer" id="runtime_minutes"></span> Min <span class="odometer" id="runtime_seconds"></span> Sec
+            </div>
+        
+        
+            <script data-swup-reload-script>
+                try {
+                    function odometer_init() {
+                    const elements = document.querySelectorAll('.odometer');
+                    elements.forEach(el => {
+                        new Odometer({
+                            el,
+                            format: '( ddd).dd',
+                            duration: 200
+                        });
+                    });
+                    }
+                    odometer_init();
+                } catch (error) {}
+            </script>
+        
+        
+        
+    </div>  
+</footer>
+        </div>
+    </div>
+
+    
+        <div class="post-tools">
+            <div class="post-tools-container">
+    <ul class="article-tools-list">
+        <!-- TOC aside toggle -->
+        
+            <li class="right-bottom-tools page-aside-toggle">
+                <i class="fa-regular fa-outdent"></i>
+            </li>
+        
+
+        <!-- go comment -->
+        
+    </ul>
+</div>
+
+        </div>
+    
+
+    <div class="right-side-tools-container">
+        <div class="side-tools-container">
+    <ul class="hidden-tools-list">
+        <li class="right-bottom-tools tool-font-adjust-plus flex justify-center items-center">
+            <i class="fa-regular fa-magnifying-glass-plus"></i>
+        </li>
+
+        <li class="right-bottom-tools tool-font-adjust-minus flex justify-center items-center">
+            <i class="fa-regular fa-magnifying-glass-minus"></i>
+        </li>
+
+        <li class="right-bottom-tools tool-dark-light-toggle flex justify-center items-center">
+            <i class="fa-regular fa-moon"></i>
+        </li>
+
+        <!-- rss -->
+        
+
+        
+
+        <li class="right-bottom-tools tool-scroll-to-bottom flex justify-center items-center">
+            <i class="fa-regular fa-arrow-down"></i>
+        </li>
+    </ul>
+
+    <ul class="visible-tools-list">
+        <li class="right-bottom-tools toggle-tools-list flex justify-center items-center">
+            <i class="fa-regular fa-cog fa-spin"></i>
+        </li>
+        
+            <li class="right-bottom-tools tool-scroll-to-top flex justify-center items-center">
+                <i class="arrow-up fas fa-arrow-up"></i>
+                <span class="percent"></span>
+            </li>
+        
+        
+    </ul>
+</div>
+
+    </div>
+
+    <div class="image-viewer-container">
+    <img src="">
+</div>
+
+
+    
+        <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+          <span class="search-input-field-pre">
+            <i class="fa-solid fa-keyboard"></i>
+          </span>
+            <div class="search-input-container">
+                <input autocomplete="off"
+                       autocorrect="off"
+                       autocapitalize="off"
+                       placeholder="Search..."
+                       spellcheck="false"
+                       type="search"
+                       class="search-input"
+                >
+            </div>
+            <span class="popup-btn-close">
+                <i class="fa-solid fa-times"></i>
+            </span>
+        </div>
+        <div id="search-result">
+            <div id="no-result">
+                <i class="fa-solid fa-spinner fa-spin-pulse fa-5x fa-fw"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+
+</main>
+
+
+    
+<script src="/js/libs/Swup.min.js"></script>
+
+<script src="/js/libs/SwupSlideTheme.min.js"></script>
+
+<script src="/js/libs/SwupScriptsPlugin.min.js"></script>
+
+<script src="/js/libs/SwupProgressPlugin.min.js"></script>
+
+<script src="/js/libs/SwupScrollPlugin.min.js"></script>
+
+<script src="/js/libs/SwupPreloadPlugin.min.js"></script>
+
+<script>
+    const swup = new Swup({
+        plugins: [
+            new SwupScriptsPlugin({
+                optin: true,
+            }),
+            new SwupProgressPlugin(),
+            new SwupScrollPlugin({
+                offset: 80,
+            }),
+            new SwupSlideTheme({
+                mainElement: ".main-content-body",
+            }),
+            new SwupPreloadPlugin(),
+        ],
+        containers: ["#swup"],
+    });
+</script>
+
+
+
+
+
+
+
+<script src="/js/tools/imageViewer.js" type="module"></script>
+
+<script src="/js/utils.js" type="module"></script>
+
+<script src="/js/main.js" type="module"></script>
+
+<script src="/js/layouts/navbarShrink.js" type="module"></script>
+
+<script src="/js/tools/scrollTopBottom.js" type="module"></script>
+
+<script src="/js/tools/lightDarkSwitch.js" type="module"></script>
+
+<script src="/js/layouts/categoryList.js" type="module"></script>
+
+
+
+    
+<script src="/js/tools/localSearch.js" type="module"></script>
+
+
+
+
+    
+<script src="/js/tools/codeBlock.js" type="module"></script>
+
+
+
+
+    
+<script src="/js/layouts/lazyload.js" type="module"></script>
+
+
+
+
+    
+<script src="/js/tools/runtime.js"></script>
+
+    
+<script src="/js/libs/odometer.min.js"></script>
+
+    
+<link rel="stylesheet" href="/assets/odometer-theme-minimal.css">
+
+
+
+
+  
+<script src="/js/libs/Typed.min.js"></script>
+
+  
+<script src="/js/plugins/typed.js" type="module"></script>
+
+
+
+
+
+
+
+<div class="post-scripts" data-swup-reload-script>
+    
+        
+<script src="/js/libs/anime.min.js"></script>
+
+        
+<script src="/js/tools/tocToggle.js" type="module"></script>
+
+<script src="/js/layouts/toc.js" type="module"></script>
+
+<script src="/js/plugins/tabs.js" type="module"></script>
+
+    
+</div>
+
+
+</body>
+</html>

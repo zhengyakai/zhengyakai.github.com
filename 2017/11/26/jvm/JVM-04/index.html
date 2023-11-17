@@ -1,0 +1,836 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="keywords" content="Hexo Theme Redefine">
+    
+    <meta name="author" content="郑亚凯">
+    <!-- preconnect -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    
+    <!--- Seo Part-->
+    
+    <link rel="canonical" href="http://example.com/2017/11/26/jvm/jvm-04/"/>
+    <meta name="robots" content="index,follow">
+    <meta name="googlebot" content="index,follow">
+    <meta name="revisit-after" content="1 days">
+    
+        <meta name="description" content="最近学习了JVM的一些常用参数，今天正好是周末，就花些时间总结一下，加深印象。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="JVM常用配置参数及分析">
+<meta property="og:url" content="http://example.com/2017/11/26/jvm/JVM-04/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="最近学习了JVM的一些常用参数，今天正好是周末，就花些时间总结一下，加深印象。">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2017-11-26T10:36:09.000Z">
+<meta property="article:modified_time" content="2023-11-17T11:37:37.114Z">
+<meta property="article:author" content="John Doe">
+<meta property="article:tag" content="JVM">
+<meta name="twitter:card" content="summary">
+    
+    
+    <!--- Icon Part-->
+    <link rel="icon" type="image/png" href="https://www.zhengyk.cn/images/portrait.jpg" sizes="192x192">
+    <link rel="apple-touch-icon" sizes="180x180" href="https://www.zhengyk.cn/images/portrait.jpg">
+    <meta name="theme-color" content="#A31F34">
+    <link rel="shortcut icon" href="https://www.zhengyk.cn/images/portrait.jpg">
+    <!--- Page Info-->
+    
+    <title>
+        
+            JVM常用配置参数及分析 -
+        
+        薛定谔的汪
+    </title>
+    
+<link rel="stylesheet" href="/css/style.css">
+
+
+    
+        
+<link rel="stylesheet" href="/assets/build/styles.css">
+
+    
+
+    
+<link rel="stylesheet" href="/fonts/fonts.css">
+
+    
+<link rel="stylesheet" href="/fonts/Satoshi/satoshi.css">
+
+    
+<link rel="stylesheet" href="/fonts/Chillax/chillax.css">
+
+    <!--- Font Part-->
+    
+    
+    
+    
+
+    <!--- Inject Part-->
+    
+    <script id="hexo-configurations">
+    window.config = {"hostname":"example.com","root":"/","language":"en"};
+    window.theme = {"articles":{"style":{"font_size":"16px","line_height":1.5,"image_border_radius":"14px","image_alignment":"center","image_caption":false,"link_icon":true,"title_alignment":"left"},"word_count":{"enable":true,"count":true,"min2read":true},"author_label":{"enable":false,"auto":false,"list":[]},"code_block":{"copy":true,"style":"mac","font":{"enable":false,"family":null,"url":null}},"toc":{"enable":true,"max_depth":3,"number":false,"expand":true,"init_open":true},"copyright":{"enable":true,"default":"cc_by_nc_sa"},"lazyload":true,"recommendation":{"enable":false,"title":"推荐阅读","limit":3,"mobile_limit":2,"placeholder":"/images/wallhaven-wqery6-light.webp","skip_dirs":[]}},"colors":{"primary":"#A31F34","secondary":null},"global":{"fonts":{"chinese":{"enable":false,"family":null,"url":null},"english":{"enable":false,"family":null,"url":null}},"content_max_width":"1000px","sidebar_width":"210px","hover":{"shadow":true,"scale":false},"scroll_progress":{"bar":false,"percentage":true},"website_counter":{"url":"https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js","enable":false,"site_pv":false,"site_uv":false,"post_pv":false},"single_page":true,"open_graph":true,"google_analytics":{"enable":false,"id":null}},"home_banner":{"enable":true,"style":"fixed","image":{"light":"https://www.zhengyk.cn/images/wallhaven-wqery6-light.png","dark":"https://www.zhengyk.cn/images/wallhaven-wqery6-dark.png"},"title":"学习技术 | 分享生活","subtitle":{"text":[],"hitokoto":{"enable":false,"api":"https://v1.hitokoto.cn"},"typing_speed":100,"backing_speed":80,"starting_delay":500,"backing_delay":1500,"loop":true,"smart_backspace":true},"text_color":{"light":"#fff","dark":"#d1d1b6"},"text_style":{"title_size":"2.8rem","subtitle_size":"1.5rem","line_height":1.2},"custom_font":{"enable":false,"family":null,"url":null},"social_links":{"enable":false,"links":{"github":"https://github.com/zhengyakai","instagram":null,"zhihu":null,"twitter":null,"email":null},"qrs":{"weixin":null}}},"plugins":{"feed":{"enable":false},"aplayer":{"enable":false,"type":"fixed","audios":[{"name":null,"artist":null,"url":null,"cover":null}]},"mermaid":{"enable":false,"version":"9.3.0"}},"version":"2.5.2","navbar":{"auto_hide":false,"color":{"left":"#f78736","right":"#367df7","transparency":35},"links":{"Home":{"path":"/","icon":"fa-regular fa-house"},"主页":{"path":"/","icon":"fa-regular fa-house"},"文章":{"path":"/archives","icon":"fa-regular fa-archive"},"关于":{"path":"/about","icon":"fa-regular fa-folder"}},"search":{"enable":true,"preload":true}},"page_templates":{"friends_column":2,"tags_style":"blur"},"home":{"sidebar":{"enable":true,"position":"left","first_item":"menu","announcement":null,"links":{"文章":{"path":"/archives","icon":"fa-regular fa-archive"}}},"article_date_format":"auto","categories":{"enable":true,"limit":10},"tags":{"enable":true,"limit":10}},"footerStart":2017};
+    window.lang_ago = {"second":"%s seconds ago","minute":"%s minutes ago","hour":"%s hours ago","day":"%s days ago","week":"%s weeks ago","month":"%s months ago","year":"%s years ago"};
+    window.data = {"masonry":false};
+  </script>
+    
+    <!--- Fontawesome Part-->
+    
+<link rel="stylesheet" href="/fontawesome/fontawesome.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/brands.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/solid.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/regular.min.css">
+
+    
+    
+    
+    
+<meta name="generator" content="Hexo 7.0.0"><link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+</head>
+
+
+<body>
+<div class="progress-bar-container">
+    
+
+    
+        <span class="pjax-progress-bar"></span>
+        <span class="swup-progress-icon">
+            <i class="fa-solid fa-circle-notch fa-spin"></i>
+        </span>
+    
+</div>
+
+
+<main class="page-container" id="swup">
+
+    
+
+    <div class="main-content-container">
+
+
+        <div class="main-content-header">
+            <header class="navbar-container">
+    
+    <div class="navbar-content">
+        <div class="left">
+            
+            <a class="logo-title" href="/">
+                
+                薛定谔的汪
+                
+            </a>
+        </div>
+
+        <div class="right">
+            <!-- PC -->
+            <div class="desktop">
+                <ul class="navbar-list">
+                    
+                        
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class="" 
+                                    href="/"  >
+                                    
+                                        
+                                            <i class="fa-regular fa-house"></i>
+                                        
+                                        HOME
+                                    
+                                </a>
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                        
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class="" 
+                                    href="/"  >
+                                    
+                                        
+                                            <i class="fa-regular fa-house"></i>
+                                        
+                                        主页
+                                    
+                                </a>
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                        
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class="" 
+                                    href="/archives"  >
+                                    
+                                        
+                                            <i class="fa-regular fa-archive"></i>
+                                        
+                                        文章
+                                    
+                                </a>
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                        
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class="" 
+                                    href="/about"  >
+                                    
+                                        
+                                            <i class="fa-regular fa-folder"></i>
+                                        
+                                        关于
+                                    
+                                </a>
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                    
+                        <li class="navbar-item search search-popup-trigger">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                        </li>
+                    
+                </ul>
+            </div>
+            <!-- Mobile -->
+            <div class="mobile">
+                
+                    <div class="icon-item search search-popup-trigger"><i class="fa-solid fa-magnifying-glass"></i></div>
+                
+                <div class="icon-item navbar-bar">
+                    <div class="navbar-bar-middle"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile drawer -->
+    <div class="navbar-drawer w-full absolute top-0 left-0 bg-background-color">
+        <ul class="drawer-navbar-list flex flex-col justify-start items-center">
+            
+                
+                    <li class="drawer-navbar-item text-base my-1.5 flex justify-center items-center">
+                        <a class="rounded-3xl py-1.5 px-5 hover:border hover:!text-primary active:!text-primary group " 
+                        href="/"  >
+                             
+                                
+                                    <i class="fa-regular fa-house"></i>
+                                
+                                HOME
+                            
+                        </a>
+                    </li>
+                    <!-- Submenu -->
+                    
+            
+                
+                    <li class="drawer-navbar-item text-base my-1.5 flex justify-center items-center">
+                        <a class="rounded-3xl py-1.5 px-5 hover:border hover:!text-primary active:!text-primary group " 
+                        href="/"  >
+                             
+                                
+                                    <i class="fa-regular fa-house"></i>
+                                
+                                主页
+                            
+                        </a>
+                    </li>
+                    <!-- Submenu -->
+                    
+            
+                
+                    <li class="drawer-navbar-item text-base my-1.5 flex justify-center items-center">
+                        <a class="rounded-3xl py-1.5 px-5 hover:border hover:!text-primary active:!text-primary group " 
+                        href="/archives"  >
+                             
+                                
+                                    <i class="fa-regular fa-archive"></i>
+                                
+                                文章
+                            
+                        </a>
+                    </li>
+                    <!-- Submenu -->
+                    
+            
+                
+                    <li class="drawer-navbar-item text-base my-1.5 flex justify-center items-center">
+                        <a class="rounded-3xl py-1.5 px-5 hover:border hover:!text-primary active:!text-primary group " 
+                        href="/about"  >
+                             
+                                
+                                    <i class="fa-regular fa-folder"></i>
+                                
+                                关于
+                            
+                        </a>
+                    </li>
+                    <!-- Submenu -->
+                    
+            
+
+        </ul>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+        </div>
+
+        <div class="main-content-body">
+
+            
+
+            <div class="main-content">
+
+                
+                    <div class="post-page-container">
+    <div class="article-content-container">
+
+        <div class="article-title relative w-full">
+            
+                
+                
+                <img src="https://www.zhengyk.cn/images/winter-11-26.jpg" alt="JVM常用配置参数及分析" class="w-full h-60 sm:h-72 md:h-80 object-cover sm:rounded-t-large dark:brightness-75"/>
+                
+                <div class="w-full flex items-center absolute bottom-0 justify-start">
+                    <h1 class="article-title-cover text-center mx-6 my-6 text-second-text-color bg-background-color-transparent px-4 py-3 text-3xl sm:text-4xl md:text-5xl font-bold backdrop-blur-lg rounded-xl border border-border-color ">JVM常用配置参数及分析</h1>
+                </div>
+            
+            </div>
+
+        
+            <div class="article-header flex flex-row gap-2 items-center px-2 sm:px-6 md:px-8">
+                <div class="avatar w-[46px] h-[46px] flex-shrink-0 rounded-medium border border-border-color p-[1px]">
+                    <img src="https://www.zhengyk.cn/images/portrait.jpg">
+                </div>
+                <div class="info flex flex-col justify-between">
+                    <div class="author flex items-center">
+                        <span class="name text-default-text-color text-lg font-semibold">郑亚凯</span>
+                        
+                    </div>
+                    <div class="meta-info">
+                        <div class="article-meta-info">
+    <span class="article-date article-meta-item">
+        <i class="fa-regular fa-pen-fancy"></i>&nbsp;
+        <span class="desktop">2017-11-26 18:36:09</span>
+        <span class="mobile">2017-11-26 18:36:09</span>
+        <span class="hover-info">Created</span>
+    </span>
+    
+        <span class="article-date article-meta-item">
+            <i class="fa-regular fa-wrench"></i>&nbsp;
+            <span class="desktop">2023-11-17 19:37:37</span>
+            <span class="mobile">2023-11-17 19:37:37</span>
+            <span class="hover-info">Updated</span>
+        </span>
+    
+
+    
+        <span class="article-categories article-meta-item">
+            <i class="fa-regular fa-folders"></i>&nbsp;
+            <ul>
+                
+                
+                    
+                        
+                        <li>
+                            <a href="/categories/Java%E6%8A%80%E6%9C%AF/">Java技术</a>&nbsp;
+                        </li>
+                    
+                    
+                
+            </ul>
+        </span>
+    
+    
+        <span class="article-tags article-meta-item">
+            <i class="fa-regular fa-tags"></i>&nbsp;
+            <ul>
+                
+                    <li>
+                        <a href="/tags/JVM/">JVM</a>&nbsp;
+                    </li>
+                
+            </ul>
+        </span>
+    
+
+    
+    
+    
+    
+</div>
+
+                    </div>
+                </div>
+            </div>
+        
+
+        
+
+
+        <div class="article-content markdown-body px-2 sm:px-6 md:px-8 pb-8">
+            <p>最近学习了JVM的一些常用参数，今天正好是周末，就花些时间总结一下，加深印象。</p>
+<span id="more"></span>
+
+<h1 id="JVM常用的配置参数"><a href="#JVM常用的配置参数" class="headerlink" title="JVM常用的配置参数"></a>JVM常用的配置参数</h1><h2 id="Trace跟踪参数"><a href="#Trace跟踪参数" class="headerlink" title="Trace跟踪参数"></a>Trace跟踪参数</h2><h3 id="XX-PrintGCDetails打印GC详细信息："><a href="#XX-PrintGCDetails打印GC详细信息：" class="headerlink" title="-XX:+PrintGCDetails打印GC详细信息："></a>-XX:+PrintGCDetails打印GC详细信息：</h3><div class="highlight-container" data-rel="Java"><figure class="iseeu highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">Heap                                         <span class="comment">//起始边界    当前边界    最大边界 </span></span><br><span class="line"> def <span class="keyword">new</span> <span class="title class_">generation</span>   total 4928K, used 796K [<span class="number">0x25000000</span>, <span class="number">0x25550000</span>, <span class="number">0x2a550000</span>) </span><br><span class="line">  eden space 4416K,  <span class="number">18</span>% used [<span class="number">0x25000000</span>, <span class="number">0x250c7098</span>, <span class="number">0x25450000</span>)</span><br><span class="line">  from space 512K,   <span class="number">0</span>% used [<span class="number">0x25450000</span>, <span class="number">0x25450000</span>, <span class="number">0x254d0000</span>)</span><br><span class="line">  to   space 512K,   <span class="number">0</span>% used [<span class="number">0x254d0000</span>, <span class="number">0x254d0000</span>, <span class="number">0x25550000</span>)</span><br><span class="line"> tenured generation   total 10944K, used 0K [<span class="number">0x2a550000</span>, <span class="number">0x2b000000</span>, <span class="number">0x35000000</span>)</span><br><span class="line">   the space 10944K,   <span class="number">0</span>% used [<span class="number">0x2a550000</span>, <span class="number">0x2a550000</span>, <span class="number">0x2a550200</span>, <span class="number">0x2b000000</span>)</span><br><span class="line"> compacting perm gen  total 12288K, used 193K [<span class="number">0x35000000</span>, <span class="number">0x35c00000</span>, <span class="number">0x39000000</span>)</span><br><span class="line">   the space 12288K,   <span class="number">1</span>% used [<span class="number">0x35000000</span>, <span class="number">0x35030730</span>, <span class="number">0x35030800</span>, <span class="number">0x35c00000</span>)</span><br><span class="line">    ro space 10240K,  <span class="number">44</span>% used [<span class="number">0x39000000</span>, <span class="number">0x3947b1c8</span>, <span class="number">0x3947b200</span>, <span class="number">0x39a00000</span>)</span><br><span class="line">    rw space 12288K,  <span class="number">52</span>% used [<span class="number">0x39a00000</span>, <span class="number">0x3a0431d0</span>, <span class="number">0x3a043200</span>, <span class="number">0x3a600000</span>)</span><br></pre></td></tr></table></figure></div>
+<p>def new generation：新生代内存描述：总共4928K，已使用796K</p>
+<p>eden space：eden区内存描述</p>
+<p>from space:：from survivor区内存描述</p>
+<p>to space: to survivor区内存描述</p>
+<p>tenured generation：老年代内存描述</p>
+<p>compacting perm gen：永久代内存描述</p>
+<h3 id="Xloggc-log-gc-log"><a href="#Xloggc-log-gc-log" class="headerlink" title="-Xloggc:log&#x2F;gc.log"></a>-Xloggc:log&#x2F;gc.log</h3><p>指定GC log的文件位置，以文件输出</p>
+<p>帮助开发人员分析问题</p>
+<h3 id="XX-PrintGCAtGC"><a href="#XX-PrintGCAtGC" class="headerlink" title="-XX:+PrintGCAtGC"></a>-XX:+PrintGCAtGC</h3><p>每一次GC后打印堆得信息，这个打印的GC是很详尽的，可能帮助我们很方便地处理问题。</p>
+<h3 id="XX-TraceClassLoading"><a href="#XX-TraceClassLoading" class="headerlink" title="-XX:TraceClassLoading"></a>-XX:TraceClassLoading</h3><p>监控类的加载：</p>
+<div class="highlight-container" data-rel="Java"><figure class="iseeu highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">[Loaded java.lang.Object from shared objects file] </span><br><span class="line">[Loaded java.io.Serializable from shared objects file]</span><br><span class="line">[Loaded java.lang.Comparable from shared objects file]</span><br><span class="line">[Loaded java.lang.CharSequence from shared objects file]</span><br><span class="line">[Loaded java.lang.String from shared objects file]</span><br><span class="line">[Loaded java.lang.reflect.GenericDeclaration from shared objects file]</span><br><span class="line">[Loaded java.lang.reflect.Type from shared objects file]</span><br><span class="line">[Loaded java.lang.reflect.AnnotatedElement from shared objects file]</span><br><span class="line">[Loaded java.lang.Class from shared objects file]</span><br><span class="line">[Loaded java.lang.Cloneable from shared objects file]</span><br><span class="line">[Loaded java.lang.ClassLoader from shared objects file]</span><br><span class="line">[Loaded java.lang.System from shared objects file]</span><br><span class="line">[Loaded java.lang.Throwable from shared objects file]</span><br><span class="line">[Loaded java.lang.Error from shared objects file]</span><br><span class="line">[Loaded java.lang.ThreadDeath from shared objects file]</span><br><span class="line">[Loaded java.lang.Exception from shared objects file]</span><br><span class="line">[Loaded java.lang.RuntimeException from shared objects file]</span><br><span class="line">......</span><br></pre></td></tr></table></figure></div>
+<h2 id="堆的分配参数"><a href="#堆的分配参数" class="headerlink" title="堆的分配参数"></a>堆的分配参数</h2><h3 id="Xms-Xmx"><a href="#Xms-Xmx" class="headerlink" title="-Xms -Xmx"></a>-Xms -Xmx</h3><p>堆得初始空间和最大空间（可以配置堆是否可扩展）</p>
+<p>如-Xms5m -Xmx20m 配置堆初始化5m，最大20m。</p>
+<h3 id="Xmn"><a href="#Xmn" class="headerlink" title="-Xmn"></a>-Xmn</h3><p>设置新生代大小</p>
+<h3 id="XX-NewRatio"><a href="#XX-NewRatio" class="headerlink" title="-XX:NewRatio"></a>-XX:NewRatio</h3><p>新生代和老生代的比值，如果设置为5，表示新生代:老生代&#x3D;1:5。</p>
+<h3 id="XX-SurvivorRatio"><a href="#XX-SurvivorRatio" class="headerlink" title="-XX:SurvivorRatio"></a>-XX:SurvivorRatio</h3><p>新生代中Eden和两个Survivor的比值：默认是8 即：8:1:1</p>
+<h3 id="堆得分配参数实战"><a href="#堆得分配参数实战" class="headerlink" title="堆得分配参数实战"></a>堆得分配参数实战</h3><p>示例代码：</p>
+<div class="highlight-container" data-rel="Java"><figure class="iseeu highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> test.demo;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">TestJvmArgs</span> &#123;</span><br><span class="line">	<span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">      	<span class="comment">//10次循环，每次new一个1m大小的byte数组</span></span><br><span class="line">		<span class="type">byte</span>[] barr = <span class="literal">null</span>;</span><br><span class="line">		<span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt; <span class="number">10</span>; i++) &#123;</span><br><span class="line">			barr=<span class="keyword">new</span> <span class="title class_">byte</span>[<span class="number">1024</span>*<span class="number">1024</span>];</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
+
+<h4 id="堆示例参数一："><a href="#堆示例参数一：" class="headerlink" title="堆示例参数一："></a>堆示例参数一：</h4><p>咱们设置jvm启动参数   -Xms20m -Xmx20m -Xmn1m -XX:+PrintGCDetails  设置堆固定20m大小，新生代1m，并打印GC详情。</p>
+<p>GC日志：</p>
+<div class="highlight-container" data-rel="Java"><figure class="iseeu highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">Heap</span><br><span class="line"> def <span class="keyword">new</span> <span class="title class_">generation</span>   total 960K, used 640K [<span class="number">0x33c00000</span>, <span class="number">0x33d00000</span>, <span class="number">0x33d00000</span>)</span><br><span class="line">  eden space 896K,  <span class="number">71</span>% used [<span class="number">0x33c00000</span>, <span class="number">0x33ca0230</span>, <span class="number">0x33ce0000</span>)</span><br><span class="line">  from space 64K,   <span class="number">0</span>% used [<span class="number">0x33ce0000</span>, <span class="number">0x33ce0000</span>, <span class="number">0x33cf0000</span>)</span><br><span class="line">  to   space 64K,   <span class="number">0</span>% used [<span class="number">0x33cf0000</span>, <span class="number">0x33cf0000</span>, <span class="number">0x33d00000</span>)</span><br><span class="line"> tenured generation   total 19456K, used 10240K [<span class="number">0x33d00000</span>, <span class="number">0x35000000</span>, <span class="number">0x35000000</span>)</span><br><span class="line">   the space 19456K,  <span class="number">52</span>% used [<span class="number">0x33d00000</span>, <span class="number">0x347000a0</span>, <span class="number">0x34700200</span>, <span class="number">0x35000000</span>)</span><br><span class="line"> compacting perm gen  total 12288K, used 193K [<span class="number">0x35000000</span>, <span class="number">0x35c00000</span>, <span class="number">0x39000000</span>)</span><br><span class="line">   the space 12288K,   <span class="number">1</span>% used [<span class="number">0x35000000</span>, <span class="number">0x35030760</span>, <span class="number">0x35030800</span>, <span class="number">0x35c00000</span>)</span><br><span class="line">    ro space 10240K,  <span class="number">44</span>% used [<span class="number">0x39000000</span>, <span class="number">0x3947b1c8</span>, <span class="number">0x3947b200</span>, <span class="number">0x39a00000</span>)</span><br><span class="line">    rw space 12288K,  <span class="number">52</span>% used [<span class="number">0x39a00000</span>, <span class="number">0x3a0431d0</span>, <span class="number">0x3a043200</span>, <span class="number">0x3a600000</span>)</span><br></pre></td></tr></table></figure></div>
+<p>通过GC日志我们得出，没有出现GC。因为新生代比较小，eden区也就才896k，不够存放我们new出的1m大小的对象，所以对象直接被分配大了老年代。</p>
+<p>住：我们给新生代分配的是1m，但是日志显示的是960k，这是因为新生代使用了GC的复刻算法（以后会有讲解），from和to 幸存区只能用一个，1024-64&#x3D;960。</p>
+<h4 id="堆示例参数二："><a href="#堆示例参数二：" class="headerlink" title="堆示例参数二："></a>堆示例参数二：</h4><p> -Xms20m -Xmx20m -Xmn15m -XX:+PrintGCDetails</p>
+<p>这次分配新生代的大小为15m，运行后我们观察GC日志：</p>
+<div class="highlight-container" data-rel="Java"><figure class="iseeu highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">Heap</span><br><span class="line"> def <span class="keyword">new</span> <span class="title class_">generation</span>   total 13824K, used 11469K [<span class="number">0x33c00000</span>, <span class="number">0x34b00000</span>, <span class="number">0x34b00000</span>)</span><br><span class="line">  eden space 12288K,  <span class="number">93</span>% used [<span class="number">0x33c00000</span>, <span class="number">0x34733640</span>, <span class="number">0x34800000</span>)</span><br><span class="line">  from space 1536K,   <span class="number">0</span>% used [<span class="number">0x34800000</span>, <span class="number">0x34800000</span>, <span class="number">0x34980000</span>)</span><br><span class="line">  to   space 1536K,   <span class="number">0</span>% used [<span class="number">0x34980000</span>, <span class="number">0x34980000</span>, <span class="number">0x34b00000</span>)</span><br><span class="line"> tenured generation   total 5120K, used 0K [<span class="number">0x34b00000</span>, <span class="number">0x35000000</span>, <span class="number">0x35000000</span>)</span><br><span class="line">   the space 5120K,   <span class="number">0</span>% used [<span class="number">0x34b00000</span>, <span class="number">0x34b00000</span>, <span class="number">0x34b00200</span>, <span class="number">0x35000000</span>)</span><br><span class="line"> compacting perm gen  total 12288K, used 193K [<span class="number">0x35000000</span>, <span class="number">0x35c00000</span>, <span class="number">0x39000000</span>)</span><br><span class="line">   the space 12288K,   <span class="number">1</span>% used [<span class="number">0x35000000</span>, <span class="number">0x35030780</span>, <span class="number">0x35030800</span>, <span class="number">0x35c00000</span>)</span><br><span class="line">    ro space 10240K,  <span class="number">44</span>% used [<span class="number">0x39000000</span>, <span class="number">0x3947b1c8</span>, <span class="number">0x3947b200</span>, <span class="number">0x39a00000</span>)</span><br><span class="line">    rw space 12288K,  <span class="number">52</span>% used [<span class="number">0x39a00000</span>, <span class="number">0x3a0431d0</span>, <span class="number">0x3a043200</span>, <span class="number">0x3a600000</span>)</span><br></pre></td></tr></table></figure></div>
+<p>发现这次也没有发生GC，本次eden区大小是12288k，足够存放10个1m的对象。</p>
+<p>根据对象分配优先在eden区分配原则，本次所有对象都分配到了eden区，没有对象进入老年代。</p>
+<h4 id="堆示例参数三："><a href="#堆示例参数三：" class="headerlink" title="堆示例参数三："></a>堆示例参数三：</h4><p>-Xms20m -Xmx20m -Xmn7m -XX:+PrintGCDetails</p>
+<p>这次分配新生代的大小是7m，运行程序观察GC日志：</p>
+<div class="highlight-container" data-rel="Java"><figure class="iseeu highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">[GC[DefNew: 5075K-&gt;467K(6464K), <span class="number">0.0019326</span> secs] 5075K-&gt;1491K(19776K), <span class="number">0.0019733</span> secs][Times: user=<span class="number">0.00</span> sys=<span class="number">0.00</span>, real=<span class="number">0.00</span> secs] </span><br><span class="line">[GC[DefNew: 5827K-&gt;0K(6464K), <span class="number">0.0014499</span> secs] 6851K-&gt;2515K(19776K), <span class="number">0.0014736</span> secs] [Times: user=<span class="number">0.00</span> sys=<span class="number">0.00</span>, real=<span class="number">0.00</span> secs] </span><br><span class="line">Heap</span><br><span class="line"> def <span class="keyword">new</span> <span class="title class_">generation</span>   total 6464K, used 1081K [<span class="number">0x04a00000</span>, <span class="number">0x05100000</span>, <span class="number">0x05100000</span>)</span><br><span class="line">  eden space 5760K,  <span class="number">18</span>% used [<span class="number">0x04a00000</span>, <span class="number">0x04b0e6e0</span>, <span class="number">0x04fa0000</span>)</span><br><span class="line">  from space 704K,   <span class="number">0</span>% used [<span class="number">0x04fa0000</span>, <span class="number">0x04fa00e0</span>, <span class="number">0x05050000</span>)</span><br><span class="line">  to   space 704K,   <span class="number">0</span>% used [<span class="number">0x05050000</span>, <span class="number">0x05050000</span>, <span class="number">0x05100000</span>)</span><br><span class="line"> tenured generation   total 13312K, used 2514K [<span class="number">0x05100000</span>, <span class="number">0x05e00000</span>, <span class="number">0x05e00000</span>)</span><br><span class="line">   the space 13312K,  <span class="number">18</span>% used [<span class="number">0x05100000</span>, <span class="number">0x05374b78</span>, <span class="number">0x05374c00</span>, <span class="number">0x05e00000</span>)</span><br><span class="line"> compacting perm gen  total 12288K, used 1759K [<span class="number">0x05e00000</span>, <span class="number">0x06a00000</span>, <span class="number">0x09e00000</span>)</span><br><span class="line">   the space 12288K,  <span class="number">14</span>% used [<span class="number">0x05e00000</span>, <span class="number">0x05fb7e60</span>, <span class="number">0x05fb8000</span>, <span class="number">0x06a00000</span>)</span><br><span class="line">No shared spaces configured.</span><br></pre></td></tr></table></figure></div>
+
+<p>通过日志我们发现发生了两次新生代GC。分析如下：</p>
+<p>新生代大小配置为7m，eden区5m多，前5次循环对象都进入了eden区，占用了5m，当循环第6次的时候eden区不够了，发生gc，由于from survivor区和to只有704k，不够放下任何一个对象。通过内存担保机制，有一部分对象晋升至老年代。第二次GC也是如此。</p>
+<p>我们总共创建了10*1024&#x3D;10240K大小的对象，第一次新生代GC回收了5075K-1491K&#x3D;3584K，第二次新生代GC回收了4336K，一共回收了7920K，二者相减即GC后留在内存中的对象。</p>
+<h4 id="堆示例参数四："><a href="#堆示例参数四：" class="headerlink" title="堆示例参数四："></a>堆示例参数四：</h4><p>-Xms20m -Xmx20m -Xmn7m -XX:SurvivorRatio&#x3D;2 -XX:+PrintGCDetails</p>
+<p>在参数三的基础上，修改eden:from:to&#x3D;2:1:1</p>
+<p>观察GC日志：</p>
+<div class="highlight-container" data-rel="Java"><figure class="iseeu highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">[GC[DefNew: 2710K-&gt;1419K(5376K), <span class="number">0.0020251</span> secs] 2710K-&gt;1419K(18688K), <span class="number">0.0020618</span> secs] [Times: user=<span class="number">0.00</span> sys=<span class="number">0.00</span>, real=<span class="number">0.00</span> secs] </span><br><span class="line">[GC[DefNew: 4607K-&gt;1024K(5376K), <span class="number">0.0015099</span> secs] 4607K-&gt;1418K(18688K), <span class="number">0.0015494</span> secs] [Times: user=<span class="number">0.00</span> sys=<span class="number">0.00</span>, real=<span class="number">0.00</span> secs] </span><br><span class="line">[GC[DefNew: 4125K-&gt;1024K(5376K), <span class="number">0.0003962</span> secs] 4519K-&gt;1418K(18688K), <span class="number">0.0004140</span> secs] [Times: user=<span class="number">0.00</span> sys=<span class="number">0.00</span>, real=<span class="number">0.00</span> secs] </span><br><span class="line">Heap</span><br><span class="line"> def <span class="keyword">new</span> <span class="title class_">generation</span>   total 5376K, used 3163K [<span class="number">0x33c00000</span>, <span class="number">0x34300000</span>, <span class="number">0x34300000</span>)</span><br><span class="line">  eden space 3584K,  <span class="number">59</span>% used [<span class="number">0x33c00000</span>, <span class="number">0x33e16c18</span>, <span class="number">0x33f80000</span>)</span><br><span class="line">  from space 1792K,  <span class="number">57</span>% used [<span class="number">0x34140000</span>, <span class="number">0x34240010</span>, <span class="number">0x34300000</span>)</span><br><span class="line">  to   space 1792K,   <span class="number">0</span>% used [<span class="number">0x33f80000</span>, <span class="number">0x33f80000</span>, <span class="number">0x34140000</span>)</span><br><span class="line"> tenured generation   total 13312K, used 394K [<span class="number">0x34300000</span>, <span class="number">0x35000000</span>, <span class="number">0x35000000</span>)</span><br><span class="line">   the space 13312K,   <span class="number">2</span>% used [<span class="number">0x34300000</span>, <span class="number">0x34362a80</span>, <span class="number">0x34362c00</span>, <span class="number">0x35000000</span>)</span><br><span class="line"> compacting perm gen  total 12288K, used 193K [<span class="number">0x35000000</span>, <span class="number">0x35c00000</span>, <span class="number">0x39000000</span>)</span><br><span class="line">   the space 12288K,   <span class="number">1</span>% used [<span class="number">0x35000000</span>, <span class="number">0x35030780</span>, <span class="number">0x35030800</span>, <span class="number">0x35c00000</span>)</span><br><span class="line">    ro space 10240K,  <span class="number">44</span>% used [<span class="number">0x39000000</span>, <span class="number">0x3947b1c8</span>, <span class="number">0x3947b200</span>, <span class="number">0x39a00000</span>)</span><br><span class="line">    rw space 12288K,  <span class="number">52</span>% used [<span class="number">0x39a00000</span>, <span class="number">0x3a0431d0</span>, <span class="number">0x3a043200</span>, <span class="number">0x3a600000</span>)</span><br><span class="line"></span><br></pre></td></tr></table></figure></div>
+<p>我们发现发生了3次新生代的gc，这样配置的话GC是有点多了。</p>
+<h4 id="堆示例参数五："><a href="#堆示例参数五：" class="headerlink" title="堆示例参数五："></a>堆示例参数五：</h4><p>-Xms20m -Xmx20m -Xmn10m -XX:SurvivorRatio&#x3D;2 -XX:+PrintGCDetails</p>
+<p>观察GC日志：</p>
+<div class="highlight-container" data-rel="Java"><figure class="iseeu highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">[GC[DefNew: 4870K-&gt;1419K(7680K), <span class="number">0.0014811</span> secs] 4870K-&gt;1419K(17920K), <span class="number">0.0015174</span> secs] [Times: user=<span class="number">0.00</span> sys=<span class="number">0.00</span>, real=<span class="number">0.00</span> secs] </span><br><span class="line">[GC[DefNew: 5625K-&gt;1024K(7680K), <span class="number">0.0012109</span> secs] 5625K-&gt;1418K(17920K), <span class="number">0.0012294</span> secs] [Times: user=<span class="number">0.00</span> sys=<span class="number">0.00</span>, real=<span class="number">0.00</span> secs] </span><br><span class="line">Heap</span><br><span class="line"> def <span class="keyword">new</span> <span class="title class_">generation</span>   total 7680K, used 3161K [<span class="number">0x33c00000</span>, <span class="number">0x34600000</span>, <span class="number">0x34600000</span>)</span><br><span class="line">  eden space 5120K,  <span class="number">41</span>% used [<span class="number">0x33c00000</span>, <span class="number">0x33e16538</span>, <span class="number">0x34100000</span>)</span><br><span class="line">  from space 2560K,  <span class="number">40</span>% used [<span class="number">0x34100000</span>, <span class="number">0x34200098</span>, <span class="number">0x34380000</span>)</span><br><span class="line">  to   space 2560K,   <span class="number">0</span>% used [<span class="number">0x34380000</span>, <span class="number">0x34380000</span>, <span class="number">0x34600000</span>)</span><br><span class="line"> tenured generation   total 10240K, used 394K [<span class="number">0x34600000</span>, <span class="number">0x35000000</span>, <span class="number">0x35000000</span>)</span><br><span class="line">   the space 10240K,   <span class="number">3</span>% used [<span class="number">0x34600000</span>, <span class="number">0x346629f8</span>, <span class="number">0x34662a00</span>, <span class="number">0x35000000</span>)</span><br><span class="line"> compacting perm gen  total 12288K, used 193K [<span class="number">0x35000000</span>, <span class="number">0x35c00000</span>, <span class="number">0x39000000</span>)</span><br><span class="line">   the space 12288K,   <span class="number">1</span>% used [<span class="number">0x35000000</span>, <span class="number">0x35030780</span>, <span class="number">0x35030800</span>, <span class="number">0x35c00000</span>)</span><br><span class="line">    ro space 10240K,  <span class="number">44</span>% used [<span class="number">0x39000000</span>, <span class="number">0x3947b1c8</span>, <span class="number">0x3947b200</span>, <span class="number">0x39a00000</span>)</span><br><span class="line">    rw space 12288K,  <span class="number">52</span>% used [<span class="number">0x39a00000</span>, <span class="number">0x3a0431d0</span>, <span class="number">0x3a043200</span>, <span class="number">0x3a600000</span>)</span><br><span class="line"></span><br></pre></td></tr></table></figure></div>
+<p>这次发生了两次GC，因为新生代内存比之前大了，我们再修改下。</p>
+<h4 id="堆示例参数六："><a href="#堆示例参数六：" class="headerlink" title="堆示例参数六："></a>堆示例参数六：</h4><p>-Xms20m -Xmx20m -Xmn10m -XX:SurvivorRatio&#x3D;3 -XX:+PrintGCDetails</p>
+<p>GC日志如下：</p>
+<div class="highlight-container" data-rel="Java"><figure class="iseeu highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">[GC[DefNew: 5858K-&gt;1419K(8192K), <span class="number">0.0016146</span> secs] 5858K-&gt;1419K(18432K), <span class="number">0.0016648</span> secs] [Times: user=<span class="number">0.00</span> sys=<span class="number">0.00</span>, real=<span class="number">0.00</span> secs] </span><br><span class="line">Heap</span><br><span class="line"> def <span class="keyword">new</span> <span class="title class_">generation</span>   total 8192K, used 6731K [<span class="number">0x33c00000</span>, <span class="number">0x34600000</span>, <span class="number">0x34600000</span>)</span><br><span class="line">  eden space 6144K,  <span class="number">86</span>% used [<span class="number">0x33c00000</span>, <span class="number">0x34130150</span>, <span class="number">0x34200000</span>)</span><br><span class="line">  from space 2048K,  <span class="number">69</span>% used [<span class="number">0x34400000</span>, <span class="number">0x34562cb8</span>, <span class="number">0x34600000</span>)</span><br><span class="line">  to   space 2048K,   <span class="number">0</span>% used [<span class="number">0x34200000</span>, <span class="number">0x34200000</span>, <span class="number">0x34400000</span>)</span><br><span class="line"> tenured generation   total 10240K, used 0K [<span class="number">0x34600000</span>, <span class="number">0x35000000</span>, <span class="number">0x35000000</span>)</span><br><span class="line">   the space 10240K,   <span class="number">0</span>% used [<span class="number">0x34600000</span>, <span class="number">0x34600000</span>, <span class="number">0x34600200</span>, <span class="number">0x35000000</span>)</span><br><span class="line"> compacting perm gen  total 12288K, used 193K [<span class="number">0x35000000</span>, <span class="number">0x35c00000</span>, <span class="number">0x39000000</span>)</span><br><span class="line">   the space 12288K,   <span class="number">1</span>% used [<span class="number">0x35000000</span>, <span class="number">0x35030780</span>, <span class="number">0x35030800</span>, <span class="number">0x35c00000</span>)</span><br><span class="line">    ro space 10240K,  <span class="number">44</span>% used [<span class="number">0x39000000</span>, <span class="number">0x3947b1c8</span>, <span class="number">0x3947b200</span>, <span class="number">0x39a00000</span>)</span><br><span class="line">    rw space 12288K,  <span class="number">52</span>% used [<span class="number">0x39a00000</span>, <span class="number">0x3a0431d0</span>, <span class="number">0x3a043200</span>, <span class="number">0x3a600000</span>)</span><br><span class="line"></span><br></pre></td></tr></table></figure></div>
+<p>这次只发生了一次GC，有兴趣的也可以自己尝试下哈。</p>
+<h3 id="XX-HeapDumpOnOutOfMemoryError"><a href="#XX-HeapDumpOnOutOfMemoryError" class="headerlink" title="-XX:+HeapDumpOnOutOfMemoryError"></a>-XX:+HeapDumpOnOutOfMemoryError</h3><p>发生OOM时导出堆到文件</p>
+<h3 id="XX-heapDumpPath"><a href="#XX-heapDumpPath" class="headerlink" title="-XX:+heapDumpPath"></a>-XX:+heapDumpPath</h3><p>导出OOM的路径 与上一个参数配合使用。</p>
+<h3 id="XX-OnOutOfMemoryError"><a href="#XX-OnOutOfMemoryError" class="headerlink" title="-XX:OnOutOfMemoryError"></a>-XX:OnOutOfMemoryError</h3><p>在OOM时执行一个脚本。</p>
+<p>如：-XX:OnOutOfMemoryError&#x3D;E:&#x2F;JavaEE&#x2F;Jdk&#x2F;jdk1.7.0_72&#x2F;bin&#x2F;printStack.bat %p</p>
+<p>当发生OOM时执行printStack.bat脚本，linux上是.sh文件，这个脚本可将对oom信息转存到文件。</p>
+<p>如:E:&#x2F;JavaEE&#x2F;Jdk&#x2F;jdk1.7.0_72&#x2F;bin&#x2F;jstack -F %1 &gt; E:&#x2F;a.txt</p>
+<p>也可以执行发送邮件，甚至是重启服务器。</p>
+<h3 id="堆常用参数总结："><a href="#堆常用参数总结：" class="headerlink" title="堆常用参数总结："></a>堆常用参数总结：</h3><ol>
+<li>根据实际情况合理配置堆得内存，最大内存，新生代，老生代内存等。</li>
+<li>合理调整新生代和老生代比例，官方推荐和默认比例是3:8</li>
+<li>eden:from:to的默认比例是8:1:1</li>
+<li>在发生OOM时，一定要dump出堆信息，确保可以排查问题。</li>
+</ol>
+<h2 id="永久区常用分配参数："><a href="#永久区常用分配参数：" class="headerlink" title="永久区常用分配参数："></a>永久区常用分配参数：</h2><p>-XX:PermSize  -XX:MaxPermSize </p>
+<p>配置永久区初始值和最大值，主要储存Class对象的相关信息。</p>
+<h2 id="栈的分配参数"><a href="#栈的分配参数" class="headerlink" title="栈的分配参数"></a>栈的分配参数</h2><p>-Xss  </p>
+<p>每个线程的栈帧大小，通常只有几百k到1m，决定了函数调用的深度，是线程独立的。</p>
+<p>当我们想增大最大线程数时，也可以通过适当减少这个值，当我们想要函数调用的深一些，可以增大这个值。</p>
+
+        </div>
+
+        
+            <div class="post-copyright-info px-2 sm:px-6 md:px-8">
+                <div class="article-copyright-info-container">
+    <ul>
+        <li><strong>Title:</strong> JVM常用配置参数及分析</li>
+        <li><strong>Author:</strong> 郑亚凯</li>
+        <li><strong>Created at
+                :</strong> 2017-11-26 18:36:09</li>
+        
+            <li>
+                <strong>Updated at
+                    :</strong> 2023-11-17 19:37:37
+            </li>
+        
+        <li>
+            <strong>Link:</strong> https://www.zhengyk.cn/2017/11/26/jvm/JVM-04/
+        </li>
+        <li>
+            <strong>
+                License:
+            </strong>
+            
+
+            
+                This work is licensed under <a class="license" target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0">CC BY-NC-SA 4.0</a>.
+            
+        </li>
+    </ul>
+</div>
+
+            </div>
+        
+
+        
+            <ul class="post-tags-box">
+                
+                    <li class="tag-item">
+                        <a href="/tags/JVM/">#JVM</a>&nbsp;
+                    </li>
+                
+            </ul>
+        
+
+        
+
+        
+            <div class="article-nav my-8 flex justify-between items-center px-2 sm:px-6 md:px-8">
+                
+                    <div class="article-prev border-border-color shadow-redefine-flat shadow-shadow-color-2 rounded-medium px-4 py-2 hover:shadow-redefine-flat-hover hover:shadow-shadow-color-2">
+                        <a class="prev"
+                        rel="prev"
+                        href="/2017/12/16/jvm/JVM-05/"
+                        >
+                            <span class="left arrow-icon flex justify-center items-center">
+                                <i class="fa-solid fa-chevron-left"></i>
+                            </span>
+                            <span class="title flex justify-center items-center">
+                                <span class="post-nav-title-item">JVM 常用命令（一）</span>
+                                <span class="post-nav-item">Prev posts</span>
+                            </span>
+                        </a>
+                    </div>
+                
+                
+                    <div class="article-next border-border-color shadow-redefine-flat shadow-shadow-color-2 rounded-medium px-4 py-2 hover:shadow-redefine-flat-hover hover:shadow-shadow-color-2">
+                        <a class="next"
+                        rel="next"
+                        href="/2017/11/21/jvm/JVM-03/"
+                        >
+                            <span class="title flex justify-center items-center">
+                                <span class="post-nav-title-item">JVM学习之运行机制</span>
+                                <span class="post-nav-item">Next posts</span>
+                            </span>
+                            <span class="right arrow-icon flex justify-center items-center">
+                                <i class="fa-solid fa-chevron-right"></i>
+                            </span>
+                        </a>
+                    </div>
+                
+            </div>
+        
+
+
+        
+    </div>
+
+    
+        <div class="toc-content-container">
+            <div class="post-toc-wrap">
+    <div class="post-toc">
+        <div class="toc-title">On this page</div>
+        <div class="page-title">JVM常用配置参数及分析</div>
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#JVM%E5%B8%B8%E7%94%A8%E7%9A%84%E9%85%8D%E7%BD%AE%E5%8F%82%E6%95%B0"><span class="nav-text">JVM常用的配置参数</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Trace%E8%B7%9F%E8%B8%AA%E5%8F%82%E6%95%B0"><span class="nav-text">Trace跟踪参数</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#XX-PrintGCDetails%E6%89%93%E5%8D%B0GC%E8%AF%A6%E7%BB%86%E4%BF%A1%E6%81%AF%EF%BC%9A"><span class="nav-text">-XX:+PrintGCDetails打印GC详细信息：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Xloggc-log-gc-log"><span class="nav-text">-Xloggc:log&#x2F;gc.log</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#XX-PrintGCAtGC"><span class="nav-text">-XX:+PrintGCAtGC</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#XX-TraceClassLoading"><span class="nav-text">-XX:TraceClassLoading</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A0%86%E7%9A%84%E5%88%86%E9%85%8D%E5%8F%82%E6%95%B0"><span class="nav-text">堆的分配参数</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Xms-Xmx"><span class="nav-text">-Xms -Xmx</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Xmn"><span class="nav-text">-Xmn</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#XX-NewRatio"><span class="nav-text">-XX:NewRatio</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#XX-SurvivorRatio"><span class="nav-text">-XX:SurvivorRatio</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A0%86%E5%BE%97%E5%88%86%E9%85%8D%E5%8F%82%E6%95%B0%E5%AE%9E%E6%88%98"><span class="nav-text">堆得分配参数实战</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#XX-HeapDumpOnOutOfMemoryError"><span class="nav-text">-XX:+HeapDumpOnOutOfMemoryError</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#XX-heapDumpPath"><span class="nav-text">-XX:+heapDumpPath</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#XX-OnOutOfMemoryError"><span class="nav-text">-XX:OnOutOfMemoryError</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A0%86%E5%B8%B8%E7%94%A8%E5%8F%82%E6%95%B0%E6%80%BB%E7%BB%93%EF%BC%9A"><span class="nav-text">堆常用参数总结：</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B0%B8%E4%B9%85%E5%8C%BA%E5%B8%B8%E7%94%A8%E5%88%86%E9%85%8D%E5%8F%82%E6%95%B0%EF%BC%9A"><span class="nav-text">永久区常用分配参数：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A0%88%E7%9A%84%E5%88%86%E9%85%8D%E5%8F%82%E6%95%B0"><span class="nav-text">栈的分配参数</span></a></li></ol></li></ol>
+
+    </div>
+</div>
+        </div>
+    
+</div>
+
+
+
+                
+
+            </div>
+
+            
+
+        </div>
+
+        <div class="main-content-footer">
+            <footer class="footer mt-5 py-5 h-auto text-base text-third-text-color relative border-t-2 border-t-border-color">
+    <div class="info-container py-3 text-center">
+        
+        <div class="text-center">
+            &copy;
+            
+              <span>1970</span>
+              -
+            
+            2023&nbsp;&nbsp;<i class="fa-solid fa-heart fa-beat" style="--fa-animation-duration: 0.5s; color: #f54545"></i>&nbsp;&nbsp;<a href="/">郑亚凯</a>
+        </div>
+        
+        <div class="relative text-center lg:absolute lg:left-[20px] lg:top-1/2 lg:-translate-y-1/2 lg:text-left">
+            <span class="lg:block text-sm">POWERED BY <?xml version="1.0" encoding="utf-8"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd"><svg class="relative top-[2px] inline-block align-baseline" version="1.1" id="圖層_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="1rem" height="1rem" viewBox="0 0 512 512" enable-background="new 0 0 512 512" xml:space="preserve"><path fill="#0E83CD" d="M256.4,25.8l-200,115.5L56,371.5l199.6,114.7l200-115.5l0.4-230.2L256.4,25.8z M349,354.6l-18.4,10.7l-18.6-11V275H200v79.6l-18.4,10.7l-18.6-11v-197l18.5-10.6l18.5,10.8V237h112v-79.6l18.5-10.6l18.5,10.8V354.6z"/></svg><a target="_blank" class="text-base" href="https://hexo.io">Hexo</a></span>
+            <span class="text-sm lg:block">THEME&nbsp;<a class="text-base" target="_blank" href="https://github.com/EvanNotFound/hexo-theme-redefine">Redefine v2.5.2</a></span>
+        </div>
+        
+        
+            <div>
+                Blog up for <span class="odometer" id="runtime_days" ></span> days <span class="odometer" id="runtime_hours"></span> hrs <span class="odometer" id="runtime_minutes"></span> Min <span class="odometer" id="runtime_seconds"></span> Sec
+            </div>
+        
+        
+            <script data-swup-reload-script>
+                try {
+                    function odometer_init() {
+                    const elements = document.querySelectorAll('.odometer');
+                    elements.forEach(el => {
+                        new Odometer({
+                            el,
+                            format: '( ddd).dd',
+                            duration: 200
+                        });
+                    });
+                    }
+                    odometer_init();
+                } catch (error) {}
+            </script>
+        
+        
+        
+    </div>  
+</footer>
+        </div>
+    </div>
+
+    
+        <div class="post-tools">
+            <div class="post-tools-container">
+    <ul class="article-tools-list">
+        <!-- TOC aside toggle -->
+        
+            <li class="right-bottom-tools page-aside-toggle">
+                <i class="fa-regular fa-outdent"></i>
+            </li>
+        
+
+        <!-- go comment -->
+        
+    </ul>
+</div>
+
+        </div>
+    
+
+    <div class="right-side-tools-container">
+        <div class="side-tools-container">
+    <ul class="hidden-tools-list">
+        <li class="right-bottom-tools tool-font-adjust-plus flex justify-center items-center">
+            <i class="fa-regular fa-magnifying-glass-plus"></i>
+        </li>
+
+        <li class="right-bottom-tools tool-font-adjust-minus flex justify-center items-center">
+            <i class="fa-regular fa-magnifying-glass-minus"></i>
+        </li>
+
+        <li class="right-bottom-tools tool-dark-light-toggle flex justify-center items-center">
+            <i class="fa-regular fa-moon"></i>
+        </li>
+
+        <!-- rss -->
+        
+
+        
+
+        <li class="right-bottom-tools tool-scroll-to-bottom flex justify-center items-center">
+            <i class="fa-regular fa-arrow-down"></i>
+        </li>
+    </ul>
+
+    <ul class="visible-tools-list">
+        <li class="right-bottom-tools toggle-tools-list flex justify-center items-center">
+            <i class="fa-regular fa-cog fa-spin"></i>
+        </li>
+        
+            <li class="right-bottom-tools tool-scroll-to-top flex justify-center items-center">
+                <i class="arrow-up fas fa-arrow-up"></i>
+                <span class="percent"></span>
+            </li>
+        
+        
+    </ul>
+</div>
+
+    </div>
+
+    <div class="image-viewer-container">
+    <img src="">
+</div>
+
+
+    
+        <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+          <span class="search-input-field-pre">
+            <i class="fa-solid fa-keyboard"></i>
+          </span>
+            <div class="search-input-container">
+                <input autocomplete="off"
+                       autocorrect="off"
+                       autocapitalize="off"
+                       placeholder="Search..."
+                       spellcheck="false"
+                       type="search"
+                       class="search-input"
+                >
+            </div>
+            <span class="popup-btn-close">
+                <i class="fa-solid fa-times"></i>
+            </span>
+        </div>
+        <div id="search-result">
+            <div id="no-result">
+                <i class="fa-solid fa-spinner fa-spin-pulse fa-5x fa-fw"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+
+</main>
+
+
+    
+<script src="/js/libs/Swup.min.js"></script>
+
+<script src="/js/libs/SwupSlideTheme.min.js"></script>
+
+<script src="/js/libs/SwupScriptsPlugin.min.js"></script>
+
+<script src="/js/libs/SwupProgressPlugin.min.js"></script>
+
+<script src="/js/libs/SwupScrollPlugin.min.js"></script>
+
+<script src="/js/libs/SwupPreloadPlugin.min.js"></script>
+
+<script>
+    const swup = new Swup({
+        plugins: [
+            new SwupScriptsPlugin({
+                optin: true,
+            }),
+            new SwupProgressPlugin(),
+            new SwupScrollPlugin({
+                offset: 80,
+            }),
+            new SwupSlideTheme({
+                mainElement: ".main-content-body",
+            }),
+            new SwupPreloadPlugin(),
+        ],
+        containers: ["#swup"],
+    });
+</script>
+
+
+
+
+
+
+
+<script src="/js/tools/imageViewer.js" type="module"></script>
+
+<script src="/js/utils.js" type="module"></script>
+
+<script src="/js/main.js" type="module"></script>
+
+<script src="/js/layouts/navbarShrink.js" type="module"></script>
+
+<script src="/js/tools/scrollTopBottom.js" type="module"></script>
+
+<script src="/js/tools/lightDarkSwitch.js" type="module"></script>
+
+<script src="/js/layouts/categoryList.js" type="module"></script>
+
+
+
+    
+<script src="/js/tools/localSearch.js" type="module"></script>
+
+
+
+
+    
+<script src="/js/tools/codeBlock.js" type="module"></script>
+
+
+
+
+    
+<script src="/js/layouts/lazyload.js" type="module"></script>
+
+
+
+
+    
+<script src="/js/tools/runtime.js"></script>
+
+    
+<script src="/js/libs/odometer.min.js"></script>
+
+    
+<link rel="stylesheet" href="/assets/odometer-theme-minimal.css">
+
+
+
+
+  
+<script src="/js/libs/Typed.min.js"></script>
+
+  
+<script src="/js/plugins/typed.js" type="module"></script>
+
+
+
+
+
+
+
+<div class="post-scripts" data-swup-reload-script>
+    
+        
+<script src="/js/libs/anime.min.js"></script>
+
+        
+<script src="/js/tools/tocToggle.js" type="module"></script>
+
+<script src="/js/layouts/toc.js" type="module"></script>
+
+<script src="/js/plugins/tabs.js" type="module"></script>
+
+    
+</div>
+
+
+</body>
+</html>

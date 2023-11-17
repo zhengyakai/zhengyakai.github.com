@@ -1,0 +1,887 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="keywords" content="Hexo Theme Redefine">
+    
+    <meta name="author" content="郑亚凯">
+    <!-- preconnect -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    
+    <!--- Seo Part-->
+    
+    <link rel="canonical" href="http://example.com/2018/04/01/zk/zookeeper/"/>
+    <meta name="robots" content="index,follow">
+    <meta name="googlebot" content="index,follow">
+    <meta name="revisit-after" content="1 days">
+    
+        <meta name="description" content="前言本文总结下 Zookeeper 中的一些知识点，便于自己查漏补缺，本篇当做一个笔记来写，所以写的有点乱。 Zookeeper 总结Zookeeper是一个分布式应用协调服务， Dubbo推荐使用它来当做注册中心，kafka 集群也需要它来协调各个节点。 Zookeeper 是基于key-value的文件目录式存储，当有服务注册时，会创建一个节点，每一个节点对应一个 value。 ZK节点ZK中">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Zookeeper笔记整理">
+<meta property="og:url" content="http://example.com/2018/04/01/zk/zookeeper/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="前言本文总结下 Zookeeper 中的一些知识点，便于自己查漏补缺，本篇当做一个笔记来写，所以写的有点乱。 Zookeeper 总结Zookeeper是一个分布式应用协调服务， Dubbo推荐使用它来当做注册中心，kafka 集群也需要它来协调各个节点。 Zookeeper 是基于key-value的文件目录式存储，当有服务注册时，会创建一个节点，每一个节点对应一个 value。 ZK节点ZK中">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://www.zhengyk.cn/images/zk-node.jpg">
+<meta property="og:image" content="https://www.zhengyk.cn/images/distribute-lock-01.jpg">
+<meta property="og:image" content="https://www.zhengyk.cn/images/distribute-lock-02.jpg">
+<meta property="article:published_time" content="2018-04-01T10:01:54.000Z">
+<meta property="article:modified_time" content="2023-11-17T11:37:36.998Z">
+<meta property="article:author" content="John Doe">
+<meta property="article:tag" content="zookeeper">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://www.zhengyk.cn/images/zk-node.jpg">
+    
+    
+    <!--- Icon Part-->
+    <link rel="icon" type="image/png" href="https://www.zhengyk.cn/images/portrait.jpg" sizes="192x192">
+    <link rel="apple-touch-icon" sizes="180x180" href="https://www.zhengyk.cn/images/portrait.jpg">
+    <meta name="theme-color" content="#A31F34">
+    <link rel="shortcut icon" href="https://www.zhengyk.cn/images/portrait.jpg">
+    <!--- Page Info-->
+    
+    <title>
+        
+            Zookeeper笔记整理 -
+        
+        薛定谔的汪
+    </title>
+    
+<link rel="stylesheet" href="/css/style.css">
+
+
+    
+        
+<link rel="stylesheet" href="/assets/build/styles.css">
+
+    
+
+    
+<link rel="stylesheet" href="/fonts/fonts.css">
+
+    
+<link rel="stylesheet" href="/fonts/Satoshi/satoshi.css">
+
+    
+<link rel="stylesheet" href="/fonts/Chillax/chillax.css">
+
+    <!--- Font Part-->
+    
+    
+    
+    
+
+    <!--- Inject Part-->
+    
+    <script id="hexo-configurations">
+    window.config = {"hostname":"example.com","root":"/","language":"en"};
+    window.theme = {"articles":{"style":{"font_size":"16px","line_height":1.5,"image_border_radius":"14px","image_alignment":"center","image_caption":false,"link_icon":true,"title_alignment":"left"},"word_count":{"enable":true,"count":true,"min2read":true},"author_label":{"enable":false,"auto":false,"list":[]},"code_block":{"copy":true,"style":"mac","font":{"enable":false,"family":null,"url":null}},"toc":{"enable":true,"max_depth":3,"number":false,"expand":true,"init_open":true},"copyright":{"enable":true,"default":"cc_by_nc_sa"},"lazyload":true,"recommendation":{"enable":false,"title":"推荐阅读","limit":3,"mobile_limit":2,"placeholder":"/images/wallhaven-wqery6-light.webp","skip_dirs":[]}},"colors":{"primary":"#A31F34","secondary":null},"global":{"fonts":{"chinese":{"enable":false,"family":null,"url":null},"english":{"enable":false,"family":null,"url":null}},"content_max_width":"1000px","sidebar_width":"210px","hover":{"shadow":true,"scale":false},"scroll_progress":{"bar":false,"percentage":true},"website_counter":{"url":"https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js","enable":false,"site_pv":false,"site_uv":false,"post_pv":false},"single_page":true,"open_graph":true,"google_analytics":{"enable":false,"id":null}},"home_banner":{"enable":true,"style":"fixed","image":{"light":"https://www.zhengyk.cn/images/wallhaven-wqery6-light.png","dark":"https://www.zhengyk.cn/images/wallhaven-wqery6-dark.png"},"title":"学习技术 | 分享生活","subtitle":{"text":[],"hitokoto":{"enable":false,"api":"https://v1.hitokoto.cn"},"typing_speed":100,"backing_speed":80,"starting_delay":500,"backing_delay":1500,"loop":true,"smart_backspace":true},"text_color":{"light":"#fff","dark":"#d1d1b6"},"text_style":{"title_size":"2.8rem","subtitle_size":"1.5rem","line_height":1.2},"custom_font":{"enable":false,"family":null,"url":null},"social_links":{"enable":false,"links":{"github":"https://github.com/zhengyakai","instagram":null,"zhihu":null,"twitter":null,"email":null},"qrs":{"weixin":null}}},"plugins":{"feed":{"enable":false},"aplayer":{"enable":false,"type":"fixed","audios":[{"name":null,"artist":null,"url":null,"cover":null}]},"mermaid":{"enable":false,"version":"9.3.0"}},"version":"2.5.2","navbar":{"auto_hide":false,"color":{"left":"#f78736","right":"#367df7","transparency":35},"links":{"Home":{"path":"/","icon":"fa-regular fa-house"},"主页":{"path":"/","icon":"fa-regular fa-house"},"文章":{"path":"/archives","icon":"fa-regular fa-archive"},"关于":{"path":"/about","icon":"fa-regular fa-folder"}},"search":{"enable":true,"preload":true}},"page_templates":{"friends_column":2,"tags_style":"blur"},"home":{"sidebar":{"enable":true,"position":"left","first_item":"menu","announcement":null,"links":{"文章":{"path":"/archives","icon":"fa-regular fa-archive"}}},"article_date_format":"auto","categories":{"enable":true,"limit":10},"tags":{"enable":true,"limit":10}},"footerStart":2017};
+    window.lang_ago = {"second":"%s seconds ago","minute":"%s minutes ago","hour":"%s hours ago","day":"%s days ago","week":"%s weeks ago","month":"%s months ago","year":"%s years ago"};
+    window.data = {"masonry":false};
+  </script>
+    
+    <!--- Fontawesome Part-->
+    
+<link rel="stylesheet" href="/fontawesome/fontawesome.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/brands.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/solid.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/regular.min.css">
+
+    
+    
+    
+    
+<meta name="generator" content="Hexo 7.0.0"><link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+</head>
+
+
+<body>
+<div class="progress-bar-container">
+    
+
+    
+        <span class="pjax-progress-bar"></span>
+        <span class="swup-progress-icon">
+            <i class="fa-solid fa-circle-notch fa-spin"></i>
+        </span>
+    
+</div>
+
+
+<main class="page-container" id="swup">
+
+    
+
+    <div class="main-content-container">
+
+
+        <div class="main-content-header">
+            <header class="navbar-container">
+    
+    <div class="navbar-content">
+        <div class="left">
+            
+            <a class="logo-title" href="/">
+                
+                薛定谔的汪
+                
+            </a>
+        </div>
+
+        <div class="right">
+            <!-- PC -->
+            <div class="desktop">
+                <ul class="navbar-list">
+                    
+                        
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class="" 
+                                    href="/"  >
+                                    
+                                        
+                                            <i class="fa-regular fa-house"></i>
+                                        
+                                        HOME
+                                    
+                                </a>
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                        
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class="" 
+                                    href="/"  >
+                                    
+                                        
+                                            <i class="fa-regular fa-house"></i>
+                                        
+                                        主页
+                                    
+                                </a>
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                        
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class="" 
+                                    href="/archives"  >
+                                    
+                                        
+                                            <i class="fa-regular fa-archive"></i>
+                                        
+                                        文章
+                                    
+                                </a>
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                        
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class="" 
+                                    href="/about"  >
+                                    
+                                        
+                                            <i class="fa-regular fa-folder"></i>
+                                        
+                                        关于
+                                    
+                                </a>
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                    
+                        <li class="navbar-item search search-popup-trigger">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                        </li>
+                    
+                </ul>
+            </div>
+            <!-- Mobile -->
+            <div class="mobile">
+                
+                    <div class="icon-item search search-popup-trigger"><i class="fa-solid fa-magnifying-glass"></i></div>
+                
+                <div class="icon-item navbar-bar">
+                    <div class="navbar-bar-middle"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile drawer -->
+    <div class="navbar-drawer w-full absolute top-0 left-0 bg-background-color">
+        <ul class="drawer-navbar-list flex flex-col justify-start items-center">
+            
+                
+                    <li class="drawer-navbar-item text-base my-1.5 flex justify-center items-center">
+                        <a class="rounded-3xl py-1.5 px-5 hover:border hover:!text-primary active:!text-primary group " 
+                        href="/"  >
+                             
+                                
+                                    <i class="fa-regular fa-house"></i>
+                                
+                                HOME
+                            
+                        </a>
+                    </li>
+                    <!-- Submenu -->
+                    
+            
+                
+                    <li class="drawer-navbar-item text-base my-1.5 flex justify-center items-center">
+                        <a class="rounded-3xl py-1.5 px-5 hover:border hover:!text-primary active:!text-primary group " 
+                        href="/"  >
+                             
+                                
+                                    <i class="fa-regular fa-house"></i>
+                                
+                                主页
+                            
+                        </a>
+                    </li>
+                    <!-- Submenu -->
+                    
+            
+                
+                    <li class="drawer-navbar-item text-base my-1.5 flex justify-center items-center">
+                        <a class="rounded-3xl py-1.5 px-5 hover:border hover:!text-primary active:!text-primary group " 
+                        href="/archives"  >
+                             
+                                
+                                    <i class="fa-regular fa-archive"></i>
+                                
+                                文章
+                            
+                        </a>
+                    </li>
+                    <!-- Submenu -->
+                    
+            
+                
+                    <li class="drawer-navbar-item text-base my-1.5 flex justify-center items-center">
+                        <a class="rounded-3xl py-1.5 px-5 hover:border hover:!text-primary active:!text-primary group " 
+                        href="/about"  >
+                             
+                                
+                                    <i class="fa-regular fa-folder"></i>
+                                
+                                关于
+                            
+                        </a>
+                    </li>
+                    <!-- Submenu -->
+                    
+            
+
+        </ul>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+        </div>
+
+        <div class="main-content-body">
+
+            
+
+            <div class="main-content">
+
+                
+                    <div class="post-page-container">
+    <div class="article-content-container">
+
+        <div class="article-title relative w-full">
+            
+                
+                
+                <img src="https://www.zhengyk.cn/images/2018-04-01.jpg" alt="Zookeeper笔记整理" class="w-full h-60 sm:h-72 md:h-80 object-cover sm:rounded-t-large dark:brightness-75"/>
+                
+                <div class="w-full flex items-center absolute bottom-0 justify-start">
+                    <h1 class="article-title-cover text-center mx-6 my-6 text-second-text-color bg-background-color-transparent px-4 py-3 text-3xl sm:text-4xl md:text-5xl font-bold backdrop-blur-lg rounded-xl border border-border-color ">Zookeeper笔记整理</h1>
+                </div>
+            
+            </div>
+
+        
+            <div class="article-header flex flex-row gap-2 items-center px-2 sm:px-6 md:px-8">
+                <div class="avatar w-[46px] h-[46px] flex-shrink-0 rounded-medium border border-border-color p-[1px]">
+                    <img src="https://www.zhengyk.cn/images/portrait.jpg">
+                </div>
+                <div class="info flex flex-col justify-between">
+                    <div class="author flex items-center">
+                        <span class="name text-default-text-color text-lg font-semibold">郑亚凯</span>
+                        
+                    </div>
+                    <div class="meta-info">
+                        <div class="article-meta-info">
+    <span class="article-date article-meta-item">
+        <i class="fa-regular fa-pen-fancy"></i>&nbsp;
+        <span class="desktop">2018-04-01 18:01:54</span>
+        <span class="mobile">2018-04-01 18:01:54</span>
+        <span class="hover-info">Created</span>
+    </span>
+    
+        <span class="article-date article-meta-item">
+            <i class="fa-regular fa-wrench"></i>&nbsp;
+            <span class="desktop">2023-11-17 19:37:36</span>
+            <span class="mobile">2023-11-17 19:37:36</span>
+            <span class="hover-info">Updated</span>
+        </span>
+    
+
+    
+        <span class="article-categories article-meta-item">
+            <i class="fa-regular fa-folders"></i>&nbsp;
+            <ul>
+                
+                
+                    
+                        
+                        <li>
+                            <a href="/categories/Java%E6%A1%86%E6%9E%B6/">Java框架</a>&nbsp;
+                        </li>
+                    
+                    
+                
+            </ul>
+        </span>
+    
+    
+        <span class="article-tags article-meta-item">
+            <i class="fa-regular fa-tags"></i>&nbsp;
+            <ul>
+                
+                    <li>
+                        <a href="/tags/zookeeper/">zookeeper</a>&nbsp;
+                    </li>
+                
+            </ul>
+        </span>
+    
+
+    
+    
+    
+    
+</div>
+
+                    </div>
+                </div>
+            </div>
+        
+
+        
+
+
+        <div class="article-content markdown-body px-2 sm:px-6 md:px-8 pb-8">
+            <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>本文总结下 Zookeeper 中的一些知识点，便于自己查漏补缺，本篇当做一个笔记来写，所以写的有点乱。</p>
+<h2 id="Zookeeper-总结"><a href="#Zookeeper-总结" class="headerlink" title="Zookeeper 总结"></a>Zookeeper 总结</h2><p>Zookeeper是一个分布式应用协调服务， Dubbo推荐使用它来当做注册中心，kafka 集群也需要它来协调各个节点。 Zookeeper 是基于key-value的文件目录式存储，当有服务注册时，会创建一个节点，每一个节点对应一个 value。</p>
+<h3 id="ZK节点"><a href="#ZK节点" class="headerlink" title="ZK节点"></a>ZK节点</h3><p>ZK中的节点可分为持久节点和临时节点</p>
+<h4 id="持久节点"><a href="#持久节点" class="headerlink" title="持久节点"></a>持久节点</h4><p>创建后不会自动删除，zk 命令：create &#x2F;order 0  ，标识在”&#x2F;“根目录下创建一个 order 节点，值是0。</p>
+<h4 id="临时节点"><a href="#临时节点" class="headerlink" title="临时节点"></a>临时节点</h4><p>临时节点，生命周期存在与客户端和zk服务端一次会话中，会话结束后自动删除。ZK的临时节点实现了服务的上下线感知功能。如下图示例:dubbo的order服务注册到zk上的节点信息是服务的协议地址，他们就是临时节点。</p>
+<p>使用 create -e key value 创建临时节点</p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="https://www.zhengyk.cn/images/zk-node.jpg"
+                     
+                ></p>
+<h4 id="ZK-节点的一些特性"><a href="#ZK-节点的一些特性" class="headerlink" title="ZK 节点的一些特性"></a>ZK 节点的一些特性</h4><blockquote>
+<p>同级节点的唯一性，这和操作系统统一目录下不能有重名一个道理。</p>
+<p>节点的有序性，在创建节点时，使用create -s key value， -s 标识sequence</p>
+<p>临时节点不能有子节点。</p>
+</blockquote>
+<h3 id="zoo-cfg"><a href="#zoo-cfg" class="headerlink" title="zoo.cfg"></a>zoo.cfg</h3><p>下载ZK 解压后，在其 conf 目录下有一个 zoo.sample.cfg文件，zk启动会加载 zoo.cfg文件，所以复制一份重新命名为zoo.cfg即可，zoo.cfg中有几个属性需要总结下：</p>
+<blockquote>
+<p> tricktime&#x3D;2000：时间单位 默认2000 即 2秒为一个时间单位</p>
+<p>initLimit&#x3D;10：最大的初始化同步时间 10个tricktime 即默认20秒</p>
+<p>syncLimit&#x3D;5:  Leader 和 Folllower之间的最大心跳检测时间（ZAB协议会给 zk 集群选举一个 leader，其他的节点为follower，leader 可做读写，follower只能读，区别于 kafka 中分区副本的leader和flowder）</p>
+<p>dataDir：持久化节点和事务日志等数据存储位置。默认&#x2F;tmp&#x2F;zookeeper下，建议修改到其他位置</p>
+</blockquote>
+<h3 id="节点详细信息"><a href="#节点详细信息" class="headerlink" title="节点详细信息"></a>节点详细信息</h3><p>使用ZkClient客户端登录 zk，使用 <code>get /order</code>查看先前创建的节点信息：</p>
+<div class="highlight-container" data-rel="Java"><figure class="iseeu highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">cZxid = <span class="number">0x28</span>  <span class="comment">//创建节点时事务 id</span></span><br><span class="line">ctime = Fri Nov <span class="number">23</span> <span class="number">11</span>:<span class="number">03</span>:<span class="number">01</span> CST <span class="number">2018</span></span><br><span class="line">mZxid = <span class="number">0x28</span>  <span class="comment">//修改节点时事务 id</span></span><br><span class="line">mtime = Fri Nov <span class="number">23</span> <span class="number">11</span>:<span class="number">03</span>:<span class="number">01</span> CST <span class="number">2018</span></span><br><span class="line">pZxid = <span class="number">0x28</span>  <span class="comment">//子节点修改时才产生事务 id</span></span><br><span class="line">cversion = <span class="number">0</span>  <span class="comment">//当前节点子节点的版本号(乐观锁)  控制并发</span></span><br><span class="line">dataVersion = <span class="number">0</span> <span class="comment">//当前数据内容版本号(乐观锁)    控制并发</span></span><br><span class="line">aclVersion = <span class="number">0</span> <span class="comment">//当前节点权限版本号(类似linux的文件夹权限)   控制并发</span></span><br><span class="line">ephemeralOwner = <span class="number">0x0</span> <span class="comment">//临时节点的会话标识，会话结束后用其定位要被删除的临时节点</span></span><br><span class="line">dataLength = <span class="number">1</span></span><br><span class="line">numChildren = <span class="number">0</span></span><br></pre></td></tr></table></figure></div>
+
+<h3 id="ZK集群中的角色"><a href="#ZK集群中的角色" class="headerlink" title="ZK集群中的角色"></a>ZK集群中的角色</h3><blockquote>
+<p> Leader: 可读可写，处理事务请求</p>
+<p>Follower：同步 Leader，只读</p>
+<p>Observer：监控 zk 集群，不参与选举。</p>
+</blockquote>
+<h3 id="leader的选举机制"><a href="#leader的选举机制" class="headerlink" title="leader的选举机制"></a>leader的选举机制</h3><p>zk 集群中的所有节点都会并发创建自己的znode，每个znode是唯一不重复的，value 最小的就是 leader，leader 挂了后，再从其余节点继续选择value 最小的为新 leader。（和分布式锁原理差不多）</p>
+<h3 id="Zookeeper集群节点数量为什么要是奇数个？"><a href="#Zookeeper集群节点数量为什么要是奇数个？" class="headerlink" title="Zookeeper集群节点数量为什么要是奇数个？"></a>Zookeeper集群节点数量为什么要是奇数个？</h3><p>Zookeeper集群容错是指，当宕掉几个 ZK 服务器之后，剩下的个数必须大于宕掉的个数，也就是剩下的服务数必须大于n&#x2F;2，集群中只要有过半的机器是正常工作的，那么整个集群对外就是可用的。所以为了节约资源，集群中部署基数台机器即可。</p>
+<h3 id="Zookeeper脑裂（Split-Brain）问题"><a href="#Zookeeper脑裂（Split-Brain）问题" class="headerlink" title="Zookeeper脑裂（Split-Brain）问题"></a>Zookeeper脑裂（Split-Brain）问题</h3><p>什么是 ZK 的脑裂？</p>
+<p>​	假如集群中有三个节点，一主两从，当主挂掉后，两个从节点通信正常的情况下可以达成共识，从中再选举一个为主，但当两个从节点通信故障，这时双方都认为自己应该应该选为 Leader，这样集群中就出现了两个主节点。</p>
+<p>解决脑裂问题的方式？</p>
+<ol>
+<li>Quorums，法定人数，集群中超过半数投票认为 master 挂掉后才能选举Leader。</li>
+<li>Redundant communications，冗余通信，集群中采用多种通信方式，防止一种协议失效。</li>
+<li>Fencing，共享资源的方式，设置一个共享资源，谁能看到这个共享资源，谁就在集群中，谁能获得此共享资源，谁就是 Leader</li>
+</ol>
+<p>ZK 是如何解决脑裂的？</p>
+<p>ZK 采用 Quorums 方式的方式。​	</p>
+<h3 id="会话状态"><a href="#会话状态" class="headerlink" title="会话状态"></a>会话状态</h3><p>未连接—&gt;连接中–&gt;已连接–&gt;关闭</p>
+<p>Not_Connected–&gt;Connecting–&gt;Connected–&gt;Closed</p>
+<p>连接失败直接关闭</p>
+<h3 id="Watch-事件机制"><a href="#Watch-事件机制" class="headerlink" title="Watch 事件机制"></a>Watch 事件机制</h3><p>zk 节点信息变更时，可以通过 wacth 机制告诉所有的客户端，客户端可以据此来更细自己本地的节点缓存信息。</p>
+<h3 id="数据存储"><a href="#数据存储" class="headerlink" title="数据存储"></a>数据存储</h3><p>使用DataTree ConcurrentHashMap 存储节点信息</p>
+<p>事务日志：zoo.cfg的dataDir</p>
+<p>快照日志：zoo.cfg的dataDir</p>
+<p>运行日志：&#x2F;bin&#x2F;zookeeper.out</p>
+<h3 id="基于-Java-API"><a href="#基于-Java-API" class="headerlink" title="基于 Java API"></a>基于 Java API</h3><p>ZK 原生Java API操作复杂，推荐使用高度封装的Curator。</p>
+<h3 id="Zookeeper应用"><a href="#Zookeeper应用" class="headerlink" title="Zookeeper应用"></a>Zookeeper应用</h3><p>注册中心、配置中心，分布式协调服务（kafka 集群），分布式锁等等。</p>
+<h3 id="基于-ZK-的分布式锁"><a href="#基于-ZK-的分布式锁" class="headerlink" title="基于 ZK 的分布式锁"></a>基于 ZK 的分布式锁</h3><h4 id="方案一："><a href="#方案一：" class="headerlink" title="方案一："></a>方案一：</h4><p>利用 znode 在同一目录下的唯一性，同一时刻所有的客户端都去创建&#x2F;Locks&#x2F;lock 节点，但最终只有一个能创建成功，创建成功的则获得锁；获得锁的客户端释放锁时，将节点 Lock 删除，这时ZK 的 Watch 机制告诉其他所有的客户端 Lock 节点已删除，这样其他的节点再次去竞争创建 Lock 节点进而获得锁，如图所示：</p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="https://www.zhengyk.cn/images/distribute-lock-01.jpg"
+                      alt="image-20181124152739225"
+                ></p>
+<p><strong>缺点： 羊群效应。</strong>当客户端很多的时候，每次都要通知所有的客户端去竞争创建节点，对资源消耗很大，不推荐使用此方案。</p>
+<h4 id="方案二："><a href="#方案二：" class="headerlink" title="方案二："></a>方案二：</h4><p>创建有序节点，所有的客户端都可以创建临时节点znode，znode的 value从小到大排序，谁的 value 最小，谁就获得锁，同时其他未获得锁的节点监听前一个比自己小的节点，当释放锁时，当前代表获取锁的临时节点删除，这样一直监听它的节点就会收到删除事件，然后它再判断当前目录下自己是不是最小的节点，如果是那么获取锁，如果不是则继续监听等待，直到获取锁。</p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="https://www.zhengyk.cn/images/distribute-lock-02.jpg"
+                      alt="image-20181124153525651"
+                ></p>
+<p>ZK实现分布式锁代码推荐使用 curator 来实现，也可以参照 ReentrantLock 原理实现可重入锁。</p>
+<h3 id="为什么SpringCloud-更推荐使用-ZK做注册中心"><a href="#为什么SpringCloud-更推荐使用-ZK做注册中心" class="headerlink" title="为什么SpringCloud 更推荐使用 ZK做注册中心"></a>为什么SpringCloud 更推荐使用 ZK做注册中心</h3><p>这两天看小马哥直播中谈到了 SpringCloud 推荐使用 ZK 来做注册中心，并且谈到了Eureka、ZK、Consul 的对比，以及为何推荐使用 ZK，这里记录总结下。</p>
+<h4 id="各注册中心的对比"><a href="#各注册中心的对比" class="headerlink" title="各注册中心的对比"></a>各注册中心的对比</h4><table>
+<thead>
+<tr>
+<th>比较点</th>
+<th>Eureka</th>
+<th>ZK</th>
+<th>Consul</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>熟悉度</td>
+<td>相对陌生</td>
+<td>比较熟悉</td>
+<td>更陌生</td>
+</tr>
+<tr>
+<td>CAP</td>
+<td>AP（最终一致性）</td>
+<td>CP</td>
+<td>AP（最终一致性）</td>
+</tr>
+<tr>
+<td>一致性方式</td>
+<td>Http 轮询</td>
+<td>ZAB</td>
+<td>RAFT</td>
+</tr>
+<tr>
+<td>通信方式</td>
+<td>HTTP REST</td>
+<td>自定义协议</td>
+<td>HTTP REST</td>
+</tr>
+<tr>
+<td>更新机制</td>
+<td>Peer to Peer（服务端之间）、定时轮询（客户端与服务端）</td>
+<td>Watch</td>
+<td>Agent监听</td>
+</tr>
+<tr>
+<td>适用规模</td>
+<td>20k-30k 之间的实例数</td>
+<td>10k-20k</td>
+<td>&lt;3k，超过3k 后，列表更新缓慢</td>
+</tr>
+</tbody></table>
+<p>这个是技术专家小马哥给的数据，也是经过很多实战经历总结出的经验，综合以上对比，在绝大多数项目中使用 ZK 是最合适的，再就是使用 Eureka 注册中心的话，如果项目中再用到了配置中心，还需要额外部署如 Spring Cloud Config，再次增加学习运营成本。而 ZK 不仅可以做注册中心，还可以做配置中心，大大减少了项目成员的开发和运维难度。</p>
+
+        </div>
+
+        
+            <div class="post-copyright-info px-2 sm:px-6 md:px-8">
+                <div class="article-copyright-info-container">
+    <ul>
+        <li><strong>Title:</strong> Zookeeper笔记整理</li>
+        <li><strong>Author:</strong> 郑亚凯</li>
+        <li><strong>Created at
+                :</strong> 2018-04-01 18:01:54</li>
+        
+            <li>
+                <strong>Updated at
+                    :</strong> 2023-11-17 19:37:36
+            </li>
+        
+        <li>
+            <strong>Link:</strong> https://www.zhengyk.cn/2018/04/01/zk/zookeeper/
+        </li>
+        <li>
+            <strong>
+                License:
+            </strong>
+            
+
+            
+                This work is licensed under <a class="license" target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0">CC BY-NC-SA 4.0</a>.
+            
+        </li>
+    </ul>
+</div>
+
+            </div>
+        
+
+        
+            <ul class="post-tags-box">
+                
+                    <li class="tag-item">
+                        <a href="/tags/zookeeper/">#zookeeper</a>&nbsp;
+                    </li>
+                
+            </ul>
+        
+
+        
+
+        
+            <div class="article-nav my-8 flex justify-between items-center px-2 sm:px-6 md:px-8">
+                
+                    <div class="article-prev border-border-color shadow-redefine-flat shadow-shadow-color-2 rounded-medium px-4 py-2 hover:shadow-redefine-flat-hover hover:shadow-shadow-color-2">
+                        <a class="prev"
+                        rel="prev"
+                        href="/2018/05/18/springcloud/introduce/"
+                        >
+                            <span class="left arrow-icon flex justify-center items-center">
+                                <i class="fa-solid fa-chevron-left"></i>
+                            </span>
+                            <span class="title flex justify-center items-center">
+                                <span class="post-nav-title-item">SpringCloud学习</span>
+                                <span class="post-nav-item">Prev posts</span>
+                            </span>
+                        </a>
+                    </div>
+                
+                
+                    <div class="article-next border-border-color shadow-redefine-flat shadow-shadow-color-2 rounded-medium px-4 py-2 hover:shadow-redefine-flat-hover hover:shadow-shadow-color-2">
+                        <a class="next"
+                        rel="next"
+                        href="/2018/03/30/mq/rabbitmq/delay-queue/"
+                        >
+                            <span class="title flex justify-center items-center">
+                                <span class="post-nav-title-item">利用 RabbitMQ 实现延时队列</span>
+                                <span class="post-nav-item">Next posts</span>
+                            </span>
+                            <span class="right arrow-icon flex justify-center items-center">
+                                <i class="fa-solid fa-chevron-right"></i>
+                            </span>
+                        </a>
+                    </div>
+                
+            </div>
+        
+
+
+        
+    </div>
+
+    
+        <div class="toc-content-container">
+            <div class="post-toc-wrap">
+    <div class="post-toc">
+        <div class="toc-title">On this page</div>
+        <div class="page-title">Zookeeper笔记整理</div>
+        <ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Zookeeper-%E6%80%BB%E7%BB%93"><span class="nav-text">Zookeeper 总结</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#ZK%E8%8A%82%E7%82%B9"><span class="nav-text">ZK节点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#zoo-cfg"><span class="nav-text">zoo.cfg</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%8A%82%E7%82%B9%E8%AF%A6%E7%BB%86%E4%BF%A1%E6%81%AF"><span class="nav-text">节点详细信息</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ZK%E9%9B%86%E7%BE%A4%E4%B8%AD%E7%9A%84%E8%A7%92%E8%89%B2"><span class="nav-text">ZK集群中的角色</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#leader%E7%9A%84%E9%80%89%E4%B8%BE%E6%9C%BA%E5%88%B6"><span class="nav-text">leader的选举机制</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Zookeeper%E9%9B%86%E7%BE%A4%E8%8A%82%E7%82%B9%E6%95%B0%E9%87%8F%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E6%98%AF%E5%A5%87%E6%95%B0%E4%B8%AA%EF%BC%9F"><span class="nav-text">Zookeeper集群节点数量为什么要是奇数个？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Zookeeper%E8%84%91%E8%A3%82%EF%BC%88Split-Brain%EF%BC%89%E9%97%AE%E9%A2%98"><span class="nav-text">Zookeeper脑裂（Split-Brain）问题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BC%9A%E8%AF%9D%E7%8A%B6%E6%80%81"><span class="nav-text">会话状态</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Watch-%E4%BA%8B%E4%BB%B6%E6%9C%BA%E5%88%B6"><span class="nav-text">Watch 事件机制</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E5%AD%98%E5%82%A8"><span class="nav-text">数据存储</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9F%BA%E4%BA%8E-Java-API"><span class="nav-text">基于 Java API</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Zookeeper%E5%BA%94%E7%94%A8"><span class="nav-text">Zookeeper应用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9F%BA%E4%BA%8E-ZK-%E7%9A%84%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81"><span class="nav-text">基于 ZK 的分布式锁</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88SpringCloud-%E6%9B%B4%E6%8E%A8%E8%8D%90%E4%BD%BF%E7%94%A8-ZK%E5%81%9A%E6%B3%A8%E5%86%8C%E4%B8%AD%E5%BF%83"><span class="nav-text">为什么SpringCloud 更推荐使用 ZK做注册中心</span></a></li></ol></li></ol>
+
+    </div>
+</div>
+        </div>
+    
+</div>
+
+
+
+                
+
+            </div>
+
+            
+
+        </div>
+
+        <div class="main-content-footer">
+            <footer class="footer mt-5 py-5 h-auto text-base text-third-text-color relative border-t-2 border-t-border-color">
+    <div class="info-container py-3 text-center">
+        
+        <div class="text-center">
+            &copy;
+            
+              <span>1970</span>
+              -
+            
+            2023&nbsp;&nbsp;<i class="fa-solid fa-heart fa-beat" style="--fa-animation-duration: 0.5s; color: #f54545"></i>&nbsp;&nbsp;<a href="/">郑亚凯</a>
+        </div>
+        
+        <div class="relative text-center lg:absolute lg:left-[20px] lg:top-1/2 lg:-translate-y-1/2 lg:text-left">
+            <span class="lg:block text-sm">POWERED BY <?xml version="1.0" encoding="utf-8"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd"><svg class="relative top-[2px] inline-block align-baseline" version="1.1" id="圖層_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="1rem" height="1rem" viewBox="0 0 512 512" enable-background="new 0 0 512 512" xml:space="preserve"><path fill="#0E83CD" d="M256.4,25.8l-200,115.5L56,371.5l199.6,114.7l200-115.5l0.4-230.2L256.4,25.8z M349,354.6l-18.4,10.7l-18.6-11V275H200v79.6l-18.4,10.7l-18.6-11v-197l18.5-10.6l18.5,10.8V237h112v-79.6l18.5-10.6l18.5,10.8V354.6z"/></svg><a target="_blank" class="text-base" href="https://hexo.io">Hexo</a></span>
+            <span class="text-sm lg:block">THEME&nbsp;<a class="text-base" target="_blank" href="https://github.com/EvanNotFound/hexo-theme-redefine">Redefine v2.5.2</a></span>
+        </div>
+        
+        
+            <div>
+                Blog up for <span class="odometer" id="runtime_days" ></span> days <span class="odometer" id="runtime_hours"></span> hrs <span class="odometer" id="runtime_minutes"></span> Min <span class="odometer" id="runtime_seconds"></span> Sec
+            </div>
+        
+        
+            <script data-swup-reload-script>
+                try {
+                    function odometer_init() {
+                    const elements = document.querySelectorAll('.odometer');
+                    elements.forEach(el => {
+                        new Odometer({
+                            el,
+                            format: '( ddd).dd',
+                            duration: 200
+                        });
+                    });
+                    }
+                    odometer_init();
+                } catch (error) {}
+            </script>
+        
+        
+        
+    </div>  
+</footer>
+        </div>
+    </div>
+
+    
+        <div class="post-tools">
+            <div class="post-tools-container">
+    <ul class="article-tools-list">
+        <!-- TOC aside toggle -->
+        
+            <li class="right-bottom-tools page-aside-toggle">
+                <i class="fa-regular fa-outdent"></i>
+            </li>
+        
+
+        <!-- go comment -->
+        
+    </ul>
+</div>
+
+        </div>
+    
+
+    <div class="right-side-tools-container">
+        <div class="side-tools-container">
+    <ul class="hidden-tools-list">
+        <li class="right-bottom-tools tool-font-adjust-plus flex justify-center items-center">
+            <i class="fa-regular fa-magnifying-glass-plus"></i>
+        </li>
+
+        <li class="right-bottom-tools tool-font-adjust-minus flex justify-center items-center">
+            <i class="fa-regular fa-magnifying-glass-minus"></i>
+        </li>
+
+        <li class="right-bottom-tools tool-dark-light-toggle flex justify-center items-center">
+            <i class="fa-regular fa-moon"></i>
+        </li>
+
+        <!-- rss -->
+        
+
+        
+
+        <li class="right-bottom-tools tool-scroll-to-bottom flex justify-center items-center">
+            <i class="fa-regular fa-arrow-down"></i>
+        </li>
+    </ul>
+
+    <ul class="visible-tools-list">
+        <li class="right-bottom-tools toggle-tools-list flex justify-center items-center">
+            <i class="fa-regular fa-cog fa-spin"></i>
+        </li>
+        
+            <li class="right-bottom-tools tool-scroll-to-top flex justify-center items-center">
+                <i class="arrow-up fas fa-arrow-up"></i>
+                <span class="percent"></span>
+            </li>
+        
+        
+    </ul>
+</div>
+
+    </div>
+
+    <div class="image-viewer-container">
+    <img src="">
+</div>
+
+
+    
+        <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+          <span class="search-input-field-pre">
+            <i class="fa-solid fa-keyboard"></i>
+          </span>
+            <div class="search-input-container">
+                <input autocomplete="off"
+                       autocorrect="off"
+                       autocapitalize="off"
+                       placeholder="Search..."
+                       spellcheck="false"
+                       type="search"
+                       class="search-input"
+                >
+            </div>
+            <span class="popup-btn-close">
+                <i class="fa-solid fa-times"></i>
+            </span>
+        </div>
+        <div id="search-result">
+            <div id="no-result">
+                <i class="fa-solid fa-spinner fa-spin-pulse fa-5x fa-fw"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+
+</main>
+
+
+    
+<script src="/js/libs/Swup.min.js"></script>
+
+<script src="/js/libs/SwupSlideTheme.min.js"></script>
+
+<script src="/js/libs/SwupScriptsPlugin.min.js"></script>
+
+<script src="/js/libs/SwupProgressPlugin.min.js"></script>
+
+<script src="/js/libs/SwupScrollPlugin.min.js"></script>
+
+<script src="/js/libs/SwupPreloadPlugin.min.js"></script>
+
+<script>
+    const swup = new Swup({
+        plugins: [
+            new SwupScriptsPlugin({
+                optin: true,
+            }),
+            new SwupProgressPlugin(),
+            new SwupScrollPlugin({
+                offset: 80,
+            }),
+            new SwupSlideTheme({
+                mainElement: ".main-content-body",
+            }),
+            new SwupPreloadPlugin(),
+        ],
+        containers: ["#swup"],
+    });
+</script>
+
+
+
+
+
+
+
+<script src="/js/tools/imageViewer.js" type="module"></script>
+
+<script src="/js/utils.js" type="module"></script>
+
+<script src="/js/main.js" type="module"></script>
+
+<script src="/js/layouts/navbarShrink.js" type="module"></script>
+
+<script src="/js/tools/scrollTopBottom.js" type="module"></script>
+
+<script src="/js/tools/lightDarkSwitch.js" type="module"></script>
+
+<script src="/js/layouts/categoryList.js" type="module"></script>
+
+
+
+    
+<script src="/js/tools/localSearch.js" type="module"></script>
+
+
+
+
+    
+<script src="/js/tools/codeBlock.js" type="module"></script>
+
+
+
+
+    
+<script src="/js/layouts/lazyload.js" type="module"></script>
+
+
+
+
+    
+<script src="/js/tools/runtime.js"></script>
+
+    
+<script src="/js/libs/odometer.min.js"></script>
+
+    
+<link rel="stylesheet" href="/assets/odometer-theme-minimal.css">
+
+
+
+
+  
+<script src="/js/libs/Typed.min.js"></script>
+
+  
+<script src="/js/plugins/typed.js" type="module"></script>
+
+
+
+
+
+
+
+<div class="post-scripts" data-swup-reload-script>
+    
+        
+<script src="/js/libs/anime.min.js"></script>
+
+        
+<script src="/js/tools/tocToggle.js" type="module"></script>
+
+<script src="/js/layouts/toc.js" type="module"></script>
+
+<script src="/js/plugins/tabs.js" type="module"></script>
+
+    
+</div>
+
+
+</body>
+</html>
