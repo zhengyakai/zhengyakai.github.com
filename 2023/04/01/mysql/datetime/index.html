@@ -1,0 +1,1070 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="keywords" content="Hexo Theme Redefine">
+    
+    
+    <meta name="author" content="薛定谔的汪">
+    
+    <!-- Completely eliminate flash of wrong theme -->
+    <script>
+        (function() {
+            const THEME_KEY = "REDEFINE-THEME-STATUS";
+            const DARK = "dark", LIGHT = "light";
+            
+            // Get preferred theme
+            function getTheme() {
+                try {
+                    const saved = localStorage.getItem(THEME_KEY);
+                    if (saved) {
+                        const { isDark } = JSON.parse(saved);
+                        return isDark ? DARK : LIGHT;
+                    }
+                } catch (e) {}
+                
+                return matchMedia("(prefers-color-scheme: dark)").matches ? DARK : LIGHT;
+            }
+            
+            // Apply theme to document
+            function applyTheme(theme) {
+                const isDark = theme === DARK;
+                const root = document.documentElement;
+                
+                // Set classes for compatibility
+                root.classList.add(theme);
+                root.classList.remove(isDark ? LIGHT : DARK);
+                root.style.colorScheme = theme;
+            }
+            
+            // Initial application
+            const theme = getTheme();
+            applyTheme(theme);
+            
+            // Listen for system preference changes
+            matchMedia("(prefers-color-scheme: dark)").addEventListener("change", ({ matches }) => {
+                // Only update if using system preference (no localStorage entry)
+                if (!localStorage.getItem(THEME_KEY)) {
+                    applyTheme(matches ? DARK : LIGHT);
+                }
+            });
+            
+            // Set body classes ASAP (before DOMContentLoaded)
+            (function() {
+                const addBodyClass = () => {
+                    const b = document.body;
+                    if (!b) return false;
+                    b.classList.add(theme + "-mode");
+                    return true;
+                };
+
+                // Try immediately
+                if (addBodyClass()) return;
+
+                // Observe until body exists
+                const mo = new MutationObserver(() => {
+                    if (addBodyClass()) mo.disconnect();
+                });
+                mo.observe(document.documentElement, { childList: true, subtree: true });
+            })();
+        })();
+    </script>
+    
+    <!-- preconnect -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    
+    <!--- Seo Part-->
+    
+    <link rel="canonical" href="http://example.com/2023/04/01/mysql/datetime/"/>
+    <meta name="robots" content="index,follow">
+    <meta name="googlebot" content="index,follow">
+    <meta name="revisit-after" content="1 days">
+    
+    
+        
+        <meta name="description" content="Hexo Theme Redefine, Redefine Your Hexo Journey.">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MySQL时间存储最佳实践">
+<meta property="og:url" content="http://example.com/2023/04/01/mysql/datetime/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="Hexo Theme Redefine, Redefine Your Hexo Journey.">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://example.com/images/redefine-og.webp">
+<meta property="article:published_time" content="2023-04-01T08:39:03.000Z">
+<meta property="article:modified_time" content="2026-03-27T06:41:12.980Z">
+<meta property="article:author" content="[object Object]">
+<meta property="article:tag" content="MySQL">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/images/redefine-og.webp">
+    
+    
+    <!--- Icon Part-->
+    <link rel="icon" type="image/png" href="https://www.zhengyk.cn/images/portrait.jpg" sizes="192x192">
+    <link rel="apple-touch-icon" sizes="180x180" href="https://www.zhengyk.cn/images/portrait.jpg">
+    <meta name="theme-color" content="#A31F34">
+    <link rel="shortcut icon" href="https://www.zhengyk.cn/images/portrait.jpg">
+    <!--- Page Info-->
+    
+    <title>
+        
+            MySQL时间存储最佳实践 | 薛定谔的汪
+        
+    </title>
+
+    
+<link rel="stylesheet" href="/fonts/Chillax/chillax.css">
+
+
+    <!--- Inject Part-->
+    
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+
+    
+        
+<link rel="stylesheet" href="/css/build/tailwind.css">
+
+    
+
+    
+<link rel="stylesheet" href="/fonts/GeistMono/geist-mono.css">
+
+    
+<link rel="stylesheet" href="/fonts/Geist/geist.css">
+
+    <!--- Font Part-->
+    
+    
+    
+    
+    
+    
+
+    <script id="hexo-configurations">
+    window.config = {"hostname":"example.com","root":"/","language":"en"};
+    window.theme = {"articles":{"style":{"font_size":"16px","line_height":1.5,"image_border_radius":"14px","image_alignment":"center","image_caption":false,"link_icon":true,"delete_mask":false,"title_alignment":"left","headings_top_spacing":{"h1":"3.2rem","h2":"2.4rem","h3":"1.9rem","h4":"1.6rem","h5":"1.4rem","h6":"1.3rem"}},"word_count":{"enable":true,"count":true,"min2read":true},"author_label":{"enable":true,"auto":false,"list":[]},"code_block":{"copy":true,"style":"mac","highlight_theme":{"light":"github","dark":"vs2015"},"font":{"enable":false,"family":null,"url":null}},"toc":{"enable":true,"max_depth":3,"number":false,"expand":true,"init_open":true},"copyright":{"enable":true,"default":"cc_by_nc_sa"},"lazyload":true,"pangu_js":false,"recommendation":{"enable":false,"title":"推荐阅读","limit":3,"mobile_limit":2,"placeholder":"/images/wallhaven-wqery6-light.webp","skip_dirs":[]}},"colors":{"primary":"#A31F34","secondary":null,"default_mode":"light"},"global":{"fonts":{"chinese":{"enable":false,"family":null,"url":null},"english":{"enable":false,"family":null,"url":null},"title":{"enable":false,"family":null,"url":null}},"content_max_width":"1000px","sidebar_width":"210px","hover":{"shadow":true,"scale":false},"scroll_progress":{"bar":false,"percentage":true},"website_counter":{"url":"https://cn.vercount.one/js","enable":false,"site_pv":false,"site_uv":false,"post_pv":false},"single_page":true,"preloader":{"enable":false,"custom_message":null},"side_tools":{"gear_rotation":true,"auto_expand":false},"open_graph":{"enable":true,"image":"/images/redefine-og.webp","description":"Hexo Theme Redefine, Redefine Your Hexo Journey."},"google_analytics":{"enable":false,"id":null}},"home_banner":{"enable":true,"style":"fixed","image":{"light":"https://www.zhengyk.cn/images/wallhaven-wqery6-light.webp","dark":"https://www.zhengyk.cn/images/wallhaven-wqery6-dark.webp"},"title":"学习技术 | 分享生活","subtitle":{"text":[],"hitokoto":{"enable":false,"show_author":false,"api":"https://v1.hitokoto.cn"},"typing_speed":100,"backing_speed":80,"starting_delay":500,"backing_delay":1500,"loop":true,"smart_backspace":true},"text_color":{"light":"#fff","dark":"#d1d1b6"},"text_style":{"title_size":"2.8rem","subtitle_size":"1.5rem","line_height":1.2},"custom_font":{"enable":false,"family":null,"url":null},"social_links":{"enable":false,"style":"default","links":[{"icon":"fa-brands fa-github","url":null},{"icon":"fa-brands fa-twitter","url":null},{"icon":"fa-solid fa-at","url":"you@example.com"},{"icon":"fa-brands fa-telegram","url":null},{"icon":"/images/custom-icon.svg","url":null}],"qrs":[{"icon":"fa-brands fa-weixin","qr":null},{"icon":"/images/custom-icon.svg","qr":null}]}},"plugins":{"feed":{"enable":false},"aplayer":{"enable":false,"type":"fixed","audios":[{"name":null,"artist":null,"url":null,"cover":null,"lrc":null}]},"mermaid":{"enable":false,"version":"11.4.1","theme":{"light":"default","dark":"dark"}}},"version":"2.9.0","navbar":{"auto_hide":false,"color":{"left":"#f78736","right":"#367df7","transparency":35},"width":{"home":"1200px","pages":"1000px"},"links":{"Home":{"path":"/","icon":"fa-regular fa-house"},"Archives":{"path":"/archives","icon":"fa-regular fa-archive"},"About":{"icon":"fa-regular fa-user","submenus":{"Me":"/about","Github":"https://github.com/zhengyakai"}},"Tags":{"icon":"fa-solid fa-tags","path":"/tags/"},"Categories":{"icon":"fa-solid fa-folder","path":"/categories/"}},"search":{"enable":false,"preload":true}},"page_templates":{"friends_column":2,"tags_style":"blur","masonry":{"batch_size":12,"initial_batch_size":24}},"home":{"sidebar":{"enable":true,"position":"left","first_item":"menu","announcement":null,"show_on_mobile":true,"links":null},"article_date_format":"auto","excerpt_length":200,"categories":{"enable":true,"limit":3},"tags":{"enable":true,"limit":3}},"footer":{"runtime":true,"icon":"<i class=\"fa-solid fa-heart fa-beat\" style=\"--fa-animation-duration: 0.5s; color: #f54545\"></i>","start":"2017/8/17","statistics":true,"customize":null,"icp":{"enable":false,"number":null,"url":null}},"footerStart":"2017/8/17","mermaid":{"style":{"light":"default","dark":"dark"}}};
+    window.lang_ago = {"second":"%s seconds ago","minute":"%s minutes ago","hour":"%s hours ago","day":"%s days ago","week":"%s weeks ago","month":"%s months ago","year":"%s years ago"};
+    window.i18n = {"search":"Search...","toc":"On this page","prev":"Prev","next":"Next","prev_posts":"Prev posts","next_posts":"Next posts","page":"Page %d","recent_posts":"Recent Posts","share":"Share","powered_by":"POWERED BY %s","theme":"THEME","rss_feed":"RSS Feed","category":"Category","categories":"Categories","tag":"Tag","tags":"Tags","post":"Post","posts":"Posts","tagcloud":"Tag Cloud","comment":"Comment","comments":"Comments","home":"Home","archive":"Archive","archives":"Archives","top":"TOP","sticky":"Sticky","go-back-home":"Go Back Home","masonry_loading":"Loading photos...","image_viewer":"Image viewer","close":"Close","exif":{"title":"EXIF","cards":{"camera":"Camera","lens":"Lens","exposure":"Exposure","other":"Other"},"fields":{"make":"Brand","model":"Model","date_taken":"Date taken","lens_model":"Lens","focal_length":"Focal length","focus_mode":"Focus mode","shutter":"Shutter","aperture":"Aperture","iso":"ISO","exposure_program":"Exposure program","exposure_compensation":"Exposure compensation","metering_mode":"Metering mode","flash":"Flash","white_balance":"White balance","latitude":"Latitude","longitude":"Longitude","altitude":"Altitude"},"status":{"loading":"Loading...","no_exif":"No EXIF available","library_missing":"EXIF library not loaded","image_source_missing":"Image source unavailable","unavailable":"EXIF unavailable (blocked by CORS or missing metadata)","flag_unavailable":"EXIF unavailable"}},"about":"About","changelog":"Changelog","links":"Links","link":"Link","friends":"Friends","friend":"Friend","timeline":"Timeline","shuoshuo":"Shuoshuo","bookmarks":"Bookmarks","site_uv":"VISITOR COUNT","site_pv":"TOTAL PAGE VIEWS","read_more":"Read more","wordcount":"Words","min2read":"Mins","status":"Status","runtime":"Blog up for","days":"days","hours":"hrs","minutes":"Min","seconds":"Sec","optimized_by":"and Optimized by Evan","rights":"All Rights Reserved","site_posts":"%s posts in total","site_wordcount":"%s words in total","copyright":{"author":"Author","title":"Title","link":"Link","create_time":"Created at","update_time":"Updated at","license_title":"License","license_content":"This work is licensed under %s.","all_rights_reserved":"All Rights Reserved &#169; %s","public_domain":"This work is in the public domain."},"ago":{"second":"%s seconds ago","minute":"%s minutes ago","hour":"%s hours ago","day":"%s days ago","week":"%s weeks ago","month":"%s months ago","year":"%s years ago"},"create_time":"Created","update_time":"Updated","expired":"This post is written %s days ago, and the content may not be up to date."};
+    window.data = {"masonry":false};
+  </script>
+    
+    <!--- Fontawesome Part-->
+    
+<link rel="stylesheet" href="/fontawesome/fontawesome.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/brands.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/solid.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/regular.min.css">
+
+    
+    
+    
+    
+<meta name="generator" content="Hexo 8.1.1"></head>
+
+
+<body>
+	<div class="progress-bar-container">
+	
+
+	
+	<span class="pjax-progress-bar"></span>
+	<!--        <span class="swup-progress-icon">-->
+	<!--            <i class="fa-solid fa-circle-notch fa-spin"></i>-->
+	<!--        </span>-->
+	
+</div>
+
+<main class="page-container" id="swup">
+
+	
+
+	<div class="main-content-container flex flex-col justify-between min-h-dvh">
+		<div class="main-content-header">
+			<header class="navbar-container px-6 md:px-12">
+    <div class="navbar-content transition-navbar ">
+        <div class="left">
+            
+            <a class="logo-title" href="/">
+                
+                薛定谔的汪
+                
+            </a>
+        </div>
+
+        <div class="right">
+            <!-- PC -->
+            <div class="desktop">
+                <ul class="navbar-list">
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/"
+                                        >
+                                    <i class="fa-regular fa-house fa-fw"></i>
+                                    HOME
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/archives"
+                                        >
+                                    <i class="fa-regular fa-archive fa-fw"></i>
+                                    ARCHIVES
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class="has-dropdown"
+                                   href="#"
+                                        onClick=&#34;return false;&#34;>
+                                    <i class="fa-regular fa-user fa-fw"></i>
+                                    ABOUT
+                                    <i class="fa-solid fa-chevron-down fa-fw"></i>
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                                    <ul class="sub-menu">
+                                        
+                                            <li>
+                                                <a href="/about">
+                                                    ME
+                                                </a>
+                                            </li>
+                                        
+                                            <li>
+                                                <a target="_blank" rel="noopener" href="https://github.com/zhengyakai">
+                                                    GITHUB
+                                                </a>
+                                            </li>
+                                        
+                                    </ul>
+                                
+                            </li>
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/tags/"
+                                        >
+                                    <i class="fa-solid fa-tags fa-fw"></i>
+                                    TAGS
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/categories/"
+                                        >
+                                    <i class="fa-solid fa-folder fa-fw"></i>
+                                    CATEGORIES
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                    
+                </ul>
+            </div>
+            <!-- Mobile -->
+            <div class="mobile">
+                
+                <div class="icon-item navbar-bar">
+                    <div class="navbar-bar-middle"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile sheet -->
+    <div class="navbar-drawer h-dvh w-full absolute top-0 left-0 bg-background-color flex flex-col justify-between">
+        <ul class="drawer-navbar-list flex flex-col px-4 justify-center items-start">
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/"
+                        >
+                            <span>
+                                HOME
+                            </span>
+                            
+                                <i class="fa-regular fa-house fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/archives"
+                        >
+                            <span>
+                                ARCHIVES
+                            </span>
+                            
+                                <i class="fa-regular fa-archive fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+                
+                    
+
+                    <li class="drawer-navbar-item-sub text-base my-1.5 flex flex-col w-full">
+                        
+                        <div class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary cursor-pointer text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                             navbar-data-toggle="submenu-About"
+                        >
+                            <span>
+                                ABOUT
+                            </span>
+                            
+                                <i class="fa-solid fa-chevron-right fa-sm fa-fw transition-all"></i>
+                            
+                        </div>
+                        
+
+                        
+                            <div class="flex-col items-start px-2 py-2 hidden" data-target="submenu-About">
+                                
+                                    <div class="drawer-navbar-item text-base flex flex-col justify-center items-start hover:underline active:underline hover:underline-offset-1 rounded-3xl">
+                                        <a class=" text-third-text-color text-xl"
+                                           href="/about">ME</a>
+                                    </div>
+                                
+                                    <div class="drawer-navbar-item text-base flex flex-col justify-center items-start hover:underline active:underline hover:underline-offset-1 rounded-3xl">
+                                        <a class=" text-third-text-color text-xl"
+                                           target="_blank" rel="noopener" href="https://github.com/zhengyakai">GITHUB</a>
+                                    </div>
+                                
+                            </div>
+                        
+                    </li>
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/tags/"
+                        >
+                            <span>
+                                TAGS
+                            </span>
+                            
+                                <i class="fa-solid fa-tags fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/categories/"
+                        >
+                            <span>
+                                CATEGORIES
+                            </span>
+                            
+                                <i class="fa-solid fa-folder fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+
+            
+            
+        </ul>
+
+        <div class="statistics flex justify-around my-2.5">
+    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/tags">
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">36</div>
+        <div class="label text-third-text-color text-sm">Tags</div>
+    </a>
+    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/categories">
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">14</div>
+        <div class="label text-third-text-color text-sm">Categories</div>
+    </a>
+    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/archives">
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">108</div>
+        <div class="label text-third-text-color text-sm">Posts</div>
+    </a>
+</div>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+		</div>
+
+		<div class="main-content-body transition-fade-up">
+			
+
+			<div class="main-content">
+				<div class="post-page-container flex relative justify-between box-border w-full h-full">
+	<div class="article-content-container">
+
+		<div class="article-title relative w-full">
+			
+			
+			
+			<img src="https://www.zhengyk.cn/images/summer-07-01.jpeg" alt="MySQL时间存储最佳实践" class="w-full h-60 sm:h-72 md:h-80 object-cover sm:rounded-t-large dark:brightness-75" />
+			
+			<div class="w-full flex items-center absolute bottom-0 justify-start">
+				<h1 class="article-title-cover text-center mx-6 my-6 text-second-text-color bg-background-color-transparent px-4 py-3 text-3xl sm:text-4xl md:text-5xl font-semibold backdrop-blur-lg rounded-xl border border-border-color ">MySQL时间存储最佳实践</h1>
+			</div>
+			
+		</div>
+
+		
+		<div class="article-header flex flex-row gap-2 items-center px-2 sm:px-6 md:px-8">
+			<div class="avatar w-[46px] h-[46px] shrink-0 rounded-medium border border-border-color p-px">
+				<img src="https://www.zhengyk.cn/images/portrait.jpg">
+			</div>
+			<div class="info flex flex-col justify-between">
+				<div class="author flex items-center">
+					<span class="name text-default-text-color text-lg font-semibold">薛定谔的汪</span>
+					
+					<span class="author-label ml-1.5 text-xs px-2 py-0.5 rounded-small text-third-text-color border border-shadow-color-1">Lv5</span>
+					
+				</div>
+				<div class="meta-info">
+					<div class="article-meta-info">
+    <span class="article-date article-meta-item">
+        <i class="fa-regular fa-pen-fancy"></i>&nbsp;
+        <span class="desktop">2023-04-01 16:39:03</span>
+        <span class="mobile">2023-04-01 16:39:03</span>
+        <span class="hover-info">Created</span>
+    </span>
+    
+        <span class="article-date article-meta-item">
+            <i class="fa-regular fa-wrench"></i>&nbsp;
+            <span class="desktop">2026-03-27 14:41:12</span>
+            <span class="mobile">2026-03-27 14:41:12</span>
+            <span class="hover-info">Updated</span>
+        </span>
+    
+
+    
+        <span class="article-categories article-meta-item">
+            <i class="fa-regular fa-folders"></i>&nbsp;
+            <ul>
+                
+                
+                    
+                        
+                        <li>
+                            <a href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a>&nbsp;
+                        </li>
+                    
+                    
+                
+            </ul>
+        </span>
+    
+    
+        <span class="article-tags article-meta-item">
+            <i class="fa-regular fa-tags"></i>&nbsp;
+            <ul>
+                
+                    <li>
+                        <a href="/tags/MySQL/">MySQL</a>&nbsp;
+                    </li>
+                
+            </ul>
+        </span>
+    
+
+    
+    
+    
+    
+</div>
+
+				</div>
+			</div>
+		</div>
+		
+
+		
+
+
+		<div class="article-content markdown-body px-2 sm:px-6 md:px-8 pb-8">
+			<h1 id="MySQL时间存储最佳实践：选型建议-跨时区转换全方案"><a href="#MySQL时间存储最佳实践：选型建议-跨时区转换全方案" class="headerlink" title="MySQL时间存储最佳实践：选型建议+跨时区转换全方案"></a>MySQL时间存储最佳实践：选型建议+跨时区转换全方案</h1><p>在后端开发中，时间字段的存储的是最基础也最容易踩坑的环节——选对存储类型能避免后续90%的时间相关问题，而跨时区场景的处理则直接影响系统的兼容性和数据一致性。很多开发者要么随便选datetime&#x2F;timestamp，要么遇到跨时区就手忙脚乱，今天就一次性讲清楚：MySQL时间存储该怎么选，以及当数据库用datetime但业务需要时区转换时，如何优雅落地。</p>
+<p>本文全程贴合生产标准，不管是国内业务还是国际化业务，不管是新项目选型还是老项目改造，都能直接套用，彻底避开时间存储和时区转换的所有坑。</p>
+<h2 id="一、MySQL时间存储类型选型建议"><a href="#一、MySQL时间存储类型选型建议" class="headerlink" title="一、MySQL时间存储类型选型建议"></a>一、MySQL时间存储类型选型建议</h2><p>MySQL提供了多种时间存储类型，datetime、timestamp、date、time、varchar，不同类型的适用场景差异极大，选错了不仅影响性能，还会埋下时区、精度、范围等隐患。先上核心选型结论，再逐个拆解。</p>
+<h3 id="核心选型原则"><a href="#核心选型原则" class="headerlink" title="核心选型原则"></a>核心选型原则</h3><ol>
+<li>国内业务（无跨时区需求）：优先用 <strong>datetime(3)</strong>，带毫秒精度，稳定无隐患；</li>
+<li>国际化跨时区业务：优先用 <strong>datetime(3)+代码层UTC转换</strong>，替代timestamp（规避2038年限）；</li>
+<li>仅存日期（如生日）：用 <strong>date</strong>；仅存时间（如打卡时段）：用 <strong>time</strong>（均不推荐用于业务核心时间字段）；</li>
+<li>绝对禁止：用 <strong>varchar</strong> 存储时间（无法排序、无法索引、无法用时间函数，是慢查询重灾区）。</li>
+</ol>
+<h3 id="四种常见时间类型对比（一眼选对）"><a href="#四种常见时间类型对比（一眼选对）" class="headerlink" title="四种常见时间类型对比（一眼选对）"></a>四种常见时间类型对比（一眼选对）</h3><table>
+<thead>
+<tr>
+<th align="left">存储类型</th>
+<th align="left">时间格式</th>
+<th align="left">时区支持</th>
+<th align="left">时间范围</th>
+<th align="left">存储空间</th>
+<th align="left">适用场景</th>
+<th align="left">推荐度</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">datetime(3)</td>
+<td align="left">2025-03-27 15:30:20.123</td>
+<td align="left">无（不自动转换）</td>
+<td align="left">1000–9999年</td>
+<td align="left">5~8字节</td>
+<td align="left">国内业务、跨时区业务（配合代码转换）</td>
+<td align="left">⭐⭐⭐⭐⭐（首选）</td>
+</tr>
+<tr>
+<td align="left">timestamp(3)</td>
+<td align="left">2025-03-27 15:30:20.123</td>
+<td align="left">有（自动时区转换）</td>
+<td align="left">1970–2038年</td>
+<td align="left">4~7字节</td>
+<td align="left">短期国际化业务（无2038顾虑）</td>
+<td align="left">⭐⭐⭐（次选）</td>
+</tr>
+<tr>
+<td align="left">date</td>
+<td align="left">2025-03-27</td>
+<td align="left">无</td>
+<td align="left">1000–9999年</td>
+<td align="left">3字节</td>
+<td align="left">仅存储日期（如生日、注册日期）</td>
+<td align="left">⭐⭐（按需使用）</td>
+</tr>
+<tr>
+<td align="left">time</td>
+<td align="left">15:30:20</td>
+<td align="left">无</td>
+<td align="left">00:00:00~23:59:59</td>
+<td align="left">3字节</td>
+<td align="left">仅存储时间（如打卡时间、时段）</td>
+<td align="left">⭐（按需使用）</td>
+</tr>
+<tr>
+<td align="left">varchar</td>
+<td align="left">字符串格式（如2025-03-27）</td>
+<td align="left">无</td>
+<td align="left">无限制（取决于字符串长度）</td>
+<td align="left">较高（随字符串长度变化）</td>
+<td align="left">无任何适用场景</td>
+<td align="left">❌（绝对禁止）</td>
+</tr>
+</tbody></table>
+<h3 id="生产标准建表模板"><a href="#生产标准建表模板" class="headerlink" title="生产标准建表模板"></a>生产标准建表模板</h3><p>不管是国内业务还是跨时区业务，核心时间字段（创建时间、更新时间、支付时间等）统一用datetime(3)，以下是通用建表模板，适配所有业务场景：</p>
+<div class="code-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE TABLE</span> `<span class="keyword">user</span>` (</span><br><span class="line">  `id` <span class="type">bigint</span> <span class="keyword">NOT NULL</span> AUTO_INCREMENT COMMENT <span class="string">&#x27;主键ID&#x27;</span>,</span><br><span class="line">  `name` <span class="type">varchar</span>(<span class="number">32</span>) <span class="keyword">NOT NULL</span> <span class="keyword">DEFAULT</span> <span class="string">&#x27;&#x27;</span> COMMENT <span class="string">&#x27;用户名&#x27;</span>,</span><br><span class="line">  `phone` <span class="type">varchar</span>(<span class="number">11</span>) <span class="keyword">NOT NULL</span> <span class="keyword">DEFAULT</span> <span class="string">&#x27;&#x27;</span> COMMENT <span class="string">&#x27;手机号&#x27;</span>,</span><br><span class="line">  `create_time` datetime(<span class="number">3</span>) <span class="keyword">NOT NULL</span> <span class="keyword">DEFAULT</span> <span class="built_in">CURRENT_TIMESTAMP</span>(<span class="number">3</span>) COMMENT <span class="string">&#x27;创建时间（UTC，跨时区业务用）&#x27;</span>,</span><br><span class="line">  `update_time` datetime(<span class="number">3</span>) <span class="keyword">NOT NULL</span> <span class="keyword">DEFAULT</span> <span class="built_in">CURRENT_TIMESTAMP</span>(<span class="number">3</span>) <span class="keyword">ON</span> <span class="keyword">UPDATE</span> <span class="built_in">CURRENT_TIMESTAMP</span>(<span class="number">3</span>) COMMENT <span class="string">&#x27;更新时间（UTC，跨时区业务用）&#x27;</span>,</span><br><span class="line">  `register_date` <span class="type">date</span> <span class="keyword">DEFAULT</span> <span class="keyword">NULL</span> COMMENT <span class="string">&#x27;注册日期（仅存日期，按需添加）&#x27;</span>,</span><br><span class="line">  <span class="keyword">PRIMARY KEY</span> (`id`),</span><br><span class="line">  KEY `idx_create_time` (`create_time`) COMMENT <span class="string">&#x27;时间范围查询索引&#x27;</span></span><br><span class="line">) ENGINE<span class="operator">=</span>InnoDB <span class="keyword">DEFAULT</span> CHARSET<span class="operator">=</span>utf8mb4 COMMENT<span class="operator">=</span><span class="string">&#x27;用户表&#x27;</span>;</span><br></pre></td></tr></table></figure></div>
+
+<p>说明：跨时区业务需在注释中标明“UTC”，提醒开发人员入库时存UTC时间；国内无跨时区业务，可去掉UTC注释，直接存本地时间（但推荐统一存UTC，便于后续扩展）。</p>
+<h3 id="为什么首选datetime-3-？（核心优势）"><a href="#为什么首选datetime-3-？（核心优势）" class="headerlink" title="为什么首选datetime(3)？（核心优势）"></a>为什么首选datetime(3)？（核心优势）</h3><p>很多开发者会纠结datetime和timestamp，其实datetime(3)的优势在生产场景中更突出，尤其是长期业务：</p>
+<ol>
+<li>支持毫秒精度：(3)代表保留3位毫秒，满足订单、支付、日志等核心场景的时间精度需求（避免同一秒内的操作无法排序）；</li>
+<li>时间范围极广：1000-9999年，完全规避timestamp的2038年限问题（2038年后timestamp会溢出，导致数据错乱）；</li>
+<li>不受时区影响：存储的是纯时间字符串，不会因服务器时区、MySQL时区、JDBC配置变动而错乱，稳定性最高；</li>
+<li>索引性能最优：时间范围查询（where create_time between ? and ?）时，datetime索引效率高于其他类型，且支持分区表优化。</li>
+</ol>
+<h2 id="二、重点：datetime无时区，跨时区业务怎么处理？"><a href="#二、重点：datetime无时区，跨时区业务怎么处理？" class="headerlink" title="二、重点：datetime无时区，跨时区业务怎么处理？"></a>二、重点：datetime无时区，跨时区业务怎么处理？</h2><p>前面已经明确，跨时区业务首选datetime(3)，但datetime本身不带时区信息，存的是“物理时间字符串”，无法自动做时区转换。比如北京用户（UTC+8）提交的时间，纽约用户（UTC-4）查询时，需要显示纽约本地时间，这时候该怎么处理？</p>
+<p>核心解决方案（业内公认最优）：<strong>数据库datetime统一存UTC标准时间，时区转换全部放在应用代码层</strong>，不依赖MySQL的任何时区配置，彻底避免混乱。</p>
+<h3 id="核心逻辑"><a href="#核心逻辑" class="headerlink" title="核心逻辑"></a>核心逻辑</h3><p>入库：前端本地时间 → 后端转为UTC时间 → 存入datetime(3)； 出库：数据库UTC时间 → 后端根据用户所在时区 → 转为本地时间 → 返回前端。</p>
+<p>用UTC时间作为全球统一的时间基准，既能保证底层数据一致（对账、日志追溯无压力），又能满足不同时区用户的显示需求，而且完全可控。</p>
+<h3 id="分三层落地"><a href="#分三层落地" class="headerlink" title="分三层落地"></a>分三层落地</h3><p>推荐使用JDK8自带的java.time包（线程安全，替代传统的Date、SimpleDateFormat），下面从数据库层、代码层、前端层，一步步实现落地。</p>
+<h4 id="1-数据库层：固定规范，不碰时区配置"><a href="#1-数据库层：固定规范，不碰时区配置" class="headerlink" title="1. 数据库层：固定规范，不碰时区配置"></a>1. 数据库层：固定规范，不碰时区配置</h4><p>数据库层面保持极简，不做任何时区相关的配置，只保证存储的一致性：</p>
+<ul>
+<li>字段类型：统一用datetime(3)，不修改任何MySQL时区配置（如time_zone）；</li>
+<li>存储规则：所有核心时间字段（创建、更新、支付等），必须存入UTC时间，禁止存本地时间；</li>
+<li>禁忌：不要在JDBC连接串中添加serverTimezone参数（如serverTimezone&#x3D;Asia&#x2F;Shanghai），避免MySQL自动解析时区，导致时间错乱。</li>
+</ul>
+<h4 id="2-代码层：统一处理时区转换"><a href="#2-代码层：统一处理时区转换" class="headerlink" title="2. 代码层：统一处理时区转换"></a>2. 代码层：统一处理时区转换</h4><p>时区转换的核心操作都在代码层完成，封装成工具类，全局复用，避免重复开发，下面是完整可落地的Java代码示例。</p>
+<h5 id="工具类封装（TimeZoneUtil-java）"><a href="#工具类封装（TimeZoneUtil-java）" class="headerlink" title="工具类封装（TimeZoneUtil.java）"></a>工具类封装（TimeZoneUtil.java）</h5><div class="code-container" data-rel="Java"><figure class="iseeu highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> java.time.*;</span><br><span class="line"><span class="keyword">import</span> java.time.format.DateTimeFormatter;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 时区转换工具类（适配datetime(3)，跨时区业务专用）</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">TimeZoneUtil</span> &#123;</span><br><span class="line">    <span class="comment">// 时间格式（对应datetime(3)，保留3位毫秒）</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="type">DateTimeFormatter</span> <span class="variable">FORMATTER</span> <span class="operator">=</span> DateTimeFormatter.ofPattern(<span class="string">&quot;yyyy-MM-dd HH:mm:ss.SSS&quot;</span>);</span><br><span class="line">    <span class="comment">// UTC标准时区（全局统一基准）</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="type">ZoneId</span> <span class="variable">UTC_ZONE</span> <span class="operator">=</span> ZoneId.of(<span class="string">&quot;UTC&quot;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 前端本地时间 → UTC时间（入库用）</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> localTime 前端传递的本地时间字符串（格式：yyyy-MM-dd HH:mm:ss.SSS）</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> localZoneId 用户所在时区（如北京：Asia/Shanghai，纽约：America/New_York）</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> UTC时间（LocalDateTime，直接存入数据库datetime(3)）</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> LocalDateTime <span class="title function_">localToUtc</span><span class="params">(String localTime, String localZoneId)</span> &#123;</span><br><span class="line">        <span class="comment">// 解析前端本地时间，绑定用户所在时区</span></span><br><span class="line">        <span class="type">LocalDateTime</span> <span class="variable">localDt</span> <span class="operator">=</span> LocalDateTime.parse(localTime, FORMATTER);</span><br><span class="line">        <span class="type">ZonedDateTime</span> <span class="variable">zonedLocal</span> <span class="operator">=</span> ZonedDateTime.of(localDt, ZoneId.of(localZoneId));</span><br><span class="line">        <span class="comment">// 转换为UTC时间，转为LocalDateTime返回</span></span><br><span class="line">        <span class="keyword">return</span> zonedLocal.withZoneSameInstant(UTC_ZONE).toLocalDateTime();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 数据库UTC时间 → 前端本地时间（出库用）</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> utcTime 从数据库查询出的UTC时间（LocalDateTime）</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> targetZoneId 用户所在时区</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> 本地时间字符串（格式：yyyy-MM-dd HH:mm:ss.SSS，返回给前端）</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> String <span class="title function_">utcToLocal</span><span class="params">(LocalDateTime utcTime, String targetZoneId)</span> &#123;</span><br><span class="line">        <span class="comment">// 绑定UTC时区，转换为用户目标时区</span></span><br><span class="line">        <span class="type">ZonedDateTime</span> <span class="variable">utcZoned</span> <span class="operator">=</span> ZonedDateTime.of(utcTime, UTC_ZONE);</span><br><span class="line">        <span class="type">ZonedDateTime</span> <span class="variable">targetZoned</span> <span class="operator">=</span> utcZoned.withZoneSameInstant(ZoneId.of(targetZoneId));</span><br><span class="line">        <span class="comment">// 格式化后返回前端</span></span><br><span class="line">        <span class="keyword">return</span> targetZoned.format(FORMATTER);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 获取当前系统UTC时间（直接入库，无需前端传递）</span></span><br><span class="line"><span class="comment">     * 适用场景：后端主动生成时间（如创建时间、更新时间）</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> LocalDateTime <span class="title function_">getCurrentUtcTime</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> LocalDateTime.now(UTC_ZONE);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
+
+<h5 id="实际调用示例"><a href="#实际调用示例" class="headerlink" title="实际调用示例"></a>实际调用示例</h5><div class="code-container" data-rel="Java"><figure class="iseeu highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 示例1：前端本地时间（北京UTC+8）→ UTC时间，存入数据库</span></span><br><span class="line"><span class="comment">// 前端传递：2025-03-27 20:00:00.123（北京时间）</span></span><br><span class="line"><span class="type">LocalDateTime</span> <span class="variable">utcTime</span> <span class="operator">=</span> TimeZoneUtil.localToUtc(<span class="string">&quot;2025-03-27 20:00:00.123&quot;</span>, <span class="string">&quot;Asia/Shanghai&quot;</span>);</span><br><span class="line"><span class="comment">// 此时utcTime为2025-03-27 12:00:00.123，直接存入数据库create_time字段</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 示例2：数据库UTC时间 → 前端本地时间（纽约UTC-4）</span></span><br><span class="line"><span class="comment">// 从数据库查询出utcTime：2025-03-27 12:00:00.123</span></span><br><span class="line"><span class="type">String</span> <span class="variable">newYorkTime</span> <span class="operator">=</span> TimeZoneUtil.utcToLocal(utcTime, <span class="string">&quot;America/New_York&quot;</span>);</span><br><span class="line"><span class="comment">// 此时newYorkTime为2025-03-27 08:00:00.123，返回给纽约用户</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 示例3：后端主动生成UTC时间（如创建时间）</span></span><br><span class="line"><span class="type">LocalDateTime</span> <span class="variable">currentUtc</span> <span class="operator">=</span> TimeZoneUtil.getCurrentUtcTime();</span><br><span class="line"><span class="comment">// 直接存入数据库create_time字段</span></span><br></pre></td></tr></table></figure></div>
+
+<h4 id="3-前端层：配合传递时区信息"><a href="#3-前端层：配合传递时区信息" class="headerlink" title="3. 前端层：配合传递时区信息"></a>3. 前端层：配合传递时区信息</h4><p>后端需要知道用户所在的时区，才能准确转换时间，推荐两种无需用户手动操作的方式，按需选择：</p>
+<ol>
+<li>自动获取时区（推荐）：前端通过JavaScript获取本地时区标识，请求接口时在请求头（如Time-Zone）中传递。       </li>
+<li>用户偏好设置：用户登录后，在个人中心设置时区（如“北京时间”“纽约时间”），后端存储用户时区偏好，查询时根据用户ID获取时区标识。</li>
+</ol>
+<h2 id="三、常见坑点规避"><a href="#三、常见坑点规避" class="headerlink" title="三、常见坑点规避"></a>三、常见坑点规避</h2><h3 id="坑1：用varchar存时间"><a href="#坑1：用varchar存时间" class="headerlink" title="坑1：用varchar存时间"></a>坑1：用varchar存时间</h3><p>最致命的错误，没有之一。varchar存时间无法排序、无法创建时间索引、无法使用date_add、between等时间函数，而且占空间更大，后续对账、时间范围查询都会出问题，99%的时间相关慢查询都源于此。</p>
+<h3 id="坑2：修改MySQL的time-zone配置"><a href="#坑2：修改MySQL的time-zone配置" class="headerlink" title="坑2：修改MySQL的time_zone配置"></a>坑2：修改MySQL的time_zone配置</h3><p>比如执行set global time_zone &#x3D; ‘+8:00’，把数据库时区设为北京时间。这种方式会导致跨时区部署时，不同服务器的时间解析错乱，而且时区配置是全局的，无法满足多时区用户的需求，运维成本极高。</p>
+<h3 id="坑3：JDBC连接串加serverTimezone参数"><a href="#坑3：JDBC连接串加serverTimezone参数" class="headerlink" title="坑3：JDBC连接串加serverTimezone参数"></a>坑3：JDBC连接串加serverTimezone参数</h3><p>该参数会让MySQL自动把datetime当作指定时区的时间解析，相当于“欺骗”数据库，一旦服务器时区变动或业务扩展到海外，时间会出现偏差，而且不同环境的JDBC配置可能不一致，导致时间混乱。</p>
+<h3 id="坑4：用SQL函数（如CONVERT-TZ）做时区转换"><a href="#坑4：用SQL函数（如CONVERT-TZ）做时区转换" class="headerlink" title="坑4：用SQL函数（如CONVERT_TZ）做时区转换"></a>坑4：用SQL函数（如CONVERT_TZ）做时区转换</h3><p>MySQL的CONVERT_TZ函数可以手动转换时区，但依赖MySQL时区表配置（默认可能未初始化），不同环境配置不一致会导致转换错误；而且SQL中写死时区，后续扩展到其他时区时，需要修改所有相关SQL，维护成本极高。</p>
+<h3 id="坑5：混用datetime和timestamp"><a href="#坑5：混用datetime和timestamp" class="headerlink" title="坑5：混用datetime和timestamp"></a>坑5：混用datetime和timestamp</h3><p>两种类型的时间存储逻辑不同（datetime无时区，timestamp有自动时区转换），混用会导致时间混乱；而且timestamp有2038年限，长期业务会埋下溢出隐患。</p>
+<h2 id="四、总结"><a href="#四、总结" class="headerlink" title="四、总结"></a>四、总结</h2><p>时间存储选型： 国内业务datetime(3)，跨时区UTC存底层； timestamp有2038坑，varchar绝对不能用； date&#x2F;time按需选，核心字段不推荐。</p>
+<p>时区转换原则： 入库本地转UTC，出库UTC转本地； 转换全在代码层，数据库端不碰时区； 前端传时区，后端做转换，全局一致无混乱。</p>
+<p>按照以上方案，不管是新项目选型还是老项目改造，都能彻底解决MySQL时间存储和跨时区转换的所有问题，保证数据一致性和系统稳定性，同时降低后续维护成本。</p>
+
+		</div>
+
+		
+		<div class="post-copyright-info w-full my-8 px-2 sm:px-6 md:px-8">
+			<div class="article-copyright-info-container">
+    <ul>
+        <li><strong>Title:</strong> MySQL时间存储最佳实践</li>
+        <li><strong>Author:</strong> 薛定谔的汪</li>
+        <li><strong>Created at
+                :</strong> 2023-04-01 16:39:03</li>
+        
+            <li>
+                <strong>Updated at
+                    :</strong> 2026-03-27 14:41:12
+            </li>
+        
+        <li>
+            <strong>Link:</strong> https://www.zhengyk.cn/2023/04/01/mysql/datetime/
+        </li>
+        <li>
+            <strong>
+                License:
+            </strong>
+            
+
+            
+                This work is licensed under <a class="license" target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0">CC BY-NC-SA 4.0</a>.
+            
+        </li>
+    </ul>
+</div>
+
+		</div>
+		
+
+		
+		<ul class="post-tags-box text-lg mt-1.5 flex-wrap justify-center flex md:hidden">
+			
+			<li class="tag-item mx-0.5">
+				<a href="/tags/MySQL/">#MySQL</a>&nbsp;
+			</li>
+			
+		</ul>
+		
+
+		
+
+		
+		<div class="article-nav my-8 flex justify-between items-center px-2 sm:px-6 md:px-8">
+			
+			<div class="article-prev border-border-color shadow-redefine-flat shadow-shadow-color-2 rounded-medium px-4 py-2 hover:shadow-redefine-flat-hover hover:shadow-shadow-color-2">
+				<a class="prev" rel="prev" href="/2023/05/01/mysql/Implicit_conversion/">
+					<span class="left arrow-icon flex justify-center items-center">
+						<i class="fa-solid fa-chevron-left"></i>
+					</span>
+					<span class="title flex justify-center items-center">
+						<span class="post-nav-title-item truncate max-w-48">MySQL 隐式类型转换深度剖析</span>
+						<span class="post-nav-item">Prev posts</span>
+					</span>
+				</a>
+			</div>
+			
+			
+			<div class="article-next border-border-color shadow-redefine-flat shadow-shadow-color-2 rounded-medium px-4 py-2 hover:shadow-redefine-flat-hover hover:shadow-shadow-color-2">
+				<a class="next" rel="next" href="/2023/03/01/mysql/index_failure/">
+					<span class="title flex justify-center items-center">
+						<span class="post-nav-title-item truncate max-w-48">常见的MySQL索引失效案例总结与分析</span>
+						<span class="post-nav-item">Next posts</span>
+					</span>
+					<span class="right arrow-icon flex justify-center items-center">
+						<i class="fa-solid fa-chevron-right"></i>
+					</span>
+				</a>
+			</div>
+			
+		</div>
+		
+
+
+		
+		<div class="comment-container px-2 sm:px-6 md:px-8 pb-8">
+			<div class="comments-container mt-10 w-full ">
+    <div id="comment-anchor" class="w-full h-2.5"></div>
+    <div class="comment-area-title w-full my-1.5 md:my-2.5 text-xl md:text-3xl font-bold">
+        Comments
+    </div>
+    
+
+        
+            
+    <div id="waline"></div>
+    <script type="module" data-swup-reload-script>
+      import { init } from '/js/libs/waline.js';
+
+      (function() {
+        const startPath = location.pathname;
+        const startTime = Date.now();
+        const retryDelay = 200;
+        const retryLimit = 5000;
+
+        const runWaline = () => {
+          if (location.pathname !== startPath) {
+            return;
+          }
+
+          const container = document.getElementById('waline');
+          if (!container) {
+            if (Date.now() - startTime < retryLimit) {
+              setTimeout(runWaline, retryDelay);
+            }
+            return;
+          }
+
+          if (window.redefineWalineInstance?.destroy) {
+            window.redefineWalineInstance.destroy();
+          }
+
+          container.innerHTML = '';
+          window.redefineWalineInstance = init({
+            el: '#waline',
+            serverURL: 'https://example.example.com',
+            path: location.pathname,
+            dark: 'body[class~="dark-mode"]',
+            reaction: false,
+            requiredMeta: ['nick', 'mail'],
+            emoji: [],
+                      lang: 'zh-CN',
+          });
+        };
+
+        runWaline();
+      })();
+    </script>
+
+
+
+        
+    
+</div>
+
+		</div>
+		
+	</div>
+
+	
+	<div class="toc-content-container">
+		<div class="post-toc-wrap">
+	<div class="post-toc">
+		<div class="toc-title">On this page</div>
+		<div class="page-title">MySQL时间存储最佳实践</div>
+		<ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#MySQL%E6%97%B6%E9%97%B4%E5%AD%98%E5%82%A8%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5%EF%BC%9A%E9%80%89%E5%9E%8B%E5%BB%BA%E8%AE%AE-%E8%B7%A8%E6%97%B6%E5%8C%BA%E8%BD%AC%E6%8D%A2%E5%85%A8%E6%96%B9%E6%A1%88"><span class="nav-text">MySQL时间存储最佳实践：选型建议+跨时区转换全方案</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81MySQL%E6%97%B6%E9%97%B4%E5%AD%98%E5%82%A8%E7%B1%BB%E5%9E%8B%E9%80%89%E5%9E%8B%E5%BB%BA%E8%AE%AE"><span class="nav-text">一、MySQL时间存储类型选型建议</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A0%B8%E5%BF%83%E9%80%89%E5%9E%8B%E5%8E%9F%E5%88%99"><span class="nav-text">核心选型原则</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9B%9B%E7%A7%8D%E5%B8%B8%E8%A7%81%E6%97%B6%E9%97%B4%E7%B1%BB%E5%9E%8B%E5%AF%B9%E6%AF%94%EF%BC%88%E4%B8%80%E7%9C%BC%E9%80%89%E5%AF%B9%EF%BC%89"><span class="nav-text">四种常见时间类型对比（一眼选对）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%94%9F%E4%BA%A7%E6%A0%87%E5%87%86%E5%BB%BA%E8%A1%A8%E6%A8%A1%E6%9D%BF"><span class="nav-text">生产标准建表模板</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E9%A6%96%E9%80%89datetime-3-%EF%BC%9F%EF%BC%88%E6%A0%B8%E5%BF%83%E4%BC%98%E5%8A%BF%EF%BC%89"><span class="nav-text">为什么首选datetime(3)？（核心优势）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E9%87%8D%E7%82%B9%EF%BC%9Adatetime%E6%97%A0%E6%97%B6%E5%8C%BA%EF%BC%8C%E8%B7%A8%E6%97%B6%E5%8C%BA%E4%B8%9A%E5%8A%A1%E6%80%8E%E4%B9%88%E5%A4%84%E7%90%86%EF%BC%9F"><span class="nav-text">二、重点：datetime无时区，跨时区业务怎么处理？</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A0%B8%E5%BF%83%E9%80%BB%E8%BE%91"><span class="nav-text">核心逻辑</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%86%E4%B8%89%E5%B1%82%E8%90%BD%E5%9C%B0"><span class="nav-text">分三层落地</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E5%B8%B8%E8%A7%81%E5%9D%91%E7%82%B9%E8%A7%84%E9%81%BF"><span class="nav-text">三、常见坑点规避</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9D%911%EF%BC%9A%E7%94%A8varchar%E5%AD%98%E6%97%B6%E9%97%B4"><span class="nav-text">坑1：用varchar存时间</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9D%912%EF%BC%9A%E4%BF%AE%E6%94%B9MySQL%E7%9A%84time-zone%E9%85%8D%E7%BD%AE"><span class="nav-text">坑2：修改MySQL的time_zone配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9D%913%EF%BC%9AJDBC%E8%BF%9E%E6%8E%A5%E4%B8%B2%E5%8A%A0serverTimezone%E5%8F%82%E6%95%B0"><span class="nav-text">坑3：JDBC连接串加serverTimezone参数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9D%914%EF%BC%9A%E7%94%A8SQL%E5%87%BD%E6%95%B0%EF%BC%88%E5%A6%82CONVERT-TZ%EF%BC%89%E5%81%9A%E6%97%B6%E5%8C%BA%E8%BD%AC%E6%8D%A2"><span class="nav-text">坑4：用SQL函数（如CONVERT_TZ）做时区转换</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9D%915%EF%BC%9A%E6%B7%B7%E7%94%A8datetime%E5%92%8Ctimestamp"><span class="nav-text">坑5：混用datetime和timestamp</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%9B%E3%80%81%E6%80%BB%E7%BB%93"><span class="nav-text">四、总结</span></a></li></ol></li></ol>
+
+	</div>
+</div>
+	</div>
+	
+</div>
+
+			</div>
+
+			
+		</div>
+
+		<div class="main-content-footer">
+			<footer class="footer mt-5 py-5 h-auto text-base text-third-text-color relative border-t-2 border-t-border-color">
+    <div class="info-container py-3 text-center">
+        
+        <div class="text-center">
+            &copy;
+            
+              <span>2017</span>
+              -
+            
+            2026&nbsp;&nbsp;<i class="fa-solid fa-heart fa-beat" style="--fa-animation-duration: 0.5s; color: #f54545"></i>&nbsp;&nbsp;<a href="/">薛定谔的汪</a>
+            
+                
+                <p class="post-count space-x-0.5">
+                    <span>
+                        108 posts in total
+                    </span>
+                    
+                </p>
+            
+        </div>
+        
+        <div class="relative text-center lg:absolute lg:left-[20px] lg:top-1/2 lg:-translate-y-1/2 lg:text-left">
+            <span class="lg:block text-sm">POWERED BY <?xml version="1.0" encoding="utf-8"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd"><svg class="relative top-[2px] inline-block align-baseline" version="1.1" id="圖層_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="1rem" height="1rem" viewBox="0 0 512 512" enable-background="new 0 0 512 512" xml:space="preserve"><path fill="#0E83CD" d="M256.4,25.8l-200,115.5L56,371.5l199.6,114.7l200-115.5l0.4-230.2L256.4,25.8z M349,354.6l-18.4,10.7l-18.6-11V275H200v79.6l-18.4,10.7l-18.6-11v-197l18.5-10.6l18.5,10.8V237h112v-79.6l18.5-10.6l18.5,10.8V354.6z"/></svg><a target="_blank" class="text-base" href="https://hexo.io">Hexo</a></span>
+            <span class="text-sm lg:block">THEME&nbsp;<a class="text-base" target="_blank" href="https://github.com/EvanNotFound/hexo-theme-redefine">Redefine v2.9.0</a></span>
+        </div>
+        
+        
+            <div>
+                Blog up for <span class="odometer" id="runtime_days" ></span> days <span class="odometer" id="runtime_hours"></span> hrs <span class="odometer" id="runtime_minutes"></span> Min <span class="odometer" id="runtime_seconds"></span> Sec
+            </div>
+        
+        
+            <script data-swup-reload-script>
+                try {
+                    function odometer_init() {
+                    const elements = document.querySelectorAll('.odometer');
+                    elements.forEach(el => {
+                        new Odometer({
+                            el,
+                            format: '( ddd).dd',
+                            duration: 200
+                        });
+                    });
+                    }
+                    odometer_init();
+                } catch (error) {}
+            </script>
+        
+        
+        
+    </div>  
+</footer>
+		</div>
+	</div>
+
+	
+	<div class="post-tools">
+		<div class="post-tools-container">
+	<ul class="article-tools-list">
+		<!-- TOC aside toggle -->
+		
+		<li class="right-bottom-tools page-aside-toggle">
+			<i class="fa-regular fa-outdent"></i>
+		</li>
+		
+
+		<!-- go comment -->
+		
+		<li class="go-comment">
+			<i class="fa-regular fa-comments"></i>
+		</li>
+		
+	</ul>
+</div>
+	</div>
+	
+
+	<div class="right-side-tools-container">
+		<div class="side-tools-container">
+	<ul class="hidden-tools-list">
+		<li class="right-bottom-tools tool-font-adjust-plus flex justify-center items-center">
+			<i class="fa-regular fa-magnifying-glass-plus"></i>
+		</li>
+
+		<li class="right-bottom-tools tool-font-adjust-minus flex justify-center items-center">
+			<i class="fa-regular fa-magnifying-glass-minus"></i>
+		</li>
+
+		<li class="right-bottom-tools tool-dark-light-toggle flex justify-center items-center">
+			<i class="fa-regular fa-moon"></i>
+		</li>
+
+		<!-- rss -->
+		
+
+		
+
+		<li class="right-bottom-tools tool-scroll-to-bottom flex justify-center items-center">
+			<i class="fa-regular fa-arrow-down"></i>
+		</li>
+	</ul>
+
+	<ul class="visible-tools-list">
+		<li class="right-bottom-tools toggle-tools-list flex justify-center items-center">
+			<i class="fa-regular fa-cog fa-spin"></i>
+		</li>
+		
+		<li class="right-bottom-tools tool-scroll-to-top flex justify-center items-center">
+			<i class="arrow-up fas fa-arrow-up"></i>
+			<span class="percent"></span>
+		</li>
+		
+		
+	</ul>
+</div>
+	</div>
+
+	<div class="image-viewer-container" role="dialog" aria-modal="true" aria-label="Image viewer">
+	<button class="image-viewer-close" type="button" aria-label="Close">
+		<i class="fa-solid fa-xmark"></i>
+	</button>
+	<button class="image-viewer-prev" type="button" aria-label="Prev">
+		<i class="fa-solid fa-chevron-left"></i>
+	</button>
+	<div class="image-viewer-frame">
+		<img src="" alt="">
+	</div>
+	<div class="image-viewer-exif-panel hidden absolute left-1/2 bottom-20 -translate-x-1/2 w-[min(92vw,420px)] max-h-[60vh] overflow-hidden rounded-2xl bg-background-color-transparent-80 p-4 text-left shadow-redefine-flat backdrop-blur-md" role="dialog" aria-label="EXIF" aria-hidden="true">
+		<div class="flex items-center justify-between mb-3">
+			<span class="text-sm font-semibold text-first-text-color">EXIF</span>
+			<button class="image-viewer-exif-close flex h-8 w-8 items-center justify-center rounded-full bg-background-color-transparent-80 text-first-text-color transition hover:bg-background-color-transparent-40" type="button" aria-label="Close">
+				<i class="fa-solid fa-xmark text-[0.65rem]"></i>
+			</button>
+		</div>
+		<div class="image-viewer-exif-cards grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-[50vh] overflow-y-auto pr-1 scrollbar-hide"></div>
+		<template class="image-viewer-exif-card-template">
+			<div class="rounded-lg bg-background-color-transparent-40 px-3 py-2">
+				<div class="image-viewer-exif-card-header flex items-center gap-2 mb-1">
+					<i class="image-viewer-exif-card-icon fa-solid fa-circle-info text-xs text-third-text-color"></i>
+					<div class="image-viewer-exif-card-title text-xs font-semibold text-first-text-color"></div>
+				</div>
+				<div class="image-viewer-exif-card-items flex flex-col gap-1"></div>
+			</div>
+		</template>
+	</div>
+	<button class="image-viewer-exif-toggle flex items-center gap-2 hidden absolute left-1/2 bottom-6 -translate-x-1/2 rounded-full border border-border-color bg-background-color-transparent-80 px-4 py-2 text-first-text-color backdrop-blur-md transition hover:bg-background-color-transparent-40" type="button" aria-label="EXIF" aria-expanded="false">
+		<i class="fa-solid fa-circle-info text-xs"></i>
+		<span class="text-xs font-semibold uppercase tracking-wider">EXIF</span>
+	</button>
+	<button class="image-viewer-next" type="button" aria-label="Next">
+		<i class="fa-solid fa-chevron-right"></i>
+	</button>
+</div>
+
+
+	
+
+</main>
+
+
+
+<script src="/js/build/libs/Swup.min.js"></script>
+
+<script src="/js/build/libs/SwupSlideTheme.min.js"></script>
+
+<script src="/js/build/libs/SwupScriptsPlugin.min.js"></script>
+
+<script src="/js/build/libs/SwupProgressPlugin.min.js"></script>
+
+<script src="/js/build/libs/SwupScrollPlugin.min.js"></script>
+
+<script src="/js/build/libs/SwupPreloadPlugin.min.js"></script>
+
+<script>
+    window.swup = new Swup({
+        plugins: [
+            new SwupScriptsPlugin({
+                optin: true,
+            }),
+            new SwupProgressPlugin(),
+            new SwupScrollPlugin({
+                offset: 80,
+            }),
+            new SwupSlideTheme({
+                mainElement: ".main-content-body",
+            }),
+            new SwupPreloadPlugin(),
+        ],
+        containers: ["#swup"],
+    });
+
+    window.dispatchEvent(
+        new CustomEvent("redefine:swup:ready", {
+            detail: {
+                swup: window.swup,
+            },
+        }),
+    );
+</script>
+
+
+
+
+	
+<script src="/js/build/main.js" type="module"></script>
+
+
+
+    
+<script src="/js/build/libs/odometer.min.js"></script>
+
+    
+<link rel="stylesheet" href="/assets/odometer-theme-minimal.css">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script src="/js/build/libs/moment-with-locales.min.js" data-swup-reload-script=""></script>
+
+
+
+	
+</body>
+
+</html>
