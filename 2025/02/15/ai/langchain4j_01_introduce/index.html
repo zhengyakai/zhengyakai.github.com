@@ -94,7 +94,7 @@
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="http://example.com/images/redefine-og.webp">
 <meta property="article:published_time" content="2025-02-15T10:01:54.000Z">
-<meta property="article:modified_time" content="2026-04-07T07:22:41.000Z">
+<meta property="article:modified_time" content="2026-04-08T06:50:35.304Z">
 <meta property="article:author" content="[object Object]">
 <meta property="article:tag" content="langchain4j">
 <meta name="twitter:card" content="summary">
@@ -454,7 +454,7 @@
         <div class="label text-third-text-color text-sm">Categories</div>
     </a>
     <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/archives">
-        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">111</div>
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">112</div>
         <div class="label text-third-text-color text-sm">Posts</div>
     </a>
 </div>
@@ -509,8 +509,8 @@
     
         <span class="article-date article-meta-item">
             <i class="fa-regular fa-wrench"></i>&nbsp;
-            <span class="desktop">2026-04-07 15:22:41</span>
-            <span class="mobile">2026-04-07 15:22:41</span>
+            <span class="desktop">2026-04-08 14:50:35</span>
+            <span class="mobile">2026-04-08 14:50:35</span>
             <span class="hover-info">Updated</span>
         </span>
     
@@ -666,7 +666,86 @@
 <div class="code-container" data-rel="Java"><figure class="iseeu highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@RestController</span></span><br><span class="line"><span class="meta">@RequestMapping(&quot;/api/ai&quot;)</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">AiController</span> &#123;</span><br><span class="line">    </span><br><span class="line">    <span class="meta">@Resource</span></span><br><span class="line">    <span class="keyword">private</span> AiAssistant aiAssistant;</span><br><span class="line">    </span><br><span class="line">    <span class="meta">@PostMapping(&quot;/chat&quot;)</span></span><br><span class="line">    <span class="keyword">public</span> String <span class="title function_">chat</span><span class="params">(<span class="meta">@RequestParam</span> String question)</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> aiAssistant.chat(question);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
 
 <p>用 Postman 发送请求，AI会返回关于 Stream API 的专业解答。</p>
-<h3 id="4-6-四种消息类型"><a href="#4-6-四种消息类型" class="headerlink" title="4.6 四种消息类型"></a>4.6 四种消息类型</h3><p>LangChain4j 定义了四种消息角色，理解它们能让你更好地控制 AI 行为。</p>
+<h3 id="4-6-AIService注解属性详解"><a href="#4-6-AIService注解属性详解" class="headerlink" title="4.6 @AIService注解属性详解"></a>4.6 <code>@AIService</code>注解属性详解</h3><p><code>@AiService</code> 注解是 LangChain4j 与 Spring Boot 集成的核心，它将一个普通的 Java 接口声明为一个功能强大的 AI 服务，并允许你通过其属性进行精细化的配置。</p>
+<p>下表详细列出了 <code>@AiService</code> 注解支持的所有属性及其作用：</p>
+<table>
+<thead>
+<tr>
+<th align="left">属性</th>
+<th align="left">类型</th>
+<th align="left">必填</th>
+<th align="left">描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left"><strong><code>wiringMode</code></strong></td>
+<td align="left"><code>AiServiceWiringMode</code></td>
+<td align="left">否</td>
+<td align="left"><strong>装配模式</strong>。决定如何为 AI 服务提供所需组件（如模型、记忆等）。 • <strong><code>AUTOMATIC</code> (默认)</strong>：框架会尝试从 Spring 的 <code>ApplicationContext</code> 中自动查找并装配所有匹配类型的组件。 • <strong><code>EXPLICIT</code></strong>：必须通过注解的其他属性（如 <code>chatModel</code>、<code>tools</code>）显式指定所需组件的 <strong>Bean 名称</strong>，精确控制依赖。</td>
+</tr>
+<tr>
+<td align="left"><strong><code>chatModel</code></strong></td>
+<td align="left"><code>String</code></td>
+<td align="left">否</td>
+<td align="left"><strong>对话模型的 Bean 名称</strong>。用于指定一个实现了 <code>ChatLanguageModel</code> 接口的 Bean。当 <code>wiringMode</code> 设为 <code>EXPLICIT</code> 时，需要此项来明确指定模型。</td>
+</tr>
+<tr>
+<td align="left"><strong><code>streamingChatModel</code></strong></td>
+<td align="left"><code>String</code></td>
+<td align="left">否</td>
+<td align="left"><strong>流式对话模型的 Bean 名称</strong>。用于指定一个实现了 <code>StreamingChatLanguageModel</code> 接口的 Bean，支持流式输出。同样，在 <code>EXPLICIT</code> 模式下使用。</td>
+</tr>
+<tr>
+<td align="left"><strong><code>chatMemory</code></strong></td>
+<td align="left"><code>String</code></td>
+<td align="left">否</td>
+<td align="left"><strong>聊天记忆的 Bean 名称</strong>。用于指定一个 <code>ChatMemory</code> 的 Bean。配置后，AI 服务将具备多轮对话的记忆能力，能够记住上下文。</td>
+</tr>
+<tr>
+<td align="left"><strong><code>chatMemoryProvider</code></strong></td>
+<td align="left"><code>String</code></td>
+<td align="left">否</td>
+<td align="left"><strong>聊天记忆提供者的 Bean 名称</strong>。用于指定一个 <code>ChatMemoryProvider</code> 的 Bean。与 <code>chatMemory</code> 不同，它可以根据 <code>@MemoryId</code> 为不同的会话（用户）提供独立的记忆空间，实现会话隔离。</td>
+</tr>
+<tr>
+<td align="left"><strong><code>contentRetriever</code></strong></td>
+<td align="left"><code>String</code></td>
+<td align="left">否</td>
+<td align="left"><strong>内容检索器的 Bean 名称</strong>。用于指定一个 <code>ContentRetriever</code> 的 Bean。这是实现 RAG（检索增强生成）模式的关键组件，能从外部数据源（如向量数据库）检索相关信息，作为上下文提供给 LLM。</td>
+</tr>
+<tr>
+<td align="left"><strong><code>retrievalAugmentor</code></strong></td>
+<td align="left"><code>String</code></td>
+<td align="left">否</td>
+<td align="left"><strong>检索增强器的 Bean 名称</strong>。用于指定一个 <code>RetrievalAugmentor</code> 的 Bean。这是 <code>contentRetriever</code> 的更高级和灵活的替代方案，可以对整个 RAG 流程进行更精细的控制。</td>
+</tr>
+<tr>
+<td align="left"><strong><code>moderationModel</code></strong></td>
+<td align="left"><code>String</code></td>
+<td align="left">否</td>
+<td align="left"><strong>内容审核模型的 Bean 名称</strong>。用于指定一个 <code>ModerationModel</code> 的 Bean，可以对用户输入和 AI 输出进行内容审核，过滤掉不安全或不合适的对话。</td>
+</tr>
+<tr>
+<td align="left"><strong><code>tools</code></strong></td>
+<td align="left"><code>String[]</code></td>
+<td align="left">否</td>
+<td align="left"><strong>工具 Bean 的名称数组</strong>。用于注册一个或多个 <code>@Component</code> 类（该类中包含用 <code>@Tool</code> 注解的方法）的 Bean 名称。这使得 LLM 能够调用这些外部工具&#x2F;函数来执行特定任务，如查询天气、计算等。</td>
+</tr>
+</tbody></table>
+<h3 id="两种装配模式-wiringMode-的选择"><a href="#两种装配模式-wiringMode-的选择" class="headerlink" title="两种装配模式 (wiringMode) 的选择"></a>两种装配模式 (<code>wiringMode</code>) 的选择</h3><p><code>wiringMode</code> 是决定你如何配置 AI 服务的核心，理解它有助于在便捷性和精确性之间做出权衡。</p>
+<ul>
+<li><strong>自动装配 (<code>AUTOMATIC</code>)</strong>：这是默认模式，代码最简洁。你只需声明 <code>@AiService</code>，框架会“智能”地从 Spring 容器中寻找所需组件并注入。<ul>
+<li><strong>优点</strong>：<strong>零配置</strong>，开发速度极快。</li>
+<li><strong>缺点</strong>：当 Spring 容器中存在多个同类型 Bean（比如你配置了两个 <code>ChatLanguageModel</code>）时，框架可能无法确定该注入哪一个，从而导致启动失败或行为不确定。</li>
+</ul>
+</li>
+<li><strong>手动装配 (<code>EXPLICIT</code>)</strong>：在这种模式下，你需要通过注解的各个属性（如 <code>chatModel</code>、<code>tools</code>）精确地指定所需组件的 Bean 名称。<ul>
+<li><strong>优点</strong>：<strong>清晰、安全</strong>。完全避免了 Bean 冲突的问题，服务的依赖关系在接口定义上一目了然，非常适合复杂项目。</li>
+<li><strong>缺点</strong>：需要多写一点配置。</li>
+</ul>
+</li>
+</ul>
+<h3 id="4-7-四种消息类型"><a href="#4-7-四种消息类型" class="headerlink" title="4.7 四种消息类型"></a>4.7 四种消息类型</h3><p>LangChain4j 定义了四种消息角色，理解它们能让你更好地控制 AI 行为。</p>
 <h4 id="消息类型总结"><a href="#消息类型总结" class="headerlink" title="消息类型总结"></a>消息类型总结</h4><table>
 <thead>
 <tr>
@@ -784,7 +863,7 @@
         
             <li>
                 <strong>Updated at
-                    :</strong> 2026-04-07 15:22:41
+                    :</strong> 2026-04-08 14:50:35
             </li>
         
         <li>
@@ -921,7 +1000,7 @@
 	<div class="post-toc">
 		<div class="toc-title">On this page</div>
 		<div class="page-title">LangChain4j是什么</div>
-		<ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#LangChain4j%EF%BC%9A%E4%B8%BAJava%E5%BC%80%E5%8F%91%E8%80%85%E6%89%93%E5%BC%80%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%BA%94%E7%94%A8%E7%9A%84%E5%A4%A7%E9%97%A8"><span class="nav-text">LangChain4j：为Java开发者打开大模型应用的大门</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E4%B8%BA%E4%BB%80%E4%B9%88%E9%9C%80%E8%A6%81LangChain4j%EF%BC%9F"><span class="nav-text">一、为什么需要LangChain4j？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81LangChain4j%E8%83%BD%E8%A7%A3%E5%86%B3%E4%BB%80%E4%B9%88%E9%97%AE%E9%A2%98%EF%BC%9F"><span class="nav-text">二、LangChain4j能解决什么问题？</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-%E6%B6%88%E9%99%A4%E6%A8%A1%E5%9E%8B%E5%B7%AE%E5%BC%82%EF%BC%8C%E4%B8%80%E5%A5%97%E4%BB%A3%E7%A0%81%E9%80%82%E9%85%8D%E6%89%80%E6%9C%89"><span class="nav-text">2.1 消除模型差异，一套代码适配所有</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-%E5%B0%81%E8%A3%85%E5%A4%8D%E6%9D%82%E9%80%BB%E8%BE%91%EF%BC%8C%E4%B8%93%E6%B3%A8%E4%B8%9A%E5%8A%A1"><span class="nav-text">2.2 封装复杂逻辑，专注业务</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-3-%E8%B4%B4%E5%90%88Java%E7%94%9F%E6%80%81%EF%BC%8C%E4%B8%8A%E6%89%8B%E9%9B%B6%E9%97%A8%E6%A7%9B"><span class="nav-text">2.3 贴合Java生态，上手零门槛</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E6%A0%B8%E5%BF%83%E6%A6%82%E5%BF%B5%E9%80%9F%E8%A7%88"><span class="nav-text">三、核心概念速览</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%9B%E3%80%81%E5%BF%AB%E9%80%9F%E4%B8%8A%E6%89%8B%EF%BC%9A%E8%B7%91%E9%80%9A%E7%AC%AC%E4%B8%80%E4%B8%AAAI%E5%BA%94%E7%94%A8"><span class="nav-text">四、快速上手：跑通第一个AI应用</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#4-1-%E6%B7%BB%E5%8A%A0%E4%BE%9D%E8%B5%96"><span class="nav-text">4.1 添加依赖</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-2-%E4%BD%8E%E7%BA%A7%E5%92%8C%E9%AB%98%E7%BA%A7API%E5%AF%B9%E6%AF%94"><span class="nav-text">4.2 低级和高级API对比</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-3-%E9%85%8D%E7%BD%AEAPI-Key"><span class="nav-text">4.3 配置API Key</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-4-%E7%BC%96%E5%86%99AI%E6%9C%8D%E5%8A%A1"><span class="nav-text">4.4 编写AI服务</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-5-%E5%9C%A8Controller%E4%B8%AD%E4%BD%BF%E7%94%A8"><span class="nav-text">4.5 在Controller中使用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-6-%E5%9B%9B%E7%A7%8D%E6%B6%88%E6%81%AF%E7%B1%BB%E5%9E%8B"><span class="nav-text">4.6 四种消息类型</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%94%E3%80%81LangChain4j%E7%9A%84%E8%83%BD%E5%8A%9B%E5%85%A8%E6%99%AF"><span class="nav-text">五、LangChain4j的能力全景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%AD%E3%80%81%E4%B8%8ESpring-AI%E7%9A%84%E5%AF%B9%E6%AF%94"><span class="nav-text">六、与Spring AI的对比</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%83%E3%80%81%E5%86%99%E5%9C%A8%E6%9C%80%E5%90%8E"><span class="nav-text">七、写在最后</span></a></li></ol></li></ol>
+		<ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#LangChain4j%EF%BC%9A%E4%B8%BAJava%E5%BC%80%E5%8F%91%E8%80%85%E6%89%93%E5%BC%80%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%BA%94%E7%94%A8%E7%9A%84%E5%A4%A7%E9%97%A8"><span class="nav-text">LangChain4j：为Java开发者打开大模型应用的大门</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E4%B8%BA%E4%BB%80%E4%B9%88%E9%9C%80%E8%A6%81LangChain4j%EF%BC%9F"><span class="nav-text">一、为什么需要LangChain4j？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81LangChain4j%E8%83%BD%E8%A7%A3%E5%86%B3%E4%BB%80%E4%B9%88%E9%97%AE%E9%A2%98%EF%BC%9F"><span class="nav-text">二、LangChain4j能解决什么问题？</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-%E6%B6%88%E9%99%A4%E6%A8%A1%E5%9E%8B%E5%B7%AE%E5%BC%82%EF%BC%8C%E4%B8%80%E5%A5%97%E4%BB%A3%E7%A0%81%E9%80%82%E9%85%8D%E6%89%80%E6%9C%89"><span class="nav-text">2.1 消除模型差异，一套代码适配所有</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-%E5%B0%81%E8%A3%85%E5%A4%8D%E6%9D%82%E9%80%BB%E8%BE%91%EF%BC%8C%E4%B8%93%E6%B3%A8%E4%B8%9A%E5%8A%A1"><span class="nav-text">2.2 封装复杂逻辑，专注业务</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-3-%E8%B4%B4%E5%90%88Java%E7%94%9F%E6%80%81%EF%BC%8C%E4%B8%8A%E6%89%8B%E9%9B%B6%E9%97%A8%E6%A7%9B"><span class="nav-text">2.3 贴合Java生态，上手零门槛</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E6%A0%B8%E5%BF%83%E6%A6%82%E5%BF%B5%E9%80%9F%E8%A7%88"><span class="nav-text">三、核心概念速览</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%9B%E3%80%81%E5%BF%AB%E9%80%9F%E4%B8%8A%E6%89%8B%EF%BC%9A%E8%B7%91%E9%80%9A%E7%AC%AC%E4%B8%80%E4%B8%AAAI%E5%BA%94%E7%94%A8"><span class="nav-text">四、快速上手：跑通第一个AI应用</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#4-1-%E6%B7%BB%E5%8A%A0%E4%BE%9D%E8%B5%96"><span class="nav-text">4.1 添加依赖</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-2-%E4%BD%8E%E7%BA%A7%E5%92%8C%E9%AB%98%E7%BA%A7API%E5%AF%B9%E6%AF%94"><span class="nav-text">4.2 低级和高级API对比</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-3-%E9%85%8D%E7%BD%AEAPI-Key"><span class="nav-text">4.3 配置API Key</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-4-%E7%BC%96%E5%86%99AI%E6%9C%8D%E5%8A%A1"><span class="nav-text">4.4 编写AI服务</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-5-%E5%9C%A8Controller%E4%B8%AD%E4%BD%BF%E7%94%A8"><span class="nav-text">4.5 在Controller中使用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-6-AIService%E6%B3%A8%E8%A7%A3%E5%B1%9E%E6%80%A7%E8%AF%A6%E8%A7%A3"><span class="nav-text">4.6 @AIService注解属性详解</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%A4%E7%A7%8D%E8%A3%85%E9%85%8D%E6%A8%A1%E5%BC%8F-wiringMode-%E7%9A%84%E9%80%89%E6%8B%A9"><span class="nav-text">两种装配模式 (wiringMode) 的选择</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-7-%E5%9B%9B%E7%A7%8D%E6%B6%88%E6%81%AF%E7%B1%BB%E5%9E%8B"><span class="nav-text">4.7 四种消息类型</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%94%E3%80%81LangChain4j%E7%9A%84%E8%83%BD%E5%8A%9B%E5%85%A8%E6%99%AF"><span class="nav-text">五、LangChain4j的能力全景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%AD%E3%80%81%E4%B8%8ESpring-AI%E7%9A%84%E5%AF%B9%E6%AF%94"><span class="nav-text">六、与Spring AI的对比</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%83%E3%80%81%E5%86%99%E5%9C%A8%E6%9C%80%E5%90%8E"><span class="nav-text">七、写在最后</span></a></li></ol></li></ol>
 
 	</div>
 </div>
@@ -949,7 +1028,7 @@
                 
                 <p class="post-count space-x-0.5">
                     <span>
-                        111 posts in total
+                        112 posts in total
                     </span>
                     
                 </p>

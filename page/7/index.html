@@ -486,7 +486,7 @@
         <div class="label text-third-text-color text-sm">Categories</div>
     </a>
     <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/archives">
-        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">111</div>
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">112</div>
         <div class="label text-third-text-color text-sm">Posts</div>
     </a>
 </div>
@@ -526,7 +526,7 @@
         <div class="label text-third-text-color text-sm">Categories</div>
     </a>
     <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/archives">
-        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">111</div>
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">112</div>
         <div class="label text-third-text-color text-sm">Posts</div>
     </a>
 </div>
@@ -541,6 +541,84 @@
 			<div class="main-content">
 				<div class="home-content-container">
     <ul class="home-article-list">
+        
+            <li class="home-article-item">
+
+                
+
+                
+                    
+                
+
+                
+                    <div id="home-article-thumbnail" class="home-article-thumbnail relative h-[150px] overflow-hidden rounded-t-large">
+                        <a href="/2018/06/09/springcloud/hystrix/">
+                            <img src="https://www.zhengyk.cn/images/2018-06-02.jpg?v=2" alt="Hystrix 熔断器" class="w-full h-full object-cover dark:brightness-75 transition-all" />
+                        </a>
+                    </div>
+                
+                <div class="flex flex-col gap-5 px-7 pb-7 pt-5">
+                    <h3 class="home-article-title">
+                        <a href="/2018/06/09/springcloud/hystrix/">
+                            Hystrix 熔断器
+                        </a>
+                    </h3>
+
+                    <div class="home-article-content markdown-body">
+                        
+                            
+                            最近往返北京-邯郸较频繁，有点累，好久没集中学习了。今天周六来公司加班，配合测试联调，趁着这个时间正好学习 SpringCloud-Netflix 下 Hystrix 熔断器的使用。
+背景之前说过，在分布式、集群服务环境中，通常会有多个服务层之间调用，如果某个服务出现故障，进而导致其他服务级联实效，甚至导致整个系统不可用。
+Hystrix 熔断器Hystrix 熔断器类似电路中的保险丝，或者...
+                        
+                    </div>
+
+                    <div class="home-article-meta-info-container">
+    <div class="home-article-meta-info">
+        <span><i class="fa-solid fa-calendars"></i>&nbsp;
+            <span class="home-article-date" data-date="Sat Jun 09 2018 18:20:16 GMT+0800">
+                
+                    2018-06-09
+                
+            </span>
+        </span>
+        
+            <span class="home-article-category">
+                <i class="fa-solid fa-folders"></i>&nbsp;
+            <ul>
+                
+                
+                    
+                        
+                        <li>
+                            <a href="/categories/Java%E6%A1%86%E6%9E%B6/">Java框架</a>&nbsp;
+                        </li>
+                    
+                    
+                
+            </ul>
+        </span>
+        
+        
+            <span class="home-article-tag">
+                <i class="fa-solid fa-tags"></i>&nbsp;
+                <ul>
+                    
+                        <li>
+                            
+                            <a href="/tags/springcloud/">springcloud</a>&nbsp;
+                        </li>
+                    
+                </ul>
+            </span>
+        
+    </div>
+
+    <a href="/2018/06/09/springcloud/hystrix/">Read more<span class="seo-reader-text">Hystrix 熔断器</span>&nbsp;<i class="fa-solid fa-angle-right"></i></a>
+</div>
+
+                </div>
+            </li>
         
             <li class="home-article-item">
 
@@ -1249,91 +1327,6 @@ topic 类型的交换器在匹配规则上进行了扩展，它与 direct 类型
                 </div>
             </li>
         
-            <li class="home-article-item">
-
-                
-
-                
-                    
-                
-
-                
-                    <div id="home-article-thumbnail" class="home-article-thumbnail relative h-[150px] overflow-hidden rounded-t-large">
-                        <a href="/2018/03/26/mq/rabbitmq/pub-sub/">
-                            <img src="https://www.zhengyk.cn/images/2018-03-26.jpg?v=2" alt="RabbitMQ 订阅发布" class="w-full h-full object-cover dark:brightness-75 transition-all" />
-                        </a>
-                    </div>
-                
-                <div class="flex flex-col gap-5 px-7 pb-7 pt-5">
-                    <h3 class="home-article-title">
-                        <a href="/2018/03/26/mq/rabbitmq/pub-sub/">
-                            RabbitMQ 订阅发布
-                        </a>
-                    </h3>
-
-                    <div class="home-article-content markdown-body">
-                        
-                            
-                            今天来学习下 RabbitMQ 的消息订阅发布模式：pub&#x2F;sub。
-概念发布订阅模式：一个生产者发布消息，多个消费者订阅该生产者，这样同一条消息可以被多个消费者消费。
-模型
-
-解读
-
-一个生产者，多个消费者。
-每个消费者都有自己的队列。
-每个队列都绑定到交换器上。
-生产者不是直接把消息发送到队列，而是发到了图中的“X”，也就是交换器（Exchange），交换器根据相应的路由绑定到...
-                        
-                    </div>
-
-                    <div class="home-article-meta-info-container">
-    <div class="home-article-meta-info">
-        <span><i class="fa-solid fa-calendars"></i>&nbsp;
-            <span class="home-article-date" data-date="Mon Mar 26 2018 19:44:48 GMT+0800">
-                
-                    2018-03-26
-                
-            </span>
-        </span>
-        
-            <span class="home-article-category">
-                <i class="fa-solid fa-folders"></i>&nbsp;
-            <ul>
-                
-                
-                    
-                        
-                        <li>
-                            <a href="/categories/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97/">消息队列</a>&nbsp;
-                        </li>
-                    
-                    
-                
-            </ul>
-        </span>
-        
-        
-            <span class="home-article-tag">
-                <i class="fa-solid fa-tags"></i>&nbsp;
-                <ul>
-                    
-                        <li>
-                            
-                            <a href="/tags/rabbitmq/">rabbitmq</a>&nbsp;
-                        </li>
-                    
-                </ul>
-            </span>
-        
-    </div>
-
-    <a href="/2018/03/26/mq/rabbitmq/pub-sub/">Read more<span class="seo-reader-text">RabbitMQ 订阅发布</span>&nbsp;<i class="fa-solid fa-angle-right"></i></a>
-</div>
-
-                </div>
-            </li>
-        
     </ul>
 
     <div class="home-paginator px-7 py-5">
@@ -1364,7 +1357,7 @@ topic 类型的交换器在匹配规则上进行了扩展，它与 direct 类型
                 
                 <p class="post-count space-x-0.5">
                     <span>
-                        111 posts in total
+                        112 posts in total
                     </span>
                     
                 </p>
