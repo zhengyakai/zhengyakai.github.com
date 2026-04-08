@@ -486,7 +486,7 @@
         <div class="label text-third-text-color text-sm">Categories</div>
     </a>
     <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/archives">
-        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">110</div>
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">111</div>
         <div class="label text-third-text-color text-sm">Posts</div>
     </a>
 </div>
@@ -526,7 +526,7 @@
         <div class="label text-third-text-color text-sm">Categories</div>
     </a>
     <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/archives">
-        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">110</div>
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">111</div>
         <div class="label text-third-text-color text-sm">Posts</div>
     </a>
 </div>
@@ -541,6 +541,85 @@
 			<div class="main-content">
 				<div class="home-content-container">
     <ul class="home-article-list">
+        
+            <li class="home-article-item">
+
+                
+
+                
+                    
+                
+
+                
+                    <div id="home-article-thumbnail" class="home-article-thumbnail relative h-[150px] overflow-hidden rounded-t-large">
+                        <a href="/2018/06/01/springcloud/load-balance/">
+                            <img src="https://www.zhengyk.cn/images/2018-06-01.jpg?v=2" alt="Eureka 和 Ribbon" class="w-full h-full object-cover dark:brightness-75 transition-all" />
+                        </a>
+                    </div>
+                
+                <div class="flex flex-col gap-5 px-7 pb-7 pt-5">
+                    <h3 class="home-article-title">
+                        <a href="/2018/06/01/springcloud/load-balance/">
+                            Eureka 和 Ribbon
+                        </a>
+                    </h3>
+
+                    <div class="home-article-content markdown-body">
+                        
+                            
+                            上次学习了 Eureka 服务的注册和调用，当某个服务搭建了多实例，共同注册到了 Eureka 上，那么 Eureka 是如何把消费者们的请求均衡到这些多个实例的呢？今天来学习下 Eureka 负载均衡相关的东西。
+使用 Feign新建  eureka-provider1的 SpringBoot 项目
+启动类添加@EnableEurekaCLient注解
+12345678@SpringBoo...
+                        
+                    </div>
+
+                    <div class="home-article-meta-info-container">
+    <div class="home-article-meta-info">
+        <span><i class="fa-solid fa-calendars"></i>&nbsp;
+            <span class="home-article-date" data-date="Fri Jun 01 2018 18:20:16 GMT+0800">
+                
+                    2018-06-01
+                
+            </span>
+        </span>
+        
+            <span class="home-article-category">
+                <i class="fa-solid fa-folders"></i>&nbsp;
+            <ul>
+                
+                
+                    
+                        
+                        <li>
+                            <a href="/categories/Java%E6%A1%86%E6%9E%B6/">Java框架</a>&nbsp;
+                        </li>
+                    
+                    
+                
+            </ul>
+        </span>
+        
+        
+            <span class="home-article-tag">
+                <i class="fa-solid fa-tags"></i>&nbsp;
+                <ul>
+                    
+                        <li>
+                            
+                            <a href="/tags/springcloud/">springcloud</a>&nbsp;
+                        </li>
+                    
+                </ul>
+            </span>
+        
+    </div>
+
+    <a href="/2018/06/01/springcloud/load-balance/">Read more<span class="seo-reader-text">Eureka 和 Ribbon</span>&nbsp;<i class="fa-solid fa-angle-right"></i></a>
+</div>
+
+                </div>
+            </li>
         
             <li class="home-article-item">
 
@@ -1255,91 +1334,11 @@ topic 类型的交换器在匹配规则上进行了扩展，它与 direct 类型
                 </div>
             </li>
         
-            <li class="home-article-item">
-
-                
-
-                
-                    
-                
-
-                
-                    <div id="home-article-thumbnail" class="home-article-thumbnail relative h-[150px] overflow-hidden rounded-t-large">
-                        <a href="/2018/03/25/mq/rabbitmq/ack-durable/">
-                            <img src="https://www.zhengyk.cn/images/2018-03-25.jpeg" alt="RabbitMQ ack应答和durabel持久化" class="w-full h-full object-cover dark:brightness-75 transition-all" />
-                        </a>
-                    </div>
-                
-                <div class="flex flex-col gap-5 px-7 pb-7 pt-5">
-                    <h3 class="home-article-title">
-                        <a href="/2018/03/25/mq/rabbitmq/ack-durable/">
-                            RabbitMQ ack应答和durabel持久化
-                        </a>
-                    </h3>
-
-                    <div class="home-article-content markdown-body">
-                        
-                            
-                            前言昨天在学习 RabbitMQ 的公平分发机制时提到了ack 应答机制，代码如下：
-12boolean autoAck = false;channel.basicConsume(QUEUE_NAME,autoAck,consumer);
-
-应答 ackRabbitMQ 有两种应答模式，自动和手动。 分别对应 autoAck 为 true 何 false。
-自动应答autoAck = tru...
-                        
-                    </div>
-
-                    <div class="home-article-meta-info-container">
-    <div class="home-article-meta-info">
-        <span><i class="fa-solid fa-calendars"></i>&nbsp;
-            <span class="home-article-date" data-date="Sun Mar 25 2018 13:20:16 GMT+0800">
-                
-                    2018-03-25
-                
-            </span>
-        </span>
-        
-            <span class="home-article-category">
-                <i class="fa-solid fa-folders"></i>&nbsp;
-            <ul>
-                
-                
-                    
-                        
-                        <li>
-                            <a href="/categories/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97/">消息队列</a>&nbsp;
-                        </li>
-                    
-                    
-                
-            </ul>
-        </span>
-        
-        
-            <span class="home-article-tag">
-                <i class="fa-solid fa-tags"></i>&nbsp;
-                <ul>
-                    
-                        <li>
-                            
-                            <a href="/tags/rabbitmq/">rabbitmq</a>&nbsp;
-                        </li>
-                    
-                </ul>
-            </span>
-        
-    </div>
-
-    <a href="/2018/03/25/mq/rabbitmq/ack-durable/">Read more<span class="seo-reader-text">RabbitMQ ack应答和durabel持久化</span>&nbsp;<i class="fa-solid fa-angle-right"></i></a>
-</div>
-
-                </div>
-            </li>
-        
     </ul>
 
     <div class="home-paginator px-7 py-5">
         <div class="paginator">
-	<a class="extend prev" rel="prev" href="/page/6/"><i class="fa-regular fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/5/">5</a><a class="page-number" href="/page/6/">6</a><span class="page-number current">7</span><a class="page-number" href="/page/8/">8</a><a class="page-number" href="/page/9/">9</a><span class="space">&hellip;</span><a class="page-number" href="/page/11/">11</a><a class="extend next" rel="next" href="/page/8/"><i class="fa-regular fa-angle-right"></i></a>
+	<a class="extend prev" rel="prev" href="/page/6/"><i class="fa-regular fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/5/">5</a><a class="page-number" href="/page/6/">6</a><span class="page-number current">7</span><a class="page-number" href="/page/8/">8</a><a class="page-number" href="/page/9/">9</a><span class="space">&hellip;</span><a class="page-number" href="/page/12/">12</a><a class="extend next" rel="next" href="/page/8/"><i class="fa-regular fa-angle-right"></i></a>
 </div>
   
     </div>
@@ -1365,7 +1364,7 @@ topic 类型的交换器在匹配规则上进行了扩展，它与 direct 类型
                 
                 <p class="post-count space-x-0.5">
                     <span>
-                        110 posts in total
+                        111 posts in total
                     </span>
                     
                 </p>
