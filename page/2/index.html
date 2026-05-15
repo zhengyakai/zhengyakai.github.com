@@ -478,15 +478,15 @@
 
         <div class="statistics flex justify-around my-2.5">
     <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/tags">
-        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">37</div>
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">38</div>
         <div class="label text-third-text-color text-sm">Tags</div>
     </a>
     <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/categories">
-        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">15</div>
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">16</div>
         <div class="label text-third-text-color text-sm">Categories</div>
     </a>
     <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/archives">
-        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">113</div>
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">114</div>
         <div class="label text-third-text-color text-sm">Posts</div>
     </a>
 </div>
@@ -518,15 +518,15 @@
 </div>
                 <div class="statistics flex justify-around my-2.5">
     <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/tags">
-        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">37</div>
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">38</div>
         <div class="label text-third-text-color text-sm">Tags</div>
     </a>
     <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/categories">
-        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">15</div>
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">16</div>
         <div class="label text-third-text-color text-sm">Categories</div>
     </a>
     <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/archives">
-        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">113</div>
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">114</div>
         <div class="label text-third-text-color text-sm">Posts</div>
     </a>
 </div>
@@ -541,6 +541,97 @@
 			<div class="main-content">
 				<div class="home-content-container">
     <ul class="home-article-list">
+        
+            <li class="home-article-item">
+
+                
+
+                
+                    
+                
+
+                
+                    <div id="home-article-thumbnail" class="home-article-thumbnail relative h-[150px] overflow-hidden rounded-t-large">
+                        <a href="/2022/05/30/redis/Redis02/">
+                            <img src="https://www.zhengyk.cn/images/2019-06-30.jpg" alt="缓存穿透、击穿、雪崩解决方案" class="w-full h-full object-cover dark:brightness-75 transition-all" />
+                        </a>
+                    </div>
+                
+                <div class="flex flex-col gap-5 px-7 pb-7 pt-5">
+                    <h3 class="home-article-title">
+                        <a href="/2022/05/30/redis/Redis02/">
+                            缓存穿透、击穿、雪崩解决方案
+                        </a>
+                    </h3>
+
+                    <div class="home-article-content markdown-body">
+                        
+                            
+                            缓存穿透定义 + 成因 + 解决方案 + 实战选型。
+一、缓存穿透（Cache Penetration）是什么大量请求查询根本不存在的数据，缓存查不到，全部打到数据库。
+比如：
+
+查询 id &#x3D; -1 的用户
+大量恶意请求不存在的商品
+爬虫疯狂扫无效 ID
+
+缓存和数据库都没有，缓存形同虚设 → 穿透。
+危害
+DB 压力剧增，甚至打挂
+无法通过缓存挡住流量
+
+解决方案
+缓存空值
+查...
+                        
+                    </div>
+
+                    <div class="home-article-meta-info-container">
+    <div class="home-article-meta-info">
+        <span><i class="fa-solid fa-calendars"></i>&nbsp;
+            <span class="home-article-date" data-date="Mon May 30 2022 16:39:03 GMT+0800">
+                
+                    2022-05-30
+                
+            </span>
+        </span>
+        
+            <span class="home-article-category">
+                <i class="fa-solid fa-folders"></i>&nbsp;
+            <ul>
+                
+                
+                    
+                        
+                        <li>
+                            <a href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a>&nbsp;
+                        </li>
+                    
+                    
+                
+            </ul>
+        </span>
+        
+        
+            <span class="home-article-tag">
+                <i class="fa-solid fa-tags"></i>&nbsp;
+                <ul>
+                    
+                        <li>
+                            
+                            <a href="/tags/Redis/">Redis</a>&nbsp;
+                        </li>
+                    
+                </ul>
+            </span>
+        
+    </div>
+
+    <a href="/2022/05/30/redis/Redis02/">Read more<span class="seo-reader-text">缓存穿透、击穿、雪崩解决方案</span>&nbsp;<i class="fa-solid fa-angle-right"></i></a>
+</div>
+
+                </div>
+            </li>
         
             <li class="home-article-item">
 
@@ -1280,83 +1371,6 @@ cd ~&#x2F;redis-cluster
                 </div>
             </li>
         
-            <li class="home-article-item">
-
-                
-
-                
-                    
-                
-
-                
-                    <div id="home-article-thumbnail" class="home-article-thumbnail relative h-[150px] overflow-hidden rounded-t-large">
-                        <a href="/2019/09/04/elasticsearch/es-optimized/">
-                            <img src="https://www.zhengyk.cn/images/2019-09-04.jpg" alt="ElasticSearch使用优化之拙见（转）" class="w-full h-full object-cover dark:brightness-75 transition-all" />
-                        </a>
-                    </div>
-                
-                <div class="flex flex-col gap-5 px-7 pb-7 pt-5">
-                    <h3 class="home-article-title">
-                        <a href="/2019/09/04/elasticsearch/es-optimized/">
-                            ElasticSearch使用优化之拙见（转）
-                        </a>
-                    </h3>
-
-                    <div class="home-article-content markdown-body">
-                        
-                            
-                            Elasticsearch常常作为日志存储和分析的工具，在企业级应用中常常使用。Elasticsearch提供强大的搜索、分析功能，已经是后端技术栈不可缺少的一部分。 在维护ElastciSearch集群的时候，对Elasticsearch进行了一些调优和分析，现整理成文，纯属拙见，如果有不合理之处，欢迎指出探讨。我所使用的Elasticsearch版本为5.x。
-文件句柄优化Elastic...
-                        
-                    </div>
-
-                    <div class="home-article-meta-info-container">
-    <div class="home-article-meta-info">
-        <span><i class="fa-solid fa-calendars"></i>&nbsp;
-            <span class="home-article-date" data-date="Wed Sep 04 2019 19:44:48 GMT+0800">
-                
-                    2019-09-04
-                
-            </span>
-        </span>
-        
-            <span class="home-article-category">
-                <i class="fa-solid fa-folders"></i>&nbsp;
-            <ul>
-                
-                
-                    
-                        
-                        <li>
-                            <a href="/categories/%E6%90%9C%E7%B4%A2%E5%BC%95%E6%93%8E/">搜索引擎</a>&nbsp;
-                        </li>
-                    
-                    
-                
-            </ul>
-        </span>
-        
-        
-            <span class="home-article-tag">
-                <i class="fa-solid fa-tags"></i>&nbsp;
-                <ul>
-                    
-                        <li>
-                            
-                            <a href="/tags/elasticsearch/">elasticsearch</a>&nbsp;
-                        </li>
-                    
-                </ul>
-            </span>
-        
-    </div>
-
-    <a href="/2019/09/04/elasticsearch/es-optimized/">Read more<span class="seo-reader-text">ElasticSearch使用优化之拙见（转）</span>&nbsp;<i class="fa-solid fa-angle-right"></i></a>
-</div>
-
-                </div>
-            </li>
-        
     </ul>
 
     <div class="home-paginator px-7 py-5">
@@ -1387,7 +1401,7 @@ cd ~&#x2F;redis-cluster
                 
                 <p class="post-count space-x-0.5">
                     <span>
-                        113 posts in total
+                        114 posts in total
                     </span>
                     
                 </p>
