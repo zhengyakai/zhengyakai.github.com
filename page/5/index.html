@@ -486,7 +486,7 @@
         <div class="label text-third-text-color text-sm">Categories</div>
     </a>
     <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/archives">
-        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">114</div>
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">115</div>
         <div class="label text-third-text-color text-sm">Posts</div>
     </a>
 </div>
@@ -526,7 +526,7 @@
         <div class="label text-third-text-color text-sm">Categories</div>
     </a>
     <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/archives">
-        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">114</div>
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">115</div>
         <div class="label text-third-text-color text-sm">Posts</div>
     </a>
 </div>
@@ -541,6 +541,83 @@
 			<div class="main-content">
 				<div class="home-content-container">
     <ul class="home-article-list">
+        
+            <li class="home-article-item">
+
+                
+
+                
+                    
+                
+
+                
+                    <div id="home-article-thumbnail" class="home-article-thumbnail relative h-[150px] overflow-hidden rounded-t-large">
+                        <a href="/2018/09/14/netty/tcp-zb-cb/">
+                            <img src="https://www.zhengyk.cn/images/2018-09-14.jpg" alt="Netty解决TCP粘包拆包的问题" class="w-full h-full object-cover dark:brightness-75 transition-all" />
+                        </a>
+                    </div>
+                
+                <div class="flex flex-col gap-5 px-7 pb-7 pt-5">
+                    <h3 class="home-article-title">
+                        <a href="/2018/09/14/netty/tcp-zb-cb/">
+                            Netty解决TCP粘包拆包的问题
+                        </a>
+                    </h3>
+
+                    <div class="home-article-content markdown-body">
+                        
+                            
+                            什么是 TCP 粘包拆包问题？可以先想象这么一个实际场景，一条河的两岸通过船来运输货品，如果每次运输的货品太少，就先把需要运输的货品积攒起来，差不多了再一起运走，这样可以减少船来往的次数节省成本；如果每次运输的货品太多，超过了船的承重，那就把这批货分成两批或者多批运走。
+这个例子的第一种情况就是 TCP 协议中的粘包，第二种是拆包。TCP协议可以理解为“船”，当然 TCP 粘包拆包的原因有很...
+                        
+                    </div>
+
+                    <div class="home-article-meta-info-container">
+    <div class="home-article-meta-info">
+        <span><i class="fa-solid fa-calendars"></i>&nbsp;
+            <span class="home-article-date" data-date="Fri Sep 14 2018 18:01:54 GMT+0800">
+                
+                    2018-09-14
+                
+            </span>
+        </span>
+        
+            <span class="home-article-category">
+                <i class="fa-solid fa-folders"></i>&nbsp;
+            <ul>
+                
+                
+                    
+                        
+                        <li>
+                            <a href="/categories/Java%E6%A1%86%E6%9E%B6/">Java框架</a>&nbsp;
+                        </li>
+                    
+                    
+                
+            </ul>
+        </span>
+        
+        
+            <span class="home-article-tag">
+                <i class="fa-solid fa-tags"></i>&nbsp;
+                <ul>
+                    
+                        <li>
+                            
+                            <a href="/tags/netty/">netty</a>&nbsp;
+                        </li>
+                    
+                </ul>
+            </span>
+        
+    </div>
+
+    <a href="/2018/09/14/netty/tcp-zb-cb/">Read more<span class="seo-reader-text">Netty解决TCP粘包拆包的问题</span>&nbsp;<i class="fa-solid fa-angle-right"></i></a>
+</div>
+
+                </div>
+            </li>
         
             <li class="home-article-item">
 
@@ -1264,86 +1341,6 @@ Sync 有两个子类，一个是FairSync，实现了公平锁，另一个是Nonf
                 </div>
             </li>
         
-            <li class="home-article-item">
-
-                
-
-                
-                    
-                
-
-                
-                    <div id="home-article-thumbnail" class="home-article-thumbnail relative h-[150px] overflow-hidden rounded-t-large">
-                        <a href="/2018/08/14/java/ReentrantLock-1/">
-                            <img src="https://www.zhengyk.cn/images/2018-08-14.jpg" alt="ReentrantLock那些事儿（一）" class="w-full h-full object-cover dark:brightness-75 transition-all" />
-                        </a>
-                    </div>
-                
-                <div class="flex flex-col gap-5 px-7 pb-7 pt-5">
-                    <h3 class="home-article-title">
-                        <a href="/2018/08/14/java/ReentrantLock-1/">
-                            ReentrantLock那些事儿（一）
-                        </a>
-                    </h3>
-
-                    <div class="home-article-content markdown-body">
-                        
-                            
-                            ReentrantLock 是 Lock 的一个子类，和 synchronize 一样称之为可重入锁，它有着和 synchronize 同样的内存语义，但功能比 synchronize 功能更多，使用起来更为灵活。
-
-可重入锁：能够支持对资源的重复加锁，一个典型例子就是同一个类的 synchironized 方法内可以调用本类其他的 synchronize 方法。
-
-使用 Reentrant...
-                        
-                    </div>
-
-                    <div class="home-article-meta-info-container">
-    <div class="home-article-meta-info">
-        <span><i class="fa-solid fa-calendars"></i>&nbsp;
-            <span class="home-article-date" data-date="Tue Aug 14 2018 18:01:54 GMT+0800">
-                
-                    2018-08-14
-                
-            </span>
-        </span>
-        
-            <span class="home-article-category">
-                <i class="fa-solid fa-folders"></i>&nbsp;
-            <ul>
-                
-                
-                    
-                        
-                        <li>
-                            <a href="/categories/Java%E6%8A%80%E6%9C%AF/">Java技术</a>&nbsp;
-                        </li>
-                    
-                    
-                
-            </ul>
-        </span>
-        
-        
-            <span class="home-article-tag">
-                <i class="fa-solid fa-tags"></i>&nbsp;
-                <ul>
-                    
-                        <li>
-                            
-                            <a href="/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B/">多线程</a>&nbsp;
-                        </li>
-                    
-                </ul>
-            </span>
-        
-    </div>
-
-    <a href="/2018/08/14/java/ReentrantLock-1/">Read more<span class="seo-reader-text">ReentrantLock那些事儿（一）</span>&nbsp;<i class="fa-solid fa-angle-right"></i></a>
-</div>
-
-                </div>
-            </li>
-        
     </ul>
 
     <div class="home-paginator px-7 py-5">
@@ -1374,7 +1371,7 @@ Sync 有两个子类，一个是FairSync，实现了公平锁，另一个是Nonf
                 
                 <p class="post-count space-x-0.5">
                     <span>
-                        114 posts in total
+                        115 posts in total
                     </span>
                     
                 </p>

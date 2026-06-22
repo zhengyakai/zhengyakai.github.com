@@ -486,7 +486,7 @@
         <div class="label text-third-text-color text-sm">Categories</div>
     </a>
     <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/archives">
-        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">114</div>
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">115</div>
         <div class="label text-third-text-color text-sm">Posts</div>
     </a>
 </div>
@@ -526,7 +526,7 @@
         <div class="label text-third-text-color text-sm">Categories</div>
     </a>
     <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/archives">
-        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">114</div>
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">115</div>
         <div class="label text-third-text-color text-sm">Posts</div>
     </a>
 </div>
@@ -541,6 +541,90 @@
 			<div class="main-content">
 				<div class="home-content-container">
     <ul class="home-article-list">
+        
+            <li class="home-article-item">
+
+                
+
+                
+                    
+                
+
+                
+                    <div id="home-article-thumbnail" class="home-article-thumbnail relative h-[150px] overflow-hidden rounded-t-large">
+                        <a href="/2018/06/17/springcloud/micro-service-deploy/">
+                            <img src="https://www.zhengyk.cn/images/2018-06-17.jpg" alt="微服务部署：蓝绿部署、滚动部署、灰度发布、金丝雀发布(转)" class="w-full h-full object-cover dark:brightness-75 transition-all" />
+                        </a>
+                    </div>
+                
+                <div class="flex flex-col gap-5 px-7 pb-7 pt-5">
+                    <h3 class="home-article-title">
+                        <a href="/2018/06/17/springcloud/micro-service-deploy/">
+                            微服务部署：蓝绿部署、滚动部署、灰度发布、金丝雀发布(转)
+                        </a>
+                    </h3>
+
+                    <div class="home-article-content markdown-body">
+                        
+                            
+                            本文转自 http://www.spring4all.com/article/602
+
+在项目迭代的过程中，不可避免需要”上线“。上线对应着部署，或者重新部署；部署对应着修改；修改则意味着风险。
+
+目前有很多用于部署的技术，有的简单，有的复杂；有的得停机，有的不需要停机即可完成部署。本文的目的就是将目前常用的布署方案做一个总结。
+
+一、蓝绿布署
+
+Blue&#x2F;Green Deploy...
+                        
+                    </div>
+
+                    <div class="home-article-meta-info-container">
+    <div class="home-article-meta-info">
+        <span><i class="fa-solid fa-calendars"></i>&nbsp;
+            <span class="home-article-date" data-date="Sun Jun 17 2018 19:44:48 GMT+0800">
+                
+                    2018-06-17
+                
+            </span>
+        </span>
+        
+            <span class="home-article-category">
+                <i class="fa-solid fa-folders"></i>&nbsp;
+            <ul>
+                
+                
+                    
+                        
+                        <li>
+                            <a href="/categories/Java%E6%A1%86%E6%9E%B6/">Java框架</a>&nbsp;
+                        </li>
+                    
+                    
+                
+            </ul>
+        </span>
+        
+        
+            <span class="home-article-tag">
+                <i class="fa-solid fa-tags"></i>&nbsp;
+                <ul>
+                    
+                        <li>
+                            
+                            <a href="/tags/%E5%BE%AE%E6%9C%8D%E5%8A%A1/">微服务</a>&nbsp;
+                        </li>
+                    
+                </ul>
+            </span>
+        
+    </div>
+
+    <a href="/2018/06/17/springcloud/micro-service-deploy/">Read more<span class="seo-reader-text">微服务部署：蓝绿部署、滚动部署、灰度发布、金丝雀发布(转)</span>&nbsp;<i class="fa-solid fa-angle-right"></i></a>
+</div>
+
+                </div>
+            </li>
         
             <li class="home-article-item">
 
@@ -1251,82 +1335,6 @@ ZK节点...
                 </div>
             </li>
         
-            <li class="home-article-item">
-
-                
-
-                
-                    
-                
-
-                
-                    <div id="home-article-thumbnail" class="home-article-thumbnail relative h-[150px] overflow-hidden rounded-t-large">
-                        <a href="/2018/03/29/mq/rabbitmq/tx-confirm/">
-                            <img src="https://www.zhengyk.cn/images/2018-03-29.jpeg" alt="RabbitMQ 事务和发送方确认机制" class="w-full h-full object-cover dark:brightness-75 transition-all" />
-                        </a>
-                    </div>
-                
-                <div class="flex flex-col gap-5 px-7 pb-7 pt-5">
-                    <h3 class="home-article-title">
-                        <a href="/2018/03/29/mq/rabbitmq/tx-confirm/">
-                            RabbitMQ 事务和发送方确认机制
-                        </a>
-                    </h3>
-
-                    <div class="home-article-content markdown-body">
-                        
-                            
-                            前言在使用 RabbitMQ 的时候，可以通过消息持久化操作来解决因为服务器宕机而导致消息丢失，保证了消息的可靠性。但还有个问题，当消息的生产者将消息发送出去后，消息到底有没有正确地到达服务器呢？如果不进行特殊配置，默认情况下消息的发送情况是不会返回给生产者的，也就是生产者默认情况下是不知道消息到底有没有发送到 RabbitMQ Server，如果在消息到达前就丢失了（比如因为网络原因），持...
-                        
-                    </div>
-
-                    <div class="home-article-meta-info-container">
-    <div class="home-article-meta-info">
-        <span><i class="fa-solid fa-calendars"></i>&nbsp;
-            <span class="home-article-date" data-date="Thu Mar 29 2018 19:44:48 GMT+0800">
-                
-                    2018-03-29
-                
-            </span>
-        </span>
-        
-            <span class="home-article-category">
-                <i class="fa-solid fa-folders"></i>&nbsp;
-            <ul>
-                
-                
-                    
-                        
-                        <li>
-                            <a href="/categories/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97/">消息队列</a>&nbsp;
-                        </li>
-                    
-                    
-                
-            </ul>
-        </span>
-        
-        
-            <span class="home-article-tag">
-                <i class="fa-solid fa-tags"></i>&nbsp;
-                <ul>
-                    
-                        <li>
-                            
-                            <a href="/tags/rabbitmq/">rabbitmq</a>&nbsp;
-                        </li>
-                    
-                </ul>
-            </span>
-        
-    </div>
-
-    <a href="/2018/03/29/mq/rabbitmq/tx-confirm/">Read more<span class="seo-reader-text">RabbitMQ 事务和发送方确认机制</span>&nbsp;<i class="fa-solid fa-angle-right"></i></a>
-</div>
-
-                </div>
-            </li>
-        
     </ul>
 
     <div class="home-paginator px-7 py-5">
@@ -1357,7 +1365,7 @@ ZK节点...
                 
                 <p class="post-count space-x-0.5">
                     <span>
-                        114 posts in total
+                        115 posts in total
                     </span>
                     
                 </p>
