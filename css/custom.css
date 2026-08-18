@@ -1,0 +1,81 @@
+/* Cactus 默认 14px 等宽字体偏小，按中文阅读习惯整体放大 */
+html {
+  font-size: 17px;
+}
+
+body {
+  font-size: 1rem;
+  line-height: 1.8;
+}
+
+#header h1,
+#header .h1 {
+  font-size: 1.75rem;
+  line-height: 2.4rem;
+}
+
+#header #nav {
+  font-size: 1rem;
+}
+
+#header #nav ul {
+  line-height: 1.5;
+}
+
+.post-list .post-item .meta,
+#archive .post-list .post-item .meta {
+  font-size: 0.95rem;
+  min-width: 7.5rem;
+}
+
+#footer {
+  font-size: 0.875rem;
+}
+
+#footer .footer-left {
+  height: auto;
+  line-height: 1.5;
+}
+
+body table {
+  font-size: 0.9rem;
+}
+
+pre,
+.highlight,
+.content code {
+  font-size: 0.9rem;
+}
+
+pre {
+  line-height: 1.65;
+}
+
+.content h1,
+.content .h1 {
+  font-size: 1.6em;
+}
+
+.content h2,
+.content .h2 {
+  font-size: 1.25rem;
+}
+
+.content h3 {
+  font-size: 1.1rem;
+}
+
+.content h4,
+.content h5,
+.content h6 {
+  font-size: 1rem;
+}
+
+article header .posttitle,
+.posttitle {
+  font-size: 1.65em;
+}
+
+article header .meta * {
+  font-size: 0.95rem;
+}

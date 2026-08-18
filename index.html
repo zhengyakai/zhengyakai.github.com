@@ -1,1608 +1,406 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang=zh>
 <head>
+    <!-- so meta -->
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="keywords" content="Java, Spring Boot, 微服务, Redis, 架构">
-    
-    
-    <meta name="author" content="薛定谔的汪">
-    
-    <!-- Completely eliminate flash of wrong theme -->
-    <script>
-        (function() {
-            const THEME_KEY = "REDEFINE-THEME-STATUS";
-            const DARK = "dark", LIGHT = "light";
-            
-            // Get preferred theme
-            function getTheme() {
-                try {
-                    const saved = localStorage.getItem(THEME_KEY);
-                    if (saved) {
-                        const { isDark } = JSON.parse(saved);
-                        return isDark ? DARK : LIGHT;
-                    }
-                } catch (e) {}
-                
-                return matchMedia("(prefers-color-scheme: dark)").matches ? DARK : LIGHT;
-            }
-            
-            // Apply theme to document
-            function applyTheme(theme) {
-                const isDark = theme === DARK;
-                const root = document.documentElement;
-                
-                // Set classes for compatibility
-                root.classList.add(theme);
-                root.classList.remove(isDark ? LIGHT : DARK);
-                root.style.colorScheme = theme;
-            }
-            
-            // Initial application
-            const theme = getTheme();
-            applyTheme(theme);
-            
-            // Listen for system preference changes
-            matchMedia("(prefers-color-scheme: dark)").addEventListener("change", ({ matches }) => {
-                // Only update if using system preference (no localStorage entry)
-                if (!localStorage.getItem(THEME_KEY)) {
-                    applyTheme(matches ? DARK : LIGHT);
-                }
-            });
-            
-            // Set body classes ASAP (before DOMContentLoaded)
-            (function() {
-                const addBodyClass = () => {
-                    const b = document.body;
-                    if (!b) return false;
-                    b.classList.add(theme + "-mode");
-                    return true;
-                };
-
-                // Try immediately
-                if (addBodyClass()) return;
-
-                // Observe until body exists
-                const mo = new MutationObserver(() => {
-                    if (addBodyClass()) mo.disconnect();
-                });
-                mo.observe(document.documentElement, { childList: true, subtree: true });
-            })();
-        })();
-    </script>
-    
-    <!-- preconnect -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
-    
-    <!--- Seo Part-->
-    
-    <link rel="canonical" href="https://www.zhengyk.cn/"/>
-    <meta name="robots" content="index,follow">
-    <meta name="googlebot" content="index,follow">
-    <meta name="revisit-after" content="1 days">
-    
-    
-        
-        <meta name="description" content="Hexo Theme Redefine, Redefine Your Hexo Journey.">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="分享Java、Spring Cloud、Redis等技术实践与架构思考。">
 <meta property="og:type" content="website">
 <meta property="og:title" content="薛定谔的汪 - 技术博客">
 <meta property="og:url" content="https://www.zhengyk.cn/index.html">
 <meta property="og:site_name" content="薛定谔的汪 - 技术博客">
-<meta property="og:description" content="Hexo Theme Redefine, Redefine Your Hexo Journey.">
+<meta property="og:description" content="分享Java、Spring Cloud、Redis等技术实践与架构思考。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://www.zhengyk.cn/images/redefine-og.webp">
 <meta property="article:author" content="薛定谔的汪">
 <meta property="article:tag" content="Java, Spring Boot, 微服务, Redis, 架构">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://www.zhengyk.cn/images/redefine-og.webp">
     
     
-    <!--- Icon Part-->
-    <link rel="icon" type="image/png" href="https://www.zhengyk.cn/images/portrait.jpg" sizes="192x192">
-    <link rel="apple-touch-icon" sizes="180x180" href="https://www.zhengyk.cn/images/portrait.jpg">
-    <meta name="theme-color" content="#A31F34">
-    <link rel="shortcut icon" href="https://www.zhengyk.cn/images/portrait.jpg">
-    <!--- Page Info-->
-    
-    <title>
+      
         
-            薛定谔的汪 - Redefine Your Hexo Journey.
+          <link rel="shortcut icon" href="/images/portrait.jpg">
         
-    </title>
-
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/portrait.jpg" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/portrait.jpg">
+        
+      
     
-<link rel="stylesheet" href="/fonts/Chillax/chillax.css">
+    <!-- title -->
+    <title>薛定谔的汪 - 技术博客</title>
+    <!-- async scripts -->
+    <!-- Google Analytics -->
 
 
-    <!--- Inject Part-->
-    
+    <!-- Umami Analytics -->
 
+
+    <!-- styles -->
     
 <link rel="stylesheet" href="/css/style.css">
 
+    
+<link rel="stylesheet" href="/css/custom.css">
 
+    <!-- persian styles -->
     
-        
-<link rel="stylesheet" href="/css/build/tailwind.css">
-
-    
-
-    
-<link rel="stylesheet" href="/fonts/GeistMono/geist-mono.css">
-
-    
-<link rel="stylesheet" href="/fonts/Geist/geist.css">
-
-    <!--- Font Part-->
+    <!-- rss -->
     
     
-    
-    
-    
-    
-
-    <script id="hexo-configurations">
-    window.config = {"hostname":"www.zhengyk.cn","root":"/","language":"zh-CN"};
-    window.theme = {"articles":{"style":{"font_size":"16px","line_height":1.5,"image_border_radius":"14px","image_alignment":"center","image_caption":false,"link_icon":true,"delete_mask":false,"title_alignment":"left","headings_top_spacing":{"h1":"3.2rem","h2":"2.4rem","h3":"1.9rem","h4":"1.6rem","h5":"1.4rem","h6":"1.3rem"}},"word_count":{"enable":true,"count":true,"min2read":true},"author_label":{"enable":true,"auto":false,"list":[]},"code_block":{"copy":true,"style":"mac","highlight_theme":{"light":"github","dark":"vs2015"},"font":{"enable":false,"family":null,"url":null}},"toc":{"enable":true,"max_depth":3,"number":false,"expand":true,"init_open":true},"copyright":{"enable":true,"default":"cc_by_nc_sa"},"lazyload":true,"pangu_js":false,"recommendation":{"enable":false,"title":"推荐阅读","limit":3,"mobile_limit":2,"placeholder":"/images/wallhaven-wqery6-light.webp","skip_dirs":[]}},"colors":{"primary":"#A31F34","secondary":null,"default_mode":"light"},"global":{"fonts":{"chinese":{"enable":false,"family":null,"url":null},"english":{"enable":false,"family":null,"url":null},"title":{"enable":false,"family":null,"url":null}},"content_max_width":"1000px","sidebar_width":"210px","hover":{"shadow":true,"scale":false},"scroll_progress":{"bar":false,"percentage":true},"website_counter":{"url":"https://cn.vercount.one/js","enable":false,"site_pv":false,"site_uv":false,"post_pv":false},"single_page":true,"preloader":{"enable":false,"custom_message":null},"side_tools":{"gear_rotation":true,"auto_expand":false},"open_graph":{"enable":true,"image":"/images/redefine-og.webp","description":"Hexo Theme Redefine, Redefine Your Hexo Journey."},"google_analytics":{"enable":false,"id":null}},"home_banner":{"enable":true,"style":"fixed","image":{"light":"https://www.zhengyk.cn/images/wallhaven-wqery6-light.webp","dark":"https://www.zhengyk.cn/images/wallhaven-wqery6-dark.webp"},"title":"学习技术 | 分享生活","subtitle":{"text":[],"hitokoto":{"enable":false,"show_author":false,"api":"https://v1.hitokoto.cn"},"typing_speed":100,"backing_speed":80,"starting_delay":500,"backing_delay":1500,"loop":true,"smart_backspace":true},"text_color":{"light":"#fff","dark":"#d1d1b6"},"text_style":{"title_size":"2.8rem","subtitle_size":"1.5rem","line_height":1.2},"custom_font":{"enable":false,"family":null,"url":null},"social_links":{"enable":false,"style":"default","links":[{"icon":"fa-brands fa-github","url":null},{"icon":"fa-brands fa-twitter","url":null},{"icon":"fa-solid fa-at","url":"you@example.com"},{"icon":"fa-brands fa-telegram","url":null},{"icon":"/images/custom-icon.svg","url":null}],"qrs":[{"icon":"fa-brands fa-weixin","qr":null},{"icon":"/images/custom-icon.svg","qr":null}]}},"plugins":{"feed":{"enable":false},"aplayer":{"enable":false,"type":"fixed","audios":[{"name":null,"artist":null,"url":null,"cover":null,"lrc":null}]},"mermaid":{"enable":false,"version":"11.4.1","theme":{"light":"default","dark":"dark"}}},"version":"2.9.0","navbar":{"auto_hide":false,"color":{"left":"#f78736","right":"#367df7","transparency":35},"width":{"home":"1200px","pages":"1000px"},"links":{"Home":{"path":"/","icon":"fa-regular fa-house"},"Archives":{"path":"/archives","icon":"fa-regular fa-archive"},"About":{"icon":"fa-regular fa-user","submenus":{"Me":"/about","Github":"https://github.com/zhengyakai"}},"Tags":{"icon":"fa-solid fa-tags","path":"/tags/"},"Categories":{"icon":"fa-solid fa-folder","path":"/categories/"}},"search":{"enable":false,"preload":true}},"page_templates":{"friends_column":2,"tags_style":"blur","masonry":{"batch_size":12,"initial_batch_size":24}},"home":{"sidebar":{"enable":true,"position":"left","first_item":"menu","announcement":null,"show_on_mobile":true,"links":null},"article_date_format":"auto","excerpt_length":200,"categories":{"enable":true,"limit":3},"tags":{"enable":true,"limit":3}},"footer":{"runtime":true,"icon":"<i class=\"fa-solid fa-heart fa-beat\" style=\"--fa-animation-duration: 0.5s; color: #f54545\"></i>","start":"2017/8/17","statistics":true,"customize":null,"icp":{"enable":false,"number":null,"url":null}},"footerStart":"2017/8/17","mermaid":{"style":{"light":"default","dark":"dark"}}};
-    window.lang_ago = {"second":"%s 秒前","minute":"%s 分钟前","hour":"%s 小时前","day":"%s 天前","week":"%s 周前","month":"%s 个月前","year":"%s 年前"};
-    window.i18n = {"search":"站内搜索您需要的内容...","toc":"目录","prev":"上一页","next":"下一页","prev_posts":"上一篇","next_posts":"下一篇","page":"第 %d 页","recent_posts":"最新文章","share":"分享","powered_by":"由 %s 驱动","theme":"主题","rss_feed":"RSS Feed","category":"分类","categories":"分类","tag":"标签","tags":"标签","post":"文章","posts":"文章","tagcloud":"标签云","comment":"评论","comments":"评论","top":"置顶","sticky":"置顶","go-back-home":"回到首页","masonry_loading":"照片加载中...","image_viewer":"图片查看器","close":"关闭","exif":{"title":"EXIF","cards":{"camera":"相机","lens":"镜头","exposure":"曝光","other":"其他"},"fields":{"make":"品牌","model":"机型","date_taken":"拍摄时间","lens_model":"镜头","focal_length":"焦距","focus_mode":"对焦模式","shutter":"快门","aperture":"光圈","iso":"感光度","exposure_program":"曝光程序","exposure_compensation":"曝光补偿","metering_mode":"测光模式","flash":"闪光灯","white_balance":"白平衡","latitude":"纬度","longitude":"经度","altitude":"海拔"},"status":{"loading":"加载中...","no_exif":"无 EXIF 信息","library_missing":"EXIF 库未加载","image_source_missing":"图片地址不可用","unavailable":"EXIF 不可用（可能被 CORS 阻止或缺少元数据）","flag_unavailable":"EXIF 不可用"}},"home":"首页","archive":"归档","archives":"归档","about":"关于","links":"链接","link":"链接","friends":"友情链接","friend":"友情链接","timeline":"时间轴","shuoshuo":"说说","bookmarks":"书签","site_uv":"访问人数","site_pv":"总访问量","read_more":"阅读全文","wordcount":"字","min2read":"分钟","changelog":"更新日志","status":"状态","runtime":"博客已运行","days":"天","hours":"小时","minutes":"分钟","seconds":"秒","optimized_by":"并由 Evan 进行优化","rights":"版权所有","site_posts":"共撰写了 %s 篇文章","site_wordcount":"共 %s 字","copyright":{"title":"标题","author":"作者","link":"链接","create_time":"创建于","update_time":"更新于","license_title":"版权声明","license_content":"本文章采用 %s 进行许可。","all_rights_reserved":"版权所有 &#169 %s，禁止转载。","public_domain":"本文为公有领域作品，可自由转载、引用。"},"ago":{"second":"%s 秒前","minute":"%s 分钟前","hour":"%s 小时前","day":"%s 天前","week":"%s 周前","month":"%s 个月前","year":"%s 年前"},"create_time":"创建","update_time":"更新","expired":"这篇文章最后更新于 %s 天前，内容可能已经过时。"};
-    window.data = {"masonry":false};
-  </script>
-    
-    <!--- Fontawesome Part-->
-    
-<link rel="stylesheet" href="/fontawesome/fontawesome.min.css">
-
-    
-<link rel="stylesheet" href="/fontawesome/brands.min.css">
-
-    
-<link rel="stylesheet" href="/fontawesome/solid.min.css">
-
-    
-<link rel="stylesheet" href="/fontawesome/regular.min.css">
-
-    
-    
-    
-    
+	<!-- mathjax -->
+	
 <meta name="generator" content="Hexo 8.1.2"></head>
 
-
-<body>
-	<div class="progress-bar-container">
-	
-
-	
-	<span class="pjax-progress-bar"></span>
-	<!--        <span class="swup-progress-icon">-->
-	<!--            <i class="fa-solid fa-circle-notch fa-spin"></i>-->
-	<!--        </span>-->
-	
-</div>
-
-<main class="page-container" id="swup">
-
-	
-	
-    <style>
-        .home-banner-container {
-            background: none !important;
-        }
-        .home-article-item,
-        .sidebar-links,
-        .sidebar-content,
-        a.page-number,
-        a.extend,
-        .sidebar-links .links:hover,
-        .right-bottom-tools,
-        footer.footer {
-            background-color: var(--background-color-transparent-80) !important;
-        }
-        .right-bottom-tools:hover,
-        a.page-number:hover,
-        a.extend:hover {
-            background-color: var(--primary-color) !important;
-        }
-        .site-info,
-        .home-article-sticky-label {
-            background-color: var(--background-color-transparent-15) !important;
-        }
-        .home-article-sticky-label {
-            backdrop-filter: none !important;
-        }
-    </style>
-    <div class="home-banner-background transition-fade fixed top-0 left-0 w-screen h-screen scale-125 sm:scale-110 box-border will-change-transform bg-cover">
-        <img src="https://www.zhengyk.cn/images/wallhaven-wqery6-light.webp" alt="home-banner-background" class="w-full h-full object-cover dark:hidden">
-        <img src="https://www.zhengyk.cn/images/wallhaven-wqery6-dark.webp" alt="home-banner-background" class="w-full h-full object-cover hidden dark:block">
-    </div>
-
-
-<div class="home-banner-container flex justify-center items-center transition-fade relative">
+<body class="max-width mx-auto px3 ltr">
     
-    <div class="content mt-8 flex flex-col justify-center items-center transition-fade-down">
-        <div class="description flex flex-col justify-center items-center w-screen font-medium text-center"
+    <div class="content index py4 h-card">
         
-        >
-            学习技术 | 分享生活
-            
-            
-            
-            
-            
-        </div>
-        
+          <header id="header">
+  <a class="u-url u-uid" href="/">
+  
+    
+      <img id="logo" alt class="u-logo" src="/images/portrait.jpg" />
+    
+  
+    <div id="title">
+      <h1 class="p-name">薛定谔的汪 - 技术博客</h1>
     </div>
-    <style>
-        /* Mobile-specific QR code styles */
-        .qr-toggle-item.qr-active .qr-popup {
-            visibility: visible !important;
-            opacity: 1 !important;
-            transform: translateY(0) !important;
-        }
-        
-        /* Prevent button from staying in focus/hover state on mobile */
-        @media (hover: none) and (pointer: coarse) {
-            .qr-toggle-item:focus,
-            .qr-toggle-item:hover {
-                background-color: transparent;
-            }
-            
-            .qr-toggle-item .qr-trigger:focus,
-            .qr-toggle-item .qr-trigger:hover {
-                background-color: transparent;
-                color: inherit;
-            }
-            
-            /* Only show active state when explicitly toggled */
-            .qr-popup {
-                visibility: hidden !important;
-                opacity: 0 !important;
-            }
-        }
-    </style>
-</div>
-
-	
-
-	<div class="main-content-container flex flex-col justify-between min-h-dvh">
-		<div class="main-content-header">
-			<header class="navbar-container px-6 md:px-12">
-    <div class="navbar-content transition-navbar has-home-banner">
-        <div class="left">
-            
-            <a class="logo-title" href="/">
-                <h1>
-                薛定谔的汪
-                </h1>
-            </a>
-        </div>
-
-        <div class="right">
-            <!-- PC -->
-            <div class="desktop">
-                <ul class="navbar-list">
-                    
-                        
-                            
-
-                            <li class="navbar-item">
-                                <!-- Menu -->
-                                <a class="active"
-                                   href="/"
-                                        >
-                                    <i class="fa-regular fa-house fa-fw"></i>
-                                    首页
-                                    
-                                </a>
-
-                                <!-- Submenu -->
-                                
-                            </li>
-                    
-                        
-                            
-
-                            <li class="navbar-item">
-                                <!-- Menu -->
-                                <a class=""
-                                   href="/archives"
-                                        >
-                                    <i class="fa-regular fa-archive fa-fw"></i>
-                                    归档
-                                    
-                                </a>
-
-                                <!-- Submenu -->
-                                
-                            </li>
-                    
-                        
-                            
-
-                            <li class="navbar-item">
-                                <!-- Menu -->
-                                <a class="has-dropdown"
-                                   href="#"
-                                        onClick=&#34;return false;&#34;>
-                                    <i class="fa-regular fa-user fa-fw"></i>
-                                    关于
-                                    <i class="fa-solid fa-chevron-down fa-fw"></i>
-                                </a>
-
-                                <!-- Submenu -->
-                                
-                                    <ul class="sub-menu">
-                                        
-                                            <li>
-                                                <a href="/about">
-                                                    ME
-                                                </a>
-                                            </li>
-                                        
-                                            <li>
-                                                <a target="_blank" rel="noopener" href="https://github.com/zhengyakai">
-                                                    GITHUB
-                                                </a>
-                                            </li>
-                                        
-                                    </ul>
-                                
-                            </li>
-                    
-                        
-                            
-
-                            <li class="navbar-item">
-                                <!-- Menu -->
-                                <a class=""
-                                   href="/tags/"
-                                        >
-                                    <i class="fa-solid fa-tags fa-fw"></i>
-                                    标签
-                                    
-                                </a>
-
-                                <!-- Submenu -->
-                                
-                            </li>
-                    
-                        
-                            
-
-                            <li class="navbar-item">
-                                <!-- Menu -->
-                                <a class=""
-                                   href="/categories/"
-                                        >
-                                    <i class="fa-solid fa-folder fa-fw"></i>
-                                    分类
-                                    
-                                </a>
-
-                                <!-- Submenu -->
-                                
-                            </li>
-                    
-                    
-                </ul>
-            </div>
-            <!-- Mobile -->
-            <div class="mobile">
-                
-                <div class="icon-item navbar-bar">
-                    <div class="navbar-bar-middle"></div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Mobile sheet -->
-    <div class="navbar-drawer h-dvh w-full absolute top-0 left-0 bg-background-color flex flex-col justify-between">
-        <ul class="drawer-navbar-list flex flex-col px-4 justify-center items-start">
-            
-                
-                    
-
-                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
-                        
-                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full active"
-                           href="/"
-                        >
-                            <span>
-                                首页
-                            </span>
-                            
-                                <i class="fa-regular fa-house fa-sm fa-fw"></i>
-                            
-                        </a>
-                        
-
-                        
-                    </li>
-            
-                
-                    
-
-                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
-                        
-                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
-                           href="/archives"
-                        >
-                            <span>
-                                归档
-                            </span>
-                            
-                                <i class="fa-regular fa-archive fa-sm fa-fw"></i>
-                            
-                        </a>
-                        
-
-                        
-                    </li>
-            
-                
-                    
-
-                    <li class="drawer-navbar-item-sub text-base my-1.5 flex flex-col w-full">
-                        
-                        <div class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary cursor-pointer text-2xl font-semibold group border-b border-border-color hover:border-primary w-full active"
-                             navbar-data-toggle="submenu-About"
-                        >
-                            <span>
-                                关于
-                            </span>
-                            
-                                <i class="fa-solid fa-chevron-right fa-sm fa-fw transition-all"></i>
-                            
-                        </div>
-                        
-
-                        
-                            <div class="flex-col items-start px-2 py-2 hidden" data-target="submenu-About">
-                                
-                                    <div class="drawer-navbar-item text-base flex flex-col justify-center items-start hover:underline active:underline hover:underline-offset-1 rounded-3xl">
-                                        <a class=" text-third-text-color text-xl"
-                                           href="/about">ME</a>
-                                    </div>
-                                
-                                    <div class="drawer-navbar-item text-base flex flex-col justify-center items-start hover:underline active:underline hover:underline-offset-1 rounded-3xl">
-                                        <a class=" text-third-text-color text-xl"
-                                           target="_blank" rel="noopener" href="https://github.com/zhengyakai">GITHUB</a>
-                                    </div>
-                                
-                            </div>
-                        
-                    </li>
-            
-                
-                    
-
-                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
-                        
-                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
-                           href="/tags/"
-                        >
-                            <span>
-                                标签
-                            </span>
-                            
-                                <i class="fa-solid fa-tags fa-sm fa-fw"></i>
-                            
-                        </a>
-                        
-
-                        
-                    </li>
-            
-                
-                    
-
-                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
-                        
-                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
-                           href="/categories/"
-                        >
-                            <span>
-                                分类
-                            </span>
-                            
-                                <i class="fa-solid fa-folder fa-sm fa-fw"></i>
-                            
-                        </a>
-                        
-
-                        
-                    </li>
-            
-
-            
-            
-        </ul>
-
-        <div class="statistics flex justify-around my-2.5">
-    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/tags">
-        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">38</div>
-        <div class="label text-third-text-color text-sm">标签</div>
-    </a>
-    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/categories">
-        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">16</div>
-        <div class="label text-third-text-color text-sm">分类</div>
-    </a>
-    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/archives">
-        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">115</div>
-        <div class="label text-third-text-color text-sm">文章</div>
-    </a>
-</div>
-    </div>
-
-    <div class="window-mask"></div>
-
+  </a>
+  <div id="nav">
+    <ul>
+      <li class="icon">
+        <a href="#" aria-label="目录"><i class="fa-solid fa-bars fa-2x"></i></a>
+      </li>
+      <!--
+     --><li><a href="/">首页</a></li><!--
+   --><!--
+     --><li><a href="/about/">关于</a></li><!--
+   --><!--
+     --><li><a href="/archives/">归档</a></li><!--
+   --><!--
+     --><li><a href="/tags/">标签</a></li><!--
+   --><!--
+     --><li><a href="/categories/">分类</a></li><!--
+   --><!--
+     --><li><a href="/search/">搜索</a></li><!--
+   -->
+    </ul>
+  </div>
 </header>
 
-
-		</div>
-
-		<div class="main-content-body transition-fade-up">
-			
-			<div class="home-sidebar-container">
-    <div class="sticky-container sticky">
         
-        
-            
-            <div class="sidebar-content" >
-                <div class="avatar flex justify-center">
-    <img src="https://www.zhengyk.cn/images/portrait.jpg">
-</div>
-                <div class="author flex flex-col justify-center my-2.5 mx-0">
-    <div class="name">薛定谔的汪</div>
-    
-        <div class="label">Lv5</div>
-    
-</div>
-                <div class="statistics flex justify-around my-2.5">
-    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/tags">
-        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">38</div>
-        <div class="label text-third-text-color text-sm">标签</div>
-    </a>
-    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/categories">
-        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">16</div>
-        <div class="label text-third-text-color text-sm">分类</div>
-    </a>
-    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/archives">
-        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">115</div>
-        <div class="label text-third-text-color text-sm">文章</div>
-    </a>
-</div>
-            </div>
-        
-
-    </div>
-</div>
-
-			
-
-			<div class="main-content">
-				<div class="home-content-container">
-    <ul class="home-article-list">
-        
-            <li class="home-article-item">
-
-                
-
-                
-                    
-                
-
-                
-                    <div id="home-article-thumbnail" class="home-article-thumbnail relative h-[150px] overflow-hidden rounded-t-large">
-                        <a href="/ai/springai_2.0/">
-                            <img src="https://www.zhengyk.cn/images/2019-06-30.jpg" alt="Spring AI 2.0 GA终于发布了？" class="w-full h-full object-cover dark:brightness-75 transition-all" />
-                        </a>
-                    </div>
-                
-                <div class="flex flex-col gap-5 px-7 pb-7 pt-5">
-                    <h3 class="home-article-title">
-                        <a href="/ai/springai_2.0/">
-                            Spring AI 2.0 GA终于发布了？
-                        </a>
-                    </h3>
-
-                    <div class="home-article-content markdown-body">
-                        
-                            
-                            
-Spring AI 2.0 正式 GA 发布：全栈重构，补齐 Java 企业级 AI Agent 生产短板前言Spring AI 1.x 上线后，大量 Java 开发者快速实现 LLM 对话、知识库检索、简易工具调用等原型功能，但投入企业生产环境后，各类痛点集中暴露：工具调用逻辑内置、无法自定义拦截扩展；配置文件多层嵌套，维护繁琐；多工具场景 Token 损耗严重；对话上下文管理混乱，长对...
-                        
-                    </div>
-
-                    <div class="home-article-meta-info-container">
-    <div class="home-article-meta-info">
-        <span><i class="fa-solid fa-calendars"></i>&nbsp;
-            <span class="home-article-date" data-date="Sun Jun 21 2026 18:01:54 GMT+0800">
-                
-                    2026-06-21
-                
-            </span>
-        </span>
-        
-            <span class="home-article-category">
-                <i class="fa-solid fa-folders"></i>&nbsp;
-            <ul>
-                
-                
-                    
-                        
-                        <li>
-                            <a href="/categories/%E4%BA%BA%E5%B7%A5%E6%99%BA%E8%83%BD/">人工智能</a>&nbsp;
-                        </li>
-                    
-                    
-                
-            </ul>
-        </span>
-        
-        
-            <span class="home-article-tag">
-                <i class="fa-solid fa-tags"></i>&nbsp;
-                <ul>
-                    
-                        <li>
-                            
-                            <a href="/tags/ai/">ai</a>&nbsp;
-                        </li>
-                    
-                </ul>
-            </span>
-        
-    </div>
-
-    <a href="/ai/springai_2.0/">阅读全文<span class="seo-reader-text">Spring AI 2.0 GA终于发布了？</span>&nbsp;<i class="fa-solid fa-angle-right"></i></a>
-</div>
-
-                </div>
-            </li>
-        
-            <li class="home-article-item">
-
-                
-
-                
-                    
-                
-
-                
-                    <div id="home-article-thumbnail" class="home-article-thumbnail relative h-[150px] overflow-hidden rounded-t-large">
-                        <a href="/ai/what_is_aiagent/">
-                            <img src="https://www.zhengyk.cn/images/ai-agent.png" alt="AI Agent 到底是什么？" class="w-full h-full object-cover dark:brightness-75 transition-all" />
-                        </a>
-                    </div>
-                
-                <div class="flex flex-col gap-5 px-7 pb-7 pt-5">
-                    <h3 class="home-article-title">
-                        <a href="/ai/what_is_aiagent/">
-                            AI Agent 到底是什么？
-                        </a>
-                    </h3>
-
-                    <div class="home-article-content markdown-body">
-                        
-                            
-                            
-深度解读：AI 圈疯传的 “Agent”，到底是什么？引言最近，”Agent” 可以说是 AI 领域最炙手可热的概念。
-打开任何技术社区，创业者在做它，大模型公司在推它，ChatGPT、Claude、Gemini 纷纷说自己支持“生成 Agent”。似乎不提 Agent，就不够前沿。
-但冷静下来想一个问题：
-
-Agent 到底指的是什么？
-
-是给大模型接几个外部工具就叫 Agent？还是说...
-                        
-                    </div>
-
-                    <div class="home-article-meta-info-container">
-    <div class="home-article-meta-info">
-        <span><i class="fa-solid fa-calendars"></i>&nbsp;
-            <span class="home-article-date" data-date="Tue Jan 20 2026 18:01:54 GMT+0800">
-                
-                    2026-01-20
-                
-            </span>
-        </span>
-        
-            <span class="home-article-category">
-                <i class="fa-solid fa-folders"></i>&nbsp;
-            <ul>
-                
-                
-                    
-                        
-                        <li>
-                            <a href="/categories/%E4%BA%BA%E5%B7%A5%E6%99%BA%E8%83%BD/">人工智能</a>&nbsp;
-                        </li>
-                    
-                    
-                
-            </ul>
-        </span>
-        
-        
-            <span class="home-article-tag">
-                <i class="fa-solid fa-tags"></i>&nbsp;
-                <ul>
-                    
-                        <li>
-                            
-                            <a href="/tags/ai/">ai</a>&nbsp;
-                        </li>
-                    
-                </ul>
-            </span>
-        
-    </div>
-
-    <a href="/ai/what_is_aiagent/">阅读全文<span class="seo-reader-text">AI Agent 到底是什么？</span>&nbsp;<i class="fa-solid fa-angle-right"></i></a>
-</div>
-
-                </div>
-            </li>
-        
-            <li class="home-article-item">
-
-                
-
-                
-                    
-                
-
-                
-                    <div id="home-article-thumbnail" class="home-article-thumbnail relative h-[150px] overflow-hidden rounded-t-large">
-                        <a href="/ai/langchain4j_05_RAG/">
-                            <img src="https://www.zhengyk.cn/images/2018-06-17.jpg" alt="LangChain4j RAG 检索增强" class="w-full h-full object-cover dark:brightness-75 transition-all" />
-                        </a>
-                    </div>
-                
-                <div class="flex flex-col gap-5 px-7 pb-7 pt-5">
-                    <h3 class="home-article-title">
-                        <a href="/ai/langchain4j_05_RAG/">
-                            LangChain4j RAG 检索增强
-                        </a>
-                    </h3>
-
-                    <div class="home-article-content markdown-body">
-                        
-                            
-                            LangChain4j RAG 检索增强：构建文档问答机器人一、什么是 RAG？1.1 核心概念RAG（Retrieval-Augmented Generation，检索增强生成） 是一种结合信息检索技术和 AI 内容生成的混合架构。
-用一个形象的比喻：RAG 就像给 AI 配了一个”小抄本”。当用户提问时，AI 会先从你的知识库（小抄本）中查找相关信息，然后基于这些真实资料来回答问题，而不...
-                        
-                    </div>
-
-                    <div class="home-article-meta-info-container">
-    <div class="home-article-meta-info">
-        <span><i class="fa-solid fa-calendars"></i>&nbsp;
-            <span class="home-article-date" data-date="Fri May 30 2025 18:01:54 GMT+0800">
-                
-                    2025-05-30
-                
-            </span>
-        </span>
-        
-            <span class="home-article-category">
-                <i class="fa-solid fa-folders"></i>&nbsp;
-            <ul>
-                
-                
-                    
-                        
-                        <li>
-                            <a href="/categories/AI/">AI</a>&nbsp;
-                        </li>
-                    
-                    
-                
-            </ul>
-        </span>
-        
-        
-            <span class="home-article-tag">
-                <i class="fa-solid fa-tags"></i>&nbsp;
-                <ul>
-                    
-                        <li>
-                            
-                            <a href="/tags/langchain4j/">langchain4j</a>&nbsp;
-                        </li>
-                    
-                </ul>
-            </span>
-        
-    </div>
-
-    <a href="/ai/langchain4j_05_RAG/">阅读全文<span class="seo-reader-text">LangChain4j RAG 检索增强</span>&nbsp;<i class="fa-solid fa-angle-right"></i></a>
-</div>
-
-                </div>
-            </li>
-        
-            <li class="home-article-item">
-
-                
-
-                
-                    
-                
-
-                
-                    <div id="home-article-thumbnail" class="home-article-thumbnail relative h-[150px] overflow-hidden rounded-t-large">
-                        <a href="/ai/langchain4j_04_tools/">
-                            <img src="https://www.zhengyk.cn/images/2018-06-16.jpeg" alt="LangChain4j 工具调用" class="w-full h-full object-cover dark:brightness-75 transition-all" />
-                        </a>
-                    </div>
-                
-                <div class="flex flex-col gap-5 px-7 pb-7 pt-5">
-                    <h3 class="home-article-title">
-                        <a href="/ai/langchain4j_04_tools/">
-                            LangChain4j 工具调用
-                        </a>
-                    </h3>
-
-                    <div class="home-article-content markdown-body">
-                        
-                            
-                            LangChain4j 工具调用——让 AI 从”聊天”到”行动”一、什么是工具调用？1.1 从”聊天”到”行动”的进化传统的 AI 对话是这样的：
-
-用户问：”今天北京天气怎么样？”
-AI 答：”很抱歉，我无法获取实时天气信息。”
-
-为什么？因为大模型本身只是一个”知识库”，他的训练数据是有截止时间的，它不知道此时此刻的温度。
-工具调用（Function Calling &#x2F; To...
-                        
-                    </div>
-
-                    <div class="home-article-meta-info-container">
-    <div class="home-article-meta-info">
-        <span><i class="fa-solid fa-calendars"></i>&nbsp;
-            <span class="home-article-date" data-date="Wed Apr 30 2025 18:01:54 GMT+0800">
-                
-                    2025-04-30
-                
-            </span>
-        </span>
-        
-            <span class="home-article-category">
-                <i class="fa-solid fa-folders"></i>&nbsp;
-            <ul>
-                
-                
-                    
-                        
-                        <li>
-                            <a href="/categories/AI/">AI</a>&nbsp;
-                        </li>
-                    
-                    
-                
-            </ul>
-        </span>
-        
-        
-            <span class="home-article-tag">
-                <i class="fa-solid fa-tags"></i>&nbsp;
-                <ul>
-                    
-                        <li>
-                            
-                            <a href="/tags/langchain4j/">langchain4j</a>&nbsp;
-                        </li>
-                    
-                </ul>
-            </span>
-        
-    </div>
-
-    <a href="/ai/langchain4j_04_tools/">阅读全文<span class="seo-reader-text">LangChain4j 工具调用</span>&nbsp;<i class="fa-solid fa-angle-right"></i></a>
-</div>
-
-                </div>
-            </li>
-        
-            <li class="home-article-item">
-
-                
-
-                
-                    
-                
-
-                
-                    <div id="home-article-thumbnail" class="home-article-thumbnail relative h-[150px] overflow-hidden rounded-t-large">
-                        <a href="/ai/langchain4j_03_memory/">
-                            <img src="https://www.zhengyk.cn/images/2019-06-04.jpg" alt="LangChain4j 记忆功能" class="w-full h-full object-cover dark:brightness-75 transition-all" />
-                        </a>
-                    </div>
-                
-                <div class="flex flex-col gap-5 px-7 pb-7 pt-5">
-                    <h3 class="home-article-title">
-                        <a href="/ai/langchain4j_03_memory/">
-                            LangChain4j 记忆功能
-                        </a>
-                    </h3>
-
-                    <div class="home-article-content markdown-body">
-                        
-                            
-                            LangChain4j 记忆功能——从内存存储到分布式持久化一、AI的”记忆”到底是什么？你有没有遇到过这种情况：跟AI聊了几句后，问它”我刚才说了什么？”，它一脸茫然地回答”抱歉，我没有之前的对话记录”。
-这就是AI的”健忘症”——每一次对话请求本质上都是独立的，AI不会天然”记住”你之前说过什么。
-在LangChain4j中，ChatMemory就是解决这个问题的核心组件。它不是简单地保...
-                        
-                    </div>
-
-                    <div class="home-article-meta-info-container">
-    <div class="home-article-meta-info">
-        <span><i class="fa-solid fa-calendars"></i>&nbsp;
-            <span class="home-article-date" data-date="Tue Apr 15 2025 18:01:54 GMT+0800">
-                
-                    2025-04-15
-                
-            </span>
-        </span>
-        
-            <span class="home-article-category">
-                <i class="fa-solid fa-folders"></i>&nbsp;
-            <ul>
-                
-                
-                    
-                        
-                        <li>
-                            <a href="/categories/AI/">AI</a>&nbsp;
-                        </li>
-                    
-                    
-                
-            </ul>
-        </span>
-        
-        
-            <span class="home-article-tag">
-                <i class="fa-solid fa-tags"></i>&nbsp;
-                <ul>
-                    
-                        <li>
-                            
-                            <a href="/tags/langchain4j/">langchain4j</a>&nbsp;
-                        </li>
-                    
-                </ul>
-            </span>
-        
-    </div>
-
-    <a href="/ai/langchain4j_03_memory/">阅读全文<span class="seo-reader-text">LangChain4j 记忆功能</span>&nbsp;<i class="fa-solid fa-angle-right"></i></a>
-</div>
-
-                </div>
-            </li>
-        
-            <li class="home-article-item">
-
-                
-
-                
-                    
-                
-
-                
-                    <div id="home-article-thumbnail" class="home-article-thumbnail relative h-[150px] overflow-hidden rounded-t-large">
-                        <a href="/ai/langchain4j_02_pojo/">
-                            <img src="https://www.zhengyk.cn/images/2018-09-01.jpg" alt="LangChain4j 让 AI 返回 Java 对象" class="w-full h-full object-cover dark:brightness-75 transition-all" />
-                        </a>
-                    </div>
-                
-                <div class="flex flex-col gap-5 px-7 pb-7 pt-5">
-                    <h3 class="home-article-title">
-                        <a href="/ai/langchain4j_02_pojo/">
-                            LangChain4j 让 AI 返回 Java 对象
-                        </a>
-                    </h3>
-
-                    <div class="home-article-content markdown-body">
-                        
-                            
-                            本文介绍如何 LangChain4j 的结构化输出，让 AI 返回 Java 对象， 这是 LangChain4j 最强大的功能之一！你可以让 AI 直接返回 JSON，并自动映射成 Java 对象。
-一、痛点：AI返回字符串，然后呢？上一篇文章中，我们让AI回答了一个问题，返回的是String。但在实际业务中，我们想要的往往不止是一段文字：
-
-做一个情感分析，想要返回POSITIVE、NE...
-                        
-                    </div>
-
-                    <div class="home-article-meta-info-container">
-    <div class="home-article-meta-info">
-        <span><i class="fa-solid fa-calendars"></i>&nbsp;
-            <span class="home-article-date" data-date="Sat Mar 15 2025 18:01:54 GMT+0800">
-                
-                    2025-03-15
-                
-            </span>
-        </span>
-        
-            <span class="home-article-category">
-                <i class="fa-solid fa-folders"></i>&nbsp;
-            <ul>
-                
-                
-                    
-                        
-                        <li>
-                            <a href="/categories/AI/">AI</a>&nbsp;
-                        </li>
-                    
-                    
-                
-            </ul>
-        </span>
-        
-        
-            <span class="home-article-tag">
-                <i class="fa-solid fa-tags"></i>&nbsp;
-                <ul>
-                    
-                        <li>
-                            
-                            <a href="/tags/langchain4j/">langchain4j</a>&nbsp;
-                        </li>
-                    
-                </ul>
-            </span>
-        
-    </div>
-
-    <a href="/ai/langchain4j_02_pojo/">阅读全文<span class="seo-reader-text">LangChain4j 让 AI 返回 Java 对象</span>&nbsp;<i class="fa-solid fa-angle-right"></i></a>
-</div>
-
-                </div>
-            </li>
-        
-            <li class="home-article-item">
-
-                
-
-                
-                    
-                
-
-                
-                    <div id="home-article-thumbnail" class="home-article-thumbnail relative h-[150px] overflow-hidden rounded-t-large">
-                        <a href="/ai/langchain4j_01_introduce/">
-                            <img src="https://www.zhengyk.cn/images/2019-03-15.jpg" alt="LangChain4j是什么" class="w-full h-full object-cover dark:brightness-75 transition-all" />
-                        </a>
-                    </div>
-                
-                <div class="flex flex-col gap-5 px-7 pb-7 pt-5">
-                    <h3 class="home-article-title">
-                        <a href="/ai/langchain4j_01_introduce/">
-                            LangChain4j是什么
-                        </a>
-                    </h3>
-
-                    <div class="home-article-content markdown-body">
-                        
-                            
-                            LangChain4j：为Java开发者打开大模型应用的大门一、为什么需要LangChain4j？2023年初ChatGPT引爆了大模型热潮，Python和JavaScript生态迅速涌现出LangChain、LlamaIndex等优秀框架，但Java开发者却面临一个尴尬的局面——想开发AI应用，要么直接调用各大厂商的原生API，代码臃肿且难以切换；要么只能望洋兴叹。
-LangChain4j...
-                        
-                    </div>
-
-                    <div class="home-article-meta-info-container">
-    <div class="home-article-meta-info">
-        <span><i class="fa-solid fa-calendars"></i>&nbsp;
-            <span class="home-article-date" data-date="Sat Feb 15 2025 18:01:54 GMT+0800">
-                
-                    2025-02-15
-                
-            </span>
-        </span>
-        
-            <span class="home-article-category">
-                <i class="fa-solid fa-folders"></i>&nbsp;
-            <ul>
-                
-                
-                    
-                        
-                        <li>
-                            <a href="/categories/AI/">AI</a>&nbsp;
-                        </li>
-                    
-                    
-                
-            </ul>
-        </span>
-        
-        
-            <span class="home-article-tag">
-                <i class="fa-solid fa-tags"></i>&nbsp;
-                <ul>
-                    
-                        <li>
-                            
-                            <a href="/tags/langchain4j/">langchain4j</a>&nbsp;
-                        </li>
-                    
-                </ul>
-            </span>
-        
-    </div>
-
-    <a href="/ai/langchain4j_01_introduce/">阅读全文<span class="seo-reader-text">LangChain4j是什么</span>&nbsp;<i class="fa-solid fa-angle-right"></i></a>
-</div>
-
-                </div>
-            </li>
-        
-            <li class="home-article-item">
-
-                
-
-                
-                    
-                
-
-                
-                    <div id="home-article-thumbnail" class="home-article-thumbnail relative h-[150px] overflow-hidden rounded-t-large">
-                        <a href="/elasticsearch/es-vector/">
-                            <img src="https://www.zhengyk.cn/images/2019-04-10.jpg" alt="百万条用户话术，如何快速找到相似语义占比TopN？（ES向量检索实操全方案）" class="w-full h-full object-cover dark:brightness-75 transition-all" />
-                        </a>
-                    </div>
-                
-                <div class="flex flex-col gap-5 px-7 pb-7 pt-5">
-                    <h3 class="home-article-title">
-                        <a href="/elasticsearch/es-vector/">
-                            百万条用户话术，如何快速找到相似语义占比TopN？（ES向量检索实操全方案）
-                        </a>
-                    </h3>
-
-                    <div class="home-article-content markdown-body">
-                        
-                            
-                            在我们公司业务里，积累了大量用户话术（比如客服对话、用户反馈、评论留言等），当话术量级达到一定量级时，一个核心需求就会浮现：如何找出这些话术中，相似语义的话术占比最高的那些？
-比如客服场景中，我们想知道用户最常咨询的几类问题（如“登录失败”“改绑手机号”“退款申请”），以及每类问题的占比，从而针对性优化服务；再比如用户反馈分析，快速定位核心痛点话题。
-很多人初次接触这个需求，会陷入两个误区：...
-                        
-                    </div>
-
-                    <div class="home-article-meta-info-container">
-    <div class="home-article-meta-info">
-        <span><i class="fa-solid fa-calendars"></i>&nbsp;
-            <span class="home-article-date" data-date="Tue Dec 10 2024 18:01:54 GMT+0800">
-                
-                    2024-12-10
-                
-            </span>
-        </span>
-        
-            <span class="home-article-category">
-                <i class="fa-solid fa-folders"></i>&nbsp;
-            <ul>
-                
-                
-                    
-                        
-                        <li>
-                            <a href="/categories/%E6%90%9C%E7%B4%A2%E5%BC%95%E6%93%8E/">搜索引擎</a>&nbsp;
-                        </li>
-                    
-                    
-                
-            </ul>
-        </span>
-        
-        
-            <span class="home-article-tag">
-                <i class="fa-solid fa-tags"></i>&nbsp;
-                <ul>
-                    
-                        <li>
-                            
-                            <a href="/tags/elasticsearch/">elasticsearch</a>&nbsp;
-                        </li>
-                    
-                </ul>
-            </span>
-        
-    </div>
-
-    <a href="/elasticsearch/es-vector/">阅读全文<span class="seo-reader-text">百万条用户话术，如何快速找到相似语义占比TopN？（ES向量检索实操全方案）</span>&nbsp;<i class="fa-solid fa-angle-right"></i></a>
-</div>
-
-                </div>
-            </li>
-        
-            <li class="home-article-item">
-
-                
-
-                
-                    
-                
-
-                
-                    <div id="home-article-thumbnail" class="home-article-thumbnail relative h-[150px] overflow-hidden rounded-t-large">
-                        <a href="/mysql/Implicit_conversion/">
-                            <img src="https://www.zhengyk.cn/images/summer-07-01.jpeg" alt="MySQL 隐式类型转换深度剖析" class="w-full h-full object-cover dark:brightness-75 transition-all" />
-                        </a>
-                    </div>
-                
-                <div class="flex flex-col gap-5 px-7 pb-7 pt-5">
-                    <h3 class="home-article-title">
-                        <a href="/mysql/Implicit_conversion/">
-                            MySQL 隐式类型转换深度剖析
-                        </a>
-                    </h3>
-
-                    <div class="home-article-content markdown-body">
-                        
-                            
-                            前言在 MySQL 慢查询优化中，隐式类型转换是最隐蔽、最高发的性能杀手之一。很多开发写 SQL 时不注意字段类型匹配，看似正常查询，在百万、千万级大表下直接触发索引失效、全表扫描，接口耗时从毫秒飙升到秒级，压垮数据库。
-本文带你搞懂：隐式转换底层规则、经典生产事故案例、如何排查、彻底优化根治。
-
-什么是 MySQL 隐式类型转换定义当 SQL 中运算符两端数据类型不一致时，MySQL 自动...
-                        
-                    </div>
-
-                    <div class="home-article-meta-info-container">
-    <div class="home-article-meta-info">
-        <span><i class="fa-solid fa-calendars"></i>&nbsp;
-            <span class="home-article-date" data-date="Mon May 01 2023 16:39:03 GMT+0800">
-                
-                    2023-05-01
-                
-            </span>
-        </span>
-        
-            <span class="home-article-category">
-                <i class="fa-solid fa-folders"></i>&nbsp;
-            <ul>
-                
-                
-                    
-                        
-                        <li>
-                            <a href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a>&nbsp;
-                        </li>
-                    
-                    
-                
-            </ul>
-        </span>
-        
-        
-            <span class="home-article-tag">
-                <i class="fa-solid fa-tags"></i>&nbsp;
-                <ul>
-                    
-                        <li>
-                            
-                            <a href="/tags/MySQL/">MySQL</a>&nbsp;
-                        </li>
-                    
-                </ul>
-            </span>
-        
-    </div>
-
-    <a href="/mysql/Implicit_conversion/">阅读全文<span class="seo-reader-text">MySQL 隐式类型转换深度剖析</span>&nbsp;<i class="fa-solid fa-angle-right"></i></a>
-</div>
-
-                </div>
-            </li>
-        
-            <li class="home-article-item">
-
-                
-
-                
-                    
-                
-
-                
-                    <div id="home-article-thumbnail" class="home-article-thumbnail relative h-[150px] overflow-hidden rounded-t-large">
-                        <a href="/mysql/datetime/">
-                            <img src="https://www.zhengyk.cn/images/summer-07-01.jpeg" alt="MySQL时间存储最佳实践" class="w-full h-full object-cover dark:brightness-75 transition-all" />
-                        </a>
-                    </div>
-                
-                <div class="flex flex-col gap-5 px-7 pb-7 pt-5">
-                    <h3 class="home-article-title">
-                        <a href="/mysql/datetime/">
-                            MySQL时间存储最佳实践
-                        </a>
-                    </h3>
-
-                    <div class="home-article-content markdown-body">
-                        
-                            
-                            MySQL时间存储最佳实践：选型建议+跨时区转换全方案在后端开发中，时间字段的存储的是最基础也最容易踩坑的环节——选对存储类型能避免后续90%的时间相关问题，而跨时区场景的处理则直接影响系统的兼容性和数据一致性。很多开发者要么随便选datetime&#x2F;timestamp，要么遇到跨时区就手忙脚乱，今天就一次性讲清楚：MySQL时间存储该怎么选，以及当数据库用datetime但业务需要...
-                        
-                    </div>
-
-                    <div class="home-article-meta-info-container">
-    <div class="home-article-meta-info">
-        <span><i class="fa-solid fa-calendars"></i>&nbsp;
-            <span class="home-article-date" data-date="Sat Apr 01 2023 16:39:03 GMT+0800">
-                
-                    2023-04-01
-                
-            </span>
-        </span>
-        
-            <span class="home-article-category">
-                <i class="fa-solid fa-folders"></i>&nbsp;
-            <ul>
-                
-                
-                    
-                        
-                        <li>
-                            <a href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a>&nbsp;
-                        </li>
-                    
-                    
-                
-            </ul>
-        </span>
-        
-        
-            <span class="home-article-tag">
-                <i class="fa-solid fa-tags"></i>&nbsp;
-                <ul>
-                    
-                        <li>
-                            
-                            <a href="/tags/MySQL/">MySQL</a>&nbsp;
-                        </li>
-                    
-                </ul>
-            </span>
-        
-    </div>
-
-    <a href="/mysql/datetime/">阅读全文<span class="seo-reader-text">MySQL时间存储最佳实践</span>&nbsp;<i class="fa-solid fa-angle-right"></i></a>
-</div>
-
-                </div>
-            </li>
-        
-    </ul>
-
-    <div class="home-paginator px-7 py-5">
-        <div class="paginator">
-	<span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/page/12/">12</a><a class="extend next" rel="next" href="/page/2/"><i class="fa-regular fa-angle-right"></i></a>
-</div>
+        <section id="about" class="p-note">
   
+    <p>分享Java、Spring Cloud、Redis等技术实践与架构思考。</p>
+
+  
+  
+    <p>
+      在这里找到我：
+      
+      
+      
+        
+        
+          <a class="icon u-url" target="_blank" rel="noopener me" href="https://github.com/zhengyakai" aria-label="GitHub" title="GitHub">
+            <i class="fa-brands fa-github"></i><!--
+      ---></a><!--
+    ---><!--
+    --->.
+        
+      
+    </p>
+  
+</section>
+
+<section id="writing">
+  <span class="h1"><a href="/archives/">文章</a></span>
+  
+  <span class="h2">标签</span>
+  <span class="widget tagcloud">
+    <a href="/tags/Go/" style="font-size: 13.33px;">Go</a> <a href="/tags/JVM/" style="font-size: 18.67px;">JVM</a> <a href="/tags/Java%E6%8F%92%E4%BB%B6/" style="font-size: 12px;">Java插件</a> <a href="/tags/Kafka/" style="font-size: 12px;">Kafka</a> <a href="/tags/MQTT/" style="font-size: 12px;">MQTT</a> <a href="/tags/Markdown/" style="font-size: 12px;">Markdown</a> <a href="/tags/MySQL/" style="font-size: 14.67px;">MySQL</a> <a href="/tags/NIO/" style="font-size: 12px;">NIO</a> <a href="/tags/Redis/" style="font-size: 16px;">Redis</a> <a href="/tags/ai/" style="font-size: 13.33px;">ai</a> <a href="/tags/aop/" style="font-size: 12px;">aop</a> <a href="/tags/docker/" style="font-size: 12px;">docker</a> <a href="/tags/dubbo/" style="font-size: 16px;">dubbo</a> <a href="/tags/elasticsearch/" style="font-size: 16px;">elasticsearch</a> <a href="/tags/git/" style="font-size: 12px;">git</a> <a href="/tags/java/" style="font-size: 20px;">java</a> <a href="/tags/jdk/" style="font-size: 12px;">jdk</a> <a href="/tags/js/" style="font-size: 12px;">js</a> <a href="/tags/langchain4j/" style="font-size: 17.33px;">langchain4j</a> <a href="/tags/linux/" style="font-size: 13.33px;">linux</a> <a href="/tags/netty/" style="font-size: 14.67px;">netty</a> <a href="/tags/nginx/" style="font-size: 12px;">nginx</a> <a href="/tags/rabbitmq/" style="font-size: 24px;">rabbitmq</a> <a href="/tags/springboot/" style="font-size: 18.67px;">springboot</a> <a href="/tags/springcloud/" style="font-size: 21.33px;">springcloud</a> <a href="/tags/springmvc/" style="font-size: 12px;">springmvc</a> <a href="/tags/spring%E4%BA%8B%E5%8A%A1/" style="font-size: 13.33px;">spring事务</a> <a href="/tags/tomcat/" style="font-size: 12px;">tomcat</a> <a href="/tags/vue/" style="font-size: 12px;">vue</a> <a href="/tags/zookeeper/" style="font-size: 12px;">zookeeper</a> <a href="/tags/%E5%86%85%E8%80%97/" style="font-size: 12px;">内耗</a> <a href="/tags/%E5%8F%8D%E5%B0%84/" style="font-size: 12px;">反射</a> <a href="/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B/" style="font-size: 22.67px;">多线程</a> <a href="/tags/%E5%B8%B8%E7%94%A8%E9%9B%86%E5%90%88/" style="font-size: 17.33px;">常用集合</a> <a href="/tags/%E5%BE%AE%E6%9C%8D%E5%8A%A1/" style="font-size: 12px;">微服务</a> <a href="/tags/%E6%9E%B6%E6%9E%84/" style="font-size: 16px;">架构</a> <a href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" style="font-size: 12px;">设计模式</a> <a href="/tags/%E8%AF%BB%E4%B9%A6/" style="font-size: 12px;">读书</a>
+  </span>
+  <span class="h2">最新发布</span>
+  
+  <ul class="post-list">
+    
+    
+      
+    
+    
+      <li class="post-item">
+        
+    <div class="meta">
+      
+        
+          <time datetime="2026-06-21T10:01:54.000Z" class="dt-published" itemprop="datePublished">2026-06-21</time>
+        
+      
     </div>
-</div>
 
-			</div>
 
-			
-		</div>
+        <span>
+    
+        <a class="" href="/ai/springai_2.0/">Spring AI 2.0 GA终于发布了？</a>
+    
 
-		<div class="main-content-footer">
-			<footer class="footer mt-5 py-5 h-auto text-base text-third-text-color relative border-t-2 border-t-border-color">
-    <div class="info-container py-3 text-center">
+
+</span>
+      </li>
+    
+      <li class="post-item">
         
-        <div class="text-center">
-            &copy;
-            
-              <span>2017</span>
-              -
-            
-            2026&nbsp;&nbsp;<i class="fa-solid fa-heart fa-beat" style="--fa-animation-duration: 0.5s; color: #f54545"></i>&nbsp;&nbsp;<a href="/">薛定谔的汪</a>
-            
-                
-                <p class="post-count space-x-0.5">
-                    <span>
-                        共撰写了 115 篇文章
-                    </span>
-                    
-                </p>
-            
-        </div>
+    <div class="meta">
+      
         
-        <div class="relative text-center lg:absolute lg:left-[20px] lg:top-1/2 lg:-translate-y-1/2 lg:text-left">
-            <span class="lg:block text-sm">由 <?xml version="1.0" encoding="utf-8"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd"><svg class="relative top-[2px] inline-block align-baseline" version="1.1" id="圖層_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="1rem" height="1rem" viewBox="0 0 512 512" enable-background="new 0 0 512 512" xml:space="preserve"><path fill="#0E83CD" d="M256.4,25.8l-200,115.5L56,371.5l199.6,114.7l200-115.5l0.4-230.2L256.4,25.8z M349,354.6l-18.4,10.7l-18.6-11V275H200v79.6l-18.4,10.7l-18.6-11v-197l18.5-10.6l18.5,10.8V237h112v-79.6l18.5-10.6l18.5,10.8V354.6z"/></svg><a target="_blank" class="text-base" href="https://hexo.io">Hexo</a> 驱动</span>
-            <span class="text-sm lg:block">主题&nbsp;<a class="text-base" target="_blank" href="https://github.com/EvanNotFound/hexo-theme-redefine">Redefine v2.9.0</a></span>
-        </div>
+          <time datetime="2026-01-20T10:01:54.000Z" class="dt-published" itemprop="datePublished">2026-01-20</time>
         
+      
+    </div>
+
+
+        <span>
+    
+        <a class="" href="/ai/what_is_aiagent/">AI Agent 到底是什么？</a>
+    
+
+
+</span>
+      </li>
+    
+      <li class="post-item">
         
-            <div>
-                博客已运行 <span class="odometer" id="runtime_days" ></span> 天 <span class="odometer" id="runtime_hours"></span> 小时 <span class="odometer" id="runtime_minutes"></span> 分钟 <span class="odometer" id="runtime_seconds"></span> 秒
-            </div>
+    <div class="meta">
+      
         
+          <time datetime="2025-05-30T10:01:54.000Z" class="dt-published" itemprop="datePublished">2025-05-30</time>
         
-            <script data-swup-reload-script>
-                try {
-                    function odometer_init() {
-                    const elements = document.querySelectorAll('.odometer');
-                    elements.forEach(el => {
-                        new Odometer({
-                            el,
-                            format: '( ddd).dd',
-                            duration: 200
-                        });
-                    });
-                    }
-                    odometer_init();
-                } catch (error) {}
-            </script>
+      
+    </div>
+
+
+        <span>
+    
+        <a class="" href="/ai/langchain4j_05_RAG/">LangChain4j RAG 检索增强</a>
+    
+
+
+</span>
+      </li>
+    
+      <li class="post-item">
         
+    <div class="meta">
+      
         
+          <time datetime="2025-04-30T10:01:54.000Z" class="dt-published" itemprop="datePublished">2025-04-30</time>
         
-    </div>  
+      
+    </div>
+
+
+        <span>
+    
+        <a class="" href="/ai/langchain4j_04_tools/">LangChain4j 工具调用</a>
+    
+
+
+</span>
+      </li>
+    
+      <li class="post-item">
+        
+    <div class="meta">
+      
+        
+          <time datetime="2025-04-15T10:01:54.000Z" class="dt-published" itemprop="datePublished">2025-04-15</time>
+        
+      
+    </div>
+
+
+        <span>
+    
+        <a class="" href="/ai/langchain4j_03_memory/">LangChain4j 记忆功能</a>
+    
+
+
+</span>
+      </li>
+    
+      <li class="post-item">
+        
+    <div class="meta">
+      
+        
+          <time datetime="2025-03-15T10:01:54.000Z" class="dt-published" itemprop="datePublished">2025-03-15</time>
+        
+      
+    </div>
+
+
+        <span>
+    
+        <a class="" href="/ai/langchain4j_02_pojo/">LangChain4j 让 AI 返回 Java 对象</a>
+    
+
+
+</span>
+      </li>
+    
+      <li class="post-item">
+        
+    <div class="meta">
+      
+        
+          <time datetime="2025-02-15T10:01:54.000Z" class="dt-published" itemprop="datePublished">2025-02-15</time>
+        
+      
+    </div>
+
+
+        <span>
+    
+        <a class="" href="/ai/langchain4j_01_introduce/">LangChain4j是什么</a>
+    
+
+
+</span>
+      </li>
+    
+      <li class="post-item">
+        
+    <div class="meta">
+      
+        
+          <time datetime="2024-12-10T10:01:54.000Z" class="dt-published" itemprop="datePublished">2024-12-10</time>
+        
+      
+    </div>
+
+
+        <span>
+    
+        <a class="" href="/elasticsearch/es-vector/">百万条用户话术，如何快速找到相似语义占比TopN？（ES向量检索实操全方案）</a>
+    
+
+
+</span>
+      </li>
+    
+      <li class="post-item">
+        
+    <div class="meta">
+      
+        
+          <time datetime="2023-05-01T08:39:03.000Z" class="dt-published" itemprop="datePublished">2023-05-01</time>
+        
+      
+    </div>
+
+
+        <span>
+    
+        <a class="" href="/mysql/Implicit_conversion/">MySQL 隐式类型转换深度剖析</a>
+    
+
+
+</span>
+      </li>
+    
+      <li class="post-item">
+        
+    <div class="meta">
+      
+        
+          <time datetime="2023-04-01T08:39:03.000Z" class="dt-published" itemprop="datePublished">2023-04-01</time>
+        
+      
+    </div>
+
+
+        <span>
+    
+        <a class="" href="/mysql/datetime/">MySQL时间存储最佳实践</a>
+    
+
+
+</span>
+      </li>
+    
+  </ul>
+  
+</section>
+
+
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2017-2026
+    薛定谔的汪
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     --><!--
+       --><li><a href="/archives/">归档</a></li><!--
+     --><!--
+       --><li><a href="/tags/">标签</a></li><!--
+     --><!--
+       --><li><a href="/categories/">分类</a></li><!--
+     --><!--
+       --><li><a href="/search/">搜索</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
 </footer>
-		</div>
-	</div>
 
-	
-
-	<div class="right-side-tools-container">
-		<div class="side-tools-container">
-	<ul class="hidden-tools-list">
-		<li class="right-bottom-tools tool-font-adjust-plus flex justify-center items-center">
-			<i class="fa-regular fa-magnifying-glass-plus"></i>
-		</li>
-
-		<li class="right-bottom-tools tool-font-adjust-minus flex justify-center items-center">
-			<i class="fa-regular fa-magnifying-glass-minus"></i>
-		</li>
-
-		<li class="right-bottom-tools tool-dark-light-toggle flex justify-center items-center">
-			<i class="fa-regular fa-moon"></i>
-		</li>
-
-		<!-- rss -->
-		
-
-		
-
-		<li class="right-bottom-tools tool-scroll-to-bottom flex justify-center items-center">
-			<i class="fa-regular fa-arrow-down"></i>
-		</li>
-	</ul>
-
-	<ul class="visible-tools-list">
-		<li class="right-bottom-tools toggle-tools-list flex justify-center items-center">
-			<i class="fa-regular fa-cog fa-spin"></i>
-		</li>
-		
-		<li class="right-bottom-tools tool-scroll-to-top flex justify-center items-center">
-			<i class="arrow-up fas fa-arrow-up"></i>
-			<span class="percent"></span>
-		</li>
-		
-		
-	</ul>
-</div>
-	</div>
-
-	<div class="image-viewer-container" role="dialog" aria-modal="true" aria-label="图片查看器">
-	<button class="image-viewer-close" type="button" aria-label="关闭">
-		<i class="fa-solid fa-xmark"></i>
-	</button>
-	<button class="image-viewer-prev" type="button" aria-label="上一页">
-		<i class="fa-solid fa-chevron-left"></i>
-	</button>
-	<div class="image-viewer-frame">
-		<img src="" alt="">
-	</div>
-	<div class="image-viewer-exif-panel hidden absolute left-1/2 bottom-20 -translate-x-1/2 w-[min(92vw,420px)] max-h-[60vh] overflow-hidden rounded-2xl bg-background-color-transparent-80 p-4 text-left shadow-redefine-flat backdrop-blur-md" role="dialog" aria-label="EXIF" aria-hidden="true">
-		<div class="flex items-center justify-between mb-3">
-			<span class="text-sm font-semibold text-first-text-color">EXIF</span>
-			<button class="image-viewer-exif-close flex h-8 w-8 items-center justify-center rounded-full bg-background-color-transparent-80 text-first-text-color transition hover:bg-background-color-transparent-40" type="button" aria-label="关闭">
-				<i class="fa-solid fa-xmark text-[0.65rem]"></i>
-			</button>
-		</div>
-		<div class="image-viewer-exif-cards grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-[50vh] overflow-y-auto pr-1 scrollbar-hide"></div>
-		<template class="image-viewer-exif-card-template">
-			<div class="rounded-lg bg-background-color-transparent-40 px-3 py-2">
-				<div class="image-viewer-exif-card-header flex items-center gap-2 mb-1">
-					<i class="image-viewer-exif-card-icon fa-solid fa-circle-info text-xs text-third-text-color"></i>
-					<div class="image-viewer-exif-card-title text-xs font-semibold text-first-text-color"></div>
-				</div>
-				<div class="image-viewer-exif-card-items flex flex-col gap-1"></div>
-			</div>
-		</template>
-	</div>
-	<button class="image-viewer-exif-toggle flex items-center gap-2 hidden absolute left-1/2 bottom-6 -translate-x-1/2 rounded-full border border-border-color bg-background-color-transparent-80 px-4 py-2 text-first-text-color backdrop-blur-md transition hover:bg-background-color-transparent-40" type="button" aria-label="EXIF" aria-expanded="false">
-		<i class="fa-solid fa-circle-info text-xs"></i>
-		<span class="text-xs font-semibold uppercase tracking-wider">EXIF</span>
-	</button>
-	<button class="image-viewer-next" type="button" aria-label="下一页">
-		<i class="fa-solid fa-chevron-right"></i>
-	</button>
-</div>
-
-
-	
-
-</main>
+    </div>
+    <!-- styles -->
 
 
 
-<script src="/js/build/libs/Swup.min.js"></script>
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
 
-<script src="/js/build/libs/SwupSlideTheme.min.js"></script>
 
-<script src="/js/build/libs/SwupScriptsPlugin.min.js"></script>
+    <!-- jquery -->
 
-<script src="/js/build/libs/SwupProgressPlugin.min.js"></script>
-
-<script src="/js/build/libs/SwupScrollPlugin.min.js"></script>
-
-<script src="/js/build/libs/SwupPreloadPlugin.min.js"></script>
-
-<script>
-    window.swup = new Swup({
-        plugins: [
-            new SwupScriptsPlugin({
-                optin: true,
-            }),
-            new SwupProgressPlugin(),
-            new SwupScrollPlugin({
-                offset: 80,
-            }),
-            new SwupSlideTheme({
-                mainElement: ".main-content-body",
-            }),
-            new SwupPreloadPlugin(),
-        ],
-        containers: ["#swup"],
-    });
-
-    window.dispatchEvent(
-        new CustomEvent("redefine:swup:ready", {
-            detail: {
-                swup: window.swup,
-            },
-        }),
-    );
-</script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script>
 
 
 
 
-	
-<script src="/js/build/main.js" type="module"></script>
+<!-- clipboard -->
 
 
+<script src="/js/main.js"></script>
 
-    
-<script src="/js/build/libs/odometer.min.js"></script>
+<!-- search -->
 
-    
-<link rel="stylesheet" href="/assets/odometer-theme-minimal.css">
+<!-- Baidu Analytics -->
 
+<!-- Cloudflare Analytics -->
 
+<!-- Disqus Comments -->
 
+<!-- utterances Comments -->
 
-
-
-
-
-
-
-
-
-
-
-
-<script src="/js/build/libs/moment-with-locales.min.js" data-swup-reload-script=""></script>
-
-
-
-	
 </body>
-
 </html>

@@ -1,463 +1,463 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://www.zhengyk.cn/ai/springai_2.0/</loc>
-    <lastmod>2026-06-22</lastmod>
-  </url>
-  <url>
-    <loc>https://www.zhengyk.cn/ai/what_is_aiagent/</loc>
-    <lastmod>2026-05-15</lastmod>
-  </url>
-  <url>
-    <loc>https://www.zhengyk.cn/elasticsearch/es-vector/</loc>
-    <lastmod>2026-04-10</lastmod>
-  </url>
-  <url>
-    <loc>https://www.zhengyk.cn/ai/langchain4j_05_RAG/</loc>
-    <lastmod>2026-04-10</lastmod>
-  </url>
-  <url>
-    <loc>https://www.zhengyk.cn/ai/langchain4j_04_tools/</loc>
-    <lastmod>2026-04-08</lastmod>
-  </url>
-  <url>
-    <loc>https://www.zhengyk.cn/ai/langchain4j_01_introduce/</loc>
-    <lastmod>2026-04-08</lastmod>
-  </url>
-  <url>
-    <loc>https://www.zhengyk.cn/ai/langchain4j_03_memory/</loc>
-    <lastmod>2026-04-07</lastmod>
-  </url>
-  <url>
-    <loc>https://www.zhengyk.cn/ai/langchain4j_02_pojo/</loc>
-    <lastmod>2026-04-07</lastmod>
-  </url>
-  <url>
-    <loc>https://www.zhengyk.cn/redis/Redis02/</loc>
-    <lastmod>2026-03-27</lastmod>
-  </url>
-  <url>
-    <loc>https://www.zhengyk.cn/mysql/Implicit_conversion/</loc>
-    <lastmod>2026-03-27</lastmod>
-  </url>
-  <url>
-    <loc>https://www.zhengyk.cn/mysql/datetime/</loc>
-    <lastmod>2026-03-27</lastmod>
-  </url>
-  <url>
-    <loc>https://www.zhengyk.cn/mysql/index_failure/</loc>
-    <lastmod>2026-03-27</lastmod>
-  </url>
-  <url>
-    <loc>https://www.zhengyk.cn/dubbo/dubbo-2/</loc>
-    <lastmod>2026-03-20</lastmod>
-  </url>
-  <url>
-    <loc>https://www.zhengyk.cn/dubbo/dubbo-3/</loc>
-    <lastmod>2026-03-20</lastmod>
-  </url>
-  <url>
-    <loc>https://www.zhengyk.cn/project/tx-distributedLock/</loc>
-    <lastmod>2026-03-18</lastmod>
-  </url>
-  <url>
-    <loc>https://www.zhengyk.cn/dubbo/dubbo-0/</loc>
-    <lastmod>2026-03-18</lastmod>
-  </url>
-  <url>
-    <loc>https://www.zhengyk.cn/dubbo/dubbo-1/</loc>
-    <lastmod>2026-03-18</lastmod>
+    <loc>https://www.zhengyk.cn/spring/Rollback-rule/</loc>
+    <lastmod>2026-08-18</lastmod>
   </url>
   <url>
     <loc>https://www.zhengyk.cn/spring/AopLog-Exeption/</loc>
-    <lastmod>2023-11-17</lastmod>
-  </url>
-  <url>
-    <loc>https://www.zhengyk.cn/spring/Rollback-rule/</loc>
-    <lastmod>2023-11-17</lastmod>
-  </url>
-  <url>
-    <loc>https://www.zhengyk.cn/spring/ResponseBody/</loc>
-    <lastmod>2023-11-17</lastmod>
-  </url>
-  <url>
-    <loc>https://www.zhengyk.cn/elasticsearch/introduction-practice/</loc>
-    <lastmod>2023-11-17</lastmod>
+    <lastmod>2026-08-18</lastmod>
   </url>
   <url>
     <loc>https://www.zhengyk.cn/elasticsearch/es-reindex/</loc>
-    <lastmod>2023-11-17</lastmod>
+    <lastmod>2026-08-18</lastmod>
+  </url>
+  <url>
+    <loc>https://www.zhengyk.cn/elasticsearch/introduction-practice/</loc>
+    <lastmod>2026-08-18</lastmod>
+  </url>
+  <url>
+    <loc>https://www.zhengyk.cn/elasticsearch/es-vector/</loc>
+    <lastmod>2026-08-18</lastmod>
+  </url>
+  <url>
+    <loc>https://www.zhengyk.cn/spring/ResponseBody/</loc>
+    <lastmod>2026-08-18</lastmod>
+  </url>
+  <url>
+    <loc>https://www.zhengyk.cn/dubbo/dubbo-2/</loc>
+    <lastmod>2026-08-18</lastmod>
   </url>
   <url>
     <loc>https://www.zhengyk.cn/elasticsearch/es-optimized/</loc>
-    <lastmod>2023-11-17</lastmod>
+    <lastmod>2026-08-18</lastmod>
   </url>
   <url>
-    <loc>https://www.zhengyk.cn/mq/mqtt/mqtt/</loc>
-    <lastmod>2023-11-17</lastmod>
+    <loc>https://www.zhengyk.cn/dubbo/dubbo-0/</loc>
+    <lastmod>2026-08-18</lastmod>
+  </url>
+  <url>
+    <loc>https://www.zhengyk.cn/dubbo/dubbo-1/</loc>
+    <lastmod>2026-08-18</lastmod>
+  </url>
+  <url>
+    <loc>https://www.zhengyk.cn/dubbo/dubbo-3/</loc>
+    <lastmod>2026-08-18</lastmod>
   </url>
   <url>
     <loc>https://www.zhengyk.cn/mq/kafka/kafka-note/</loc>
-    <lastmod>2023-11-17</lastmod>
+    <lastmod>2026-08-18</lastmod>
+  </url>
+  <url>
+    <loc>https://www.zhengyk.cn/mq/mqtt/mqtt/</loc>
+    <lastmod>2026-08-18</lastmod>
   </url>
   <url>
     <loc>https://www.zhengyk.cn/mq/rabbitmq/ack-durable/</loc>
-    <lastmod>2023-11-17</lastmod>
+    <lastmod>2026-08-18</lastmod>
   </url>
   <url>
     <loc>https://www.zhengyk.cn/mq/rabbitmq/delay-queue/</loc>
-    <lastmod>2023-11-17</lastmod>
-  </url>
-  <url>
-    <loc>https://www.zhengyk.cn/mq/rabbitmq/pub-sub/</loc>
-    <lastmod>2023-11-17</lastmod>
-  </url>
-  <url>
-    <loc>https://www.zhengyk.cn/mq/rabbitmq/user-vhost/</loc>
-    <lastmod>2023-11-17</lastmod>
+    <lastmod>2026-08-18</lastmod>
   </url>
   <url>
     <loc>https://www.zhengyk.cn/mq/rabbitmq/cancel-expired-order/</loc>
-    <lastmod>2023-11-17</lastmod>
+    <lastmod>2026-08-18</lastmod>
+  </url>
+  <url>
+    <loc>https://www.zhengyk.cn/mq/rabbitmq/pub-sub/</loc>
+    <lastmod>2026-08-18</lastmod>
   </url>
   <url>
     <loc>https://www.zhengyk.cn/mq/rabbitmq/tx-confirm/</loc>
-    <lastmod>2023-11-17</lastmod>
+    <lastmod>2026-08-18</lastmod>
   </url>
   <url>
-    <loc>https://www.zhengyk.cn/mq/rabbitmq/install/</loc>
-    <lastmod>2023-11-17</lastmod>
-  </url>
-  <url>
-    <loc>https://www.zhengyk.cn/mq/rabbitmq/round-robin/</loc>
-    <lastmod>2023-11-17</lastmod>
+    <loc>https://www.zhengyk.cn/mq/rabbitmq/user-vhost/</loc>
+    <lastmod>2026-08-18</lastmod>
   </url>
   <url>
     <loc>https://www.zhengyk.cn/mq/rabbitmq/java-simple-queue/</loc>
-    <lastmod>2023-11-17</lastmod>
+    <lastmod>2026-08-18</lastmod>
+  </url>
+  <url>
+    <loc>https://www.zhengyk.cn/mq/rabbitmq/round-robin/</loc>
+    <lastmod>2026-08-18</lastmod>
   </url>
   <url>
     <loc>https://www.zhengyk.cn/mq/rabbitmq/topic/</loc>
-    <lastmod>2023-11-17</lastmod>
+    <lastmod>2026-08-18</lastmod>
   </url>
   <url>
-    <loc>https://www.zhengyk.cn/mq/rabbitmq/fair-dipatch/</loc>
-    <lastmod>2023-11-17</lastmod>
+    <loc>https://www.zhengyk.cn/mq/rabbitmq/install/</loc>
+    <lastmod>2026-08-18</lastmod>
   </url>
   <url>
-    <loc>https://www.zhengyk.cn/mq/rabbitmq/routing/</loc>
-    <lastmod>2023-11-17</lastmod>
+    <loc>https://www.zhengyk.cn/mysql/index_failure/</loc>
+    <lastmod>2026-08-18</lastmod>
   </url>
   <url>
     <loc>https://www.zhengyk.cn/mq/rabbitmq/basic-concept/</loc>
-    <lastmod>2023-11-17</lastmod>
+    <lastmod>2026-08-18</lastmod>
+  </url>
+  <url>
+    <loc>https://www.zhengyk.cn/mq/rabbitmq/fair-dipatch/</loc>
+    <lastmod>2026-08-18</lastmod>
+  </url>
+  <url>
+    <loc>https://www.zhengyk.cn/mq/rabbitmq/routing/</loc>
+    <lastmod>2026-08-18</lastmod>
+  </url>
+  <url>
+    <loc>https://www.zhengyk.cn/mysql/Implicit_conversion/</loc>
+    <lastmod>2026-08-18</lastmod>
+  </url>
+  <url>
+    <loc>https://www.zhengyk.cn/mysql/datetime/</loc>
+    <lastmod>2026-08-18</lastmod>
   </url>
   <url>
     <loc>https://www.zhengyk.cn/linux/CentOS7_Clean/</loc>
-    <lastmod>2023-11-17</lastmod>
+    <lastmod>2026-08-18</lastmod>
   </url>
   <url>
     <loc>https://www.zhengyk.cn/linux/Docker/</loc>
-    <lastmod>2023-11-17</lastmod>
+    <lastmod>2026-08-18</lastmod>
   </url>
   <url>
     <loc>https://www.zhengyk.cn/linux/Linux-Command/</loc>
-    <lastmod>2023-11-17</lastmod>
+    <lastmod>2026-08-18</lastmod>
+  </url>
+  <url>
+    <loc>https://www.zhengyk.cn/ai/what_is_aiagent/</loc>
+    <lastmod>2026-08-18</lastmod>
+  </url>
+  <url>
+    <loc>https://www.zhengyk.cn/ai/langchain4j_04_tools/</loc>
+    <lastmod>2026-08-18</lastmod>
+  </url>
+  <url>
+    <loc>https://www.zhengyk.cn/ai/langchain4j_03_memory/</loc>
+    <lastmod>2026-08-18</lastmod>
+  </url>
+  <url>
+    <loc>https://www.zhengyk.cn/ai/langchain4j_01_introduce/</loc>
+    <lastmod>2026-08-18</lastmod>
+  </url>
+  <url>
+    <loc>https://www.zhengyk.cn/ai/langchain4j_02_pojo/</loc>
+    <lastmod>2026-08-18</lastmod>
+  </url>
+  <url>
+    <loc>https://www.zhengyk.cn/ai/langchain4j_05_RAG/</loc>
+    <lastmod>2026-08-18</lastmod>
+  </url>
+  <url>
+    <loc>https://www.zhengyk.cn/ai/springai_2.0/</loc>
+    <lastmod>2026-08-18</lastmod>
   </url>
   <url>
     <loc>https://www.zhengyk.cn/architecture/e-commerce-big-sale/</loc>
-    <lastmod>2023-11-17</lastmod>
+    <lastmod>2026-08-18</lastmod>
   </url>
   <url>
     <loc>https://www.zhengyk.cn/project/chainofresponsibility/</loc>
-    <lastmod>2023-11-17</lastmod>
+    <lastmod>2026-08-18</lastmod>
   </url>
   <url>
-    <loc>https://www.zhengyk.cn/netty/netty-interfaces/</loc>
-    <lastmod>2023-11-17</lastmod>
-  </url>
-  <url>
-    <loc>https://www.zhengyk.cn/netty/nio-theory/</loc>
-    <lastmod>2023-11-17</lastmod>
+    <loc>https://www.zhengyk.cn/project/tx-distributedLock/</loc>
+    <lastmod>2026-08-18</lastmod>
   </url>
   <url>
     <loc>https://www.zhengyk.cn/netty/springboot-netty/</loc>
-    <lastmod>2023-11-17</lastmod>
+    <lastmod>2026-08-18</lastmod>
+  </url>
+  <url>
+    <loc>https://www.zhengyk.cn/netty/netty-interfaces/</loc>
+    <lastmod>2026-08-18</lastmod>
   </url>
   <url>
     <loc>https://www.zhengyk.cn/netty/tcp-zb-cb/</loc>
-    <lastmod>2023-11-17</lastmod>
+    <lastmod>2026-08-18</lastmod>
   </url>
   <url>
-    <loc>https://www.zhengyk.cn/server/Resolve_tomcat_start/</loc>
-    <lastmod>2023-11-17</lastmod>
+    <loc>https://www.zhengyk.cn/netty/nio-theory/</loc>
+    <lastmod>2026-08-18</lastmod>
   </url>
   <url>
     <loc>https://www.zhengyk.cn/server/Nginx-File-Server/</loc>
-    <lastmod>2023-11-17</lastmod>
+    <lastmod>2026-08-18</lastmod>
+  </url>
+  <url>
+    <loc>https://www.zhengyk.cn/server/Resolve_tomcat_start/</loc>
+    <lastmod>2026-08-18</lastmod>
   </url>
   <url>
     <loc>https://www.zhengyk.cn/java/ReentrantLock-1/</loc>
-    <lastmod>2023-11-17</lastmod>
+    <lastmod>2026-08-18</lastmod>
   </url>
   <url>
     <loc>https://www.zhengyk.cn/java/LinkedList/</loc>
-    <lastmod>2023-11-17</lastmod>
-  </url>
-  <url>
-    <loc>https://www.zhengyk.cn/java/idempotence/</loc>
-    <lastmod>2023-11-17</lastmod>
-  </url>
-  <url>
-    <loc>https://www.zhengyk.cn/java/ThreadPool/</loc>
-    <lastmod>2023-11-17</lastmod>
-  </url>
-  <url>
-    <loc>https://www.zhengyk.cn/java/CollectorstoMapNPE/</loc>
-    <lastmod>2023-11-17</lastmod>
+    <lastmod>2026-08-18</lastmod>
   </url>
   <url>
     <loc>https://www.zhengyk.cn/java/ArrayList/</loc>
-    <lastmod>2023-11-17</lastmod>
+    <lastmod>2026-08-18</lastmod>
+  </url>
+  <url>
+    <loc>https://www.zhengyk.cn/java/CollectorstoMapNPE/</loc>
+    <lastmod>2026-08-18</lastmod>
   </url>
   <url>
     <loc>https://www.zhengyk.cn/java/HFJ01/</loc>
-    <lastmod>2023-11-17</lastmod>
+    <lastmod>2026-08-18</lastmod>
   </url>
   <url>
-    <loc>https://www.zhengyk.cn/java/joda-time-common-use/</loc>
-    <lastmod>2023-11-17</lastmod>
+    <loc>https://www.zhengyk.cn/java/ThreadPool/</loc>
+    <lastmod>2026-08-18</lastmod>
   </url>
   <url>
-    <loc>https://www.zhengyk.cn/java/ThreadLocal/</loc>
-    <lastmod>2023-11-17</lastmod>
+    <loc>https://www.zhengyk.cn/java/idempotence/</loc>
+    <lastmod>2026-08-18</lastmod>
   </url>
   <url>
     <loc>https://www.zhengyk.cn/java/Eqha/</loc>
-    <lastmod>2023-11-17</lastmod>
+    <lastmod>2026-08-18</lastmod>
   </url>
   <url>
     <loc>https://www.zhengyk.cn/java/Optional-practice/</loc>
-    <lastmod>2023-11-17</lastmod>
+    <lastmod>2026-08-18</lastmod>
   </url>
   <url>
     <loc>https://www.zhengyk.cn/java/Thread_sdf/</loc>
-    <lastmod>2023-11-17</lastmod>
+    <lastmod>2026-08-18</lastmod>
   </url>
   <url>
-    <loc>https://www.zhengyk.cn/java/volatile/</loc>
-    <lastmod>2023-11-17</lastmod>
+    <loc>https://www.zhengyk.cn/java/joda-time-common-use/</loc>
+    <lastmod>2026-08-18</lastmod>
   </url>
   <url>
-    <loc>https://www.zhengyk.cn/java/ConcurrentHashMap/</loc>
-    <lastmod>2023-11-17</lastmod>
-  </url>
-  <url>
-    <loc>https://www.zhengyk.cn/java/aliGuide/</loc>
-    <lastmod>2023-11-17</lastmod>
+    <loc>https://www.zhengyk.cn/java/ThreadLocal/</loc>
+    <lastmod>2026-08-18</lastmod>
   </url>
   <url>
     <loc>https://www.zhengyk.cn/java/BlockingQueue/</loc>
-    <lastmod>2023-11-17</lastmod>
+    <lastmod>2026-08-18</lastmod>
+  </url>
+  <url>
+    <loc>https://www.zhengyk.cn/java/ConcurrentHashMap/</loc>
+    <lastmod>2026-08-18</lastmod>
   </url>
   <url>
     <loc>https://www.zhengyk.cn/java/Reflect/</loc>
-    <lastmod>2023-11-17</lastmod>
+    <lastmod>2026-08-18</lastmod>
   </url>
   <url>
-    <loc>https://www.zhengyk.cn/java/HashMap/</loc>
-    <lastmod>2023-11-17</lastmod>
+    <loc>https://www.zhengyk.cn/java/aliGuide/</loc>
+    <lastmod>2026-08-18</lastmod>
+  </url>
+  <url>
+    <loc>https://www.zhengyk.cn/java/volatile/</loc>
+    <lastmod>2026-08-18</lastmod>
   </url>
   <url>
     <loc>https://www.zhengyk.cn/java/Java_Exception/</loc>
-    <lastmod>2023-11-17</lastmod>
+    <lastmod>2026-08-18</lastmod>
   </url>
   <url>
-    <loc>https://www.zhengyk.cn/java/lock-aqs/</loc>
-    <lastmod>2023-11-17</lastmod>
+    <loc>https://www.zhengyk.cn/java/HashMap/</loc>
+    <lastmod>2026-08-18</lastmod>
   </url>
   <url>
     <loc>https://www.zhengyk.cn/java/LinkedHashMap/</loc>
-    <lastmod>2023-11-17</lastmod>
+    <lastmod>2026-08-18</lastmod>
   </url>
   <url>
-    <loc>https://www.zhengyk.cn/java/jdk8-new-feature/</loc>
-    <lastmod>2023-11-17</lastmod>
-  </url>
-  <url>
-    <loc>https://www.zhengyk.cn/java/synchronized/</loc>
-    <lastmod>2023-11-17</lastmod>
-  </url>
-  <url>
-    <loc>https://www.zhengyk.cn/java/HandleException/</loc>
-    <lastmod>2023-11-17</lastmod>
-  </url>
-  <url>
-    <loc>https://www.zhengyk.cn/java/HFJ02/</loc>
-    <lastmod>2023-11-17</lastmod>
+    <loc>https://www.zhengyk.cn/java/lock-aqs/</loc>
+    <lastmod>2026-08-18</lastmod>
   </url>
   <url>
     <loc>https://www.zhengyk.cn/java/AtomicInteger/</loc>
-    <lastmod>2023-11-17</lastmod>
+    <lastmod>2026-08-18</lastmod>
   </url>
   <url>
-    <loc>https://www.zhengyk.cn/java/ReentrantLock-2/</loc>
-    <lastmod>2023-11-17</lastmod>
+    <loc>https://www.zhengyk.cn/java/HFJ02/</loc>
+    <lastmod>2026-08-18</lastmod>
   </url>
   <url>
-    <loc>https://www.zhengyk.cn/java/transient/</loc>
-    <lastmod>2023-11-17</lastmod>
+    <loc>https://www.zhengyk.cn/java/HandleException/</loc>
+    <lastmod>2026-08-18</lastmod>
   </url>
   <url>
-    <loc>https://www.zhengyk.cn/java/HashSet/</loc>
-    <lastmod>2023-11-17</lastmod>
+    <loc>https://www.zhengyk.cn/java/jdk8-new-feature/</loc>
+    <lastmod>2026-08-18</lastmod>
+  </url>
+  <url>
+    <loc>https://www.zhengyk.cn/java/synchronized/</loc>
+    <lastmod>2026-08-18</lastmod>
   </url>
   <url>
     <loc>https://www.zhengyk.cn/jvm/JVM-03/</loc>
-    <lastmod>2023-11-17</lastmod>
+    <lastmod>2026-08-18</lastmod>
+  </url>
+  <url>
+    <loc>https://www.zhengyk.cn/java/HashSet/</loc>
+    <lastmod>2026-08-18</lastmod>
+  </url>
+  <url>
+    <loc>https://www.zhengyk.cn/java/ReentrantLock-2/</loc>
+    <lastmod>2026-08-18</lastmod>
+  </url>
+  <url>
+    <loc>https://www.zhengyk.cn/java/transient/</loc>
+    <lastmod>2026-08-18</lastmod>
   </url>
   <url>
     <loc>https://www.zhengyk.cn/jvm/JVM-02/</loc>
-    <lastmod>2023-11-17</lastmod>
-  </url>
-  <url>
-    <loc>https://www.zhengyk.cn/jvm/JVM-06/</loc>
-    <lastmod>2023-11-17</lastmod>
-  </url>
-  <url>
-    <loc>https://www.zhengyk.cn/jvm/JVM_01/</loc>
-    <lastmod>2023-11-17</lastmod>
-  </url>
-  <url>
-    <loc>https://www.zhengyk.cn/jvm/JVM-05/</loc>
-    <lastmod>2023-11-17</lastmod>
+    <lastmod>2026-08-18</lastmod>
   </url>
   <url>
     <loc>https://www.zhengyk.cn/jvm/JVM-04/</loc>
-    <lastmod>2023-11-17</lastmod>
+    <lastmod>2026-08-18</lastmod>
+  </url>
+  <url>
+    <loc>https://www.zhengyk.cn/jvm/JVM_01/</loc>
+    <lastmod>2026-08-18</lastmod>
+  </url>
+  <url>
+    <loc>https://www.zhengyk.cn/jvm/JVM-05/</loc>
+    <lastmod>2026-08-18</lastmod>
+  </url>
+  <url>
+    <loc>https://www.zhengyk.cn/jvm/JVM-06/</loc>
+    <lastmod>2026-08-18</lastmod>
   </url>
   <url>
     <loc>https://www.zhengyk.cn/other/humbnails/</loc>
-    <lastmod>2023-11-17</lastmod>
+    <lastmod>2026-08-18</lastmod>
   </url>
   <url>
     <loc>https://www.zhengyk.cn/other/markdown-summary/</loc>
-    <lastmod>2023-11-17</lastmod>
+    <lastmod>2026-08-18</lastmod>
   </url>
   <url>
     <loc>https://www.zhengyk.cn/other/stop-neihao/</loc>
-    <lastmod>2023-11-17</lastmod>
+    <lastmod>2026-08-18</lastmod>
   </url>
   <url>
     <loc>https://www.zhengyk.cn/other/git-Hooks/</loc>
-    <lastmod>2023-11-17</lastmod>
+    <lastmod>2026-08-18</lastmod>
   </url>
   <url>
     <loc>https://www.zhengyk.cn/fe/Vue00/</loc>
-    <lastmod>2023-11-17</lastmod>
+    <lastmod>2026-08-18</lastmod>
   </url>
   <url>
     <loc>https://www.zhengyk.cn/fe/JavaScript9Console/</loc>
-    <lastmod>2023-11-17</lastmod>
-  </url>
-  <url>
-    <loc>https://www.zhengyk.cn/redis/simple-build-redis-cluster-tool/</loc>
-    <lastmod>2023-11-17</lastmod>
+    <lastmod>2026-08-18</lastmod>
   </url>
   <url>
     <loc>https://www.zhengyk.cn/redis/Redis01/</loc>
-    <lastmod>2023-11-17</lastmod>
+    <lastmod>2026-08-18</lastmod>
   </url>
   <url>
-    <loc>https://www.zhengyk.cn/redis/redis-distributed-lock/</loc>
-    <lastmod>2023-11-17</lastmod>
+    <loc>https://www.zhengyk.cn/redis/Redis02/</loc>
+    <lastmod>2026-08-18</lastmod>
+  </url>
+  <url>
+    <loc>https://www.zhengyk.cn/redis/simple-build-redis-cluster-tool/</loc>
+    <lastmod>2026-08-18</lastmod>
   </url>
   <url>
     <loc>https://www.zhengyk.cn/framework/canal-sync-mysql-redis/</loc>
-    <lastmod>2023-11-17</lastmod>
+    <lastmod>2026-08-18</lastmod>
   </url>
   <url>
     <loc>https://www.zhengyk.cn/framework/limit-degrade/</loc>
-    <lastmod>2023-11-17</lastmod>
+    <lastmod>2026-08-18</lastmod>
+  </url>
+  <url>
+    <loc>https://www.zhengyk.cn/redis/redis-distributed-lock/</loc>
+    <lastmod>2026-08-18</lastmod>
   </url>
   <url>
     <loc>https://www.zhengyk.cn/go/best-practice-for-handling-ex-error/</loc>
-    <lastmod>2023-11-17</lastmod>
+    <lastmod>2026-08-18</lastmod>
   </url>
   <url>
     <loc>https://www.zhengyk.cn/go/three-mistakes/</loc>
-    <lastmod>2023-11-17</lastmod>
+    <lastmod>2026-08-18</lastmod>
   </url>
   <url>
     <loc>https://www.zhengyk.cn/zk/zookeeper/</loc>
-    <lastmod>2023-11-17</lastmod>
+    <lastmod>2026-08-18</lastmod>
   </url>
   <url>
     <loc>https://www.zhengyk.cn/springcloud/fegin-interceptor/</loc>
-    <lastmod>2023-11-17</lastmod>
+    <lastmod>2026-08-18</lastmod>
   </url>
   <url>
     <loc>https://www.zhengyk.cn/springcloud/hystrix/</loc>
-    <lastmod>2023-11-17</lastmod>
-  </url>
-  <url>
-    <loc>https://www.zhengyk.cn/springcloud/zuul-01/</loc>
-    <lastmod>2023-11-17</lastmod>
-  </url>
-  <url>
-    <loc>https://www.zhengyk.cn/springcloud/sleuth-zipkin/</loc>
-    <lastmod>2023-11-17</lastmod>
+    <lastmod>2026-08-18</lastmod>
   </url>
   <url>
     <loc>https://www.zhengyk.cn/springcloud/micro-service-deploy/</loc>
-    <lastmod>2023-11-17</lastmod>
+    <lastmod>2026-08-18</lastmod>
+  </url>
+  <url>
+    <loc>https://www.zhengyk.cn/springcloud/sleuth-zipkin/</loc>
+    <lastmod>2026-08-18</lastmod>
   </url>
   <url>
     <loc>https://www.zhengyk.cn/springcloud/register-discovery/</loc>
-    <lastmod>2023-11-17</lastmod>
+    <lastmod>2026-08-18</lastmod>
+  </url>
+  <url>
+    <loc>https://www.zhengyk.cn/springcloud/zuul-01/</loc>
+    <lastmod>2026-08-18</lastmod>
   </url>
   <url>
     <loc>https://www.zhengyk.cn/springcloud/spring-security-oauth2-jwt/</loc>
-    <lastmod>2023-11-17</lastmod>
-  </url>
-  <url>
-    <loc>https://www.zhengyk.cn/springcloud/eureka/</loc>
-    <lastmod>2023-11-17</lastmod>
-  </url>
-  <url>
-    <loc>https://www.zhengyk.cn/springcloud/introduce/</loc>
-    <lastmod>2023-11-17</lastmod>
-  </url>
-  <url>
-    <loc>https://www.zhengyk.cn/springcloud/load-balance/</loc>
-    <lastmod>2023-11-17</lastmod>
-  </url>
-  <url>
-    <loc>https://www.zhengyk.cn/springcloud/zuul-02/</loc>
-    <lastmod>2023-11-17</lastmod>
+    <lastmod>2026-08-18</lastmod>
   </url>
   <url>
     <loc>https://www.zhengyk.cn/springboot/Sboot04/</loc>
-    <lastmod>2023-11-17</lastmod>
+    <lastmod>2026-08-18</lastmod>
   </url>
   <url>
-    <loc>https://www.zhengyk.cn/springboot/Sboot01/</loc>
-    <lastmod>2023-11-17</lastmod>
+    <loc>https://www.zhengyk.cn/springcloud/eureka/</loc>
+    <lastmod>2026-08-18</lastmod>
   </url>
   <url>
-    <loc>https://www.zhengyk.cn/springboot/spring-boot-config-load-order/</loc>
-    <lastmod>2023-11-17</lastmod>
+    <loc>https://www.zhengyk.cn/springcloud/introduce/</loc>
+    <lastmod>2026-08-18</lastmod>
   </url>
   <url>
-    <loc>https://www.zhengyk.cn/springboot/Sboot02/</loc>
-    <lastmod>2023-11-17</lastmod>
+    <loc>https://www.zhengyk.cn/springcloud/zuul-02/</loc>
+    <lastmod>2026-08-18</lastmod>
   </url>
   <url>
-    <loc>https://www.zhengyk.cn/springboot/Sboot03/</loc>
-    <lastmod>2023-11-17</lastmod>
+    <loc>https://www.zhengyk.cn/springcloud/load-balance/</loc>
+    <lastmod>2026-08-18</lastmod>
   </url>
   <url>
     <loc>https://www.zhengyk.cn/reading/java-workspace-strategy/</loc>
-    <lastmod>2023-11-17</lastmod>
+    <lastmod>2026-08-18</lastmod>
+  </url>
+  <url>
+    <loc>https://www.zhengyk.cn/springboot/Sboot01/</loc>
+    <lastmod>2026-08-18</lastmod>
+  </url>
+  <url>
+    <loc>https://www.zhengyk.cn/springboot/Sboot02/</loc>
+    <lastmod>2026-08-18</lastmod>
+  </url>
+  <url>
+    <loc>https://www.zhengyk.cn/springboot/spring-boot-config-load-order/</loc>
+    <lastmod>2026-08-18</lastmod>
+  </url>
+  <url>
+    <loc>https://www.zhengyk.cn/springboot/Sboot03/</loc>
+    <lastmod>2026-08-18</lastmod>
   </url>
 </urlset> 
