@@ -16,10 +16,24 @@ body {
 
 #header #nav {
   font-size: 1rem;
+  font-weight: 700;
 }
 
 #header #nav ul {
   line-height: 1.5;
+}
+
+#header #nav ul a {
+  font-weight: 700;
+}
+
+#header-post #nav {
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+#header-post #nav ul a {
+  font-weight: 700;
 }
 
 .post-list .post-item .meta,
