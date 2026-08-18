@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="前言本文总结下 Zookeeper 中的一些知识点，便于自己查漏补缺，本篇当做一个笔记来写，所以写的有点乱。 Zookeeper 总结Zookeeper是一个分布式应用协调服务， Dubbo推荐使用它来当做注册中心，kafka 集群也需要它来协调各个节点。 Zookeeper 是基于key-value的文件目录式存储，当有服务注册时，会创建一个节点，每一个节点对应一个 value。 ZK节点ZK中">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Zookeeper笔记整理">
+<meta property="og:url" content="https://www.zhengyk.cn/blog/3452972247.html">
+<meta property="og:site_name" content="薛定谔的汪 - 技术博客">
+<meta property="og:description" content="前言本文总结下 Zookeeper 中的一些知识点，便于自己查漏补缺，本篇当做一个笔记来写，所以写的有点乱。 Zookeeper 总结Zookeeper是一个分布式应用协调服务， Dubbo推荐使用它来当做注册中心，kafka 集群也需要它来协调各个节点。 Zookeeper 是基于key-value的文件目录式存储，当有服务注册时，会创建一个节点，每一个节点对应一个 value。 ZK节点ZK中">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://www.zhengyk.cn/images/zk-node.jpg">
+<meta property="og:image" content="https://www.zhengyk.cn/images/distribute-lock-01.jpg">
+<meta property="og:image" content="https://www.zhengyk.cn/images/distribute-lock-02.jpg">
+<meta property="article:published_time" content="2018-04-01T10:01:54.000Z">
+<meta property="article:modified_time" content="2026-08-18T07:42:43.342Z">
+<meta property="article:author" content="薛定谔的汪">
+<meta property="article:tag" content="zookeeper">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://www.zhengyk.cn/images/zk-node.jpg">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/portrait.jpg">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/portrait.jpg" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/portrait.jpg">
+        
+      
+    
+    <!-- title -->
+    <title>Zookeeper笔记整理</title>
+    <!-- async scripts -->
+    <!-- Google Analytics -->
+
+
+    <!-- Umami Analytics -->
+
+
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    
+<link rel="stylesheet" href="/css/custom.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+<meta name="generator" content="Hexo 8.1.2"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+<div id="reading-progress-bar" aria-hidden="true"></div>
+<style>
+  #reading-progress-bar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 0;
+    height: 5px;
+    background: #37c6c0;
+    z-index: 9999;
+    pointer-events: none;
+  }
+</style>
+
+
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="目录"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="目录"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="顶部" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     --><!--
+       --><li><a href="/archives/">归档</a></li><!--
+     --><!--
+       --><li><a href="/tags/">标签</a></li><!--
+     --><!--
+       --><li><a href="/categories/">分类</a></li><!--
+     --><!--
+       --><li><a href="/search/">搜索</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="上一篇" href="/blog/1550636633.html"><i class="fa-solid fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="下一篇" href="/blog/1289518436.html"><i class="fa-solid fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="返回顶部" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="分享文章" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">上一篇</span>
+      <span id="i-next" class="info" style="display:none;">下一篇</span>
+      <span id="i-top" class="info" style="display:none;">返回顶部</span>
+      <span id="i-share" class="info" style="display:none;">分享文章</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://www.zhengyk.cn/blog/3452972247.html"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://www.zhengyk.cn/blog/3452972247.html&text=Zookeeper笔记整理"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://www.zhengyk.cn/blog/3452972247.html&title=Zookeeper笔记整理"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://www.zhengyk.cn/blog/3452972247.html&is_video=false&description=Zookeeper笔记整理"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Zookeeper笔记整理&body=Check out this article: https://www.zhengyk.cn/blog/3452972247.html"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://www.zhengyk.cn/blog/3452972247.html&title=Zookeeper笔记整理"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://www.zhengyk.cn/blog/3452972247.html&title=Zookeeper笔记整理"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://www.zhengyk.cn/blog/3452972247.html&title=Zookeeper笔记整理"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://www.zhengyk.cn/blog/3452972247.html&title=Zookeeper笔记整理"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://www.zhengyk.cn/blog/3452972247.html&name=Zookeeper笔记整理&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://www.zhengyk.cn/blog/3452972247.html&t=Zookeeper笔记整理"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    
+    
+      <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Zookeeper-%E6%80%BB%E7%BB%93"><span class="toc-number">2.</span> <span class="toc-text">Zookeeper 总结</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#ZK%E8%8A%82%E7%82%B9"><span class="toc-number">2.1.</span> <span class="toc-text">ZK节点</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%8C%81%E4%B9%85%E8%8A%82%E7%82%B9"><span class="toc-number">2.1.1.</span> <span class="toc-text">持久节点</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%B8%B4%E6%97%B6%E8%8A%82%E7%82%B9"><span class="toc-number">2.1.2.</span> <span class="toc-text">临时节点</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#ZK-%E8%8A%82%E7%82%B9%E7%9A%84%E4%B8%80%E4%BA%9B%E7%89%B9%E6%80%A7"><span class="toc-number">2.1.3.</span> <span class="toc-text">ZK 节点的一些特性</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#zoo-cfg"><span class="toc-number">2.2.</span> <span class="toc-text">zoo.cfg</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%8A%82%E7%82%B9%E8%AF%A6%E7%BB%86%E4%BF%A1%E6%81%AF"><span class="toc-number">2.3.</span> <span class="toc-text">节点详细信息</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#ZK%E9%9B%86%E7%BE%A4%E4%B8%AD%E7%9A%84%E8%A7%92%E8%89%B2"><span class="toc-number">2.4.</span> <span class="toc-text">ZK集群中的角色</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#leader%E7%9A%84%E9%80%89%E4%B8%BE%E6%9C%BA%E5%88%B6"><span class="toc-number">2.5.</span> <span class="toc-text">leader的选举机制</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Zookeeper%E9%9B%86%E7%BE%A4%E8%8A%82%E7%82%B9%E6%95%B0%E9%87%8F%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E6%98%AF%E5%A5%87%E6%95%B0%E4%B8%AA%EF%BC%9F"><span class="toc-number">2.6.</span> <span class="toc-text">Zookeeper集群节点数量为什么要是奇数个？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Zookeeper%E8%84%91%E8%A3%82%EF%BC%88Split-Brain%EF%BC%89%E9%97%AE%E9%A2%98"><span class="toc-number">2.7.</span> <span class="toc-text">Zookeeper脑裂（Split-Brain）问题</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BC%9A%E8%AF%9D%E7%8A%B6%E6%80%81"><span class="toc-number">2.8.</span> <span class="toc-text">会话状态</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Watch-%E4%BA%8B%E4%BB%B6%E6%9C%BA%E5%88%B6"><span class="toc-number">2.9.</span> <span class="toc-text">Watch 事件机制</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E5%AD%98%E5%82%A8"><span class="toc-number">2.10.</span> <span class="toc-text">数据存储</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9F%BA%E4%BA%8E-Java-API"><span class="toc-number">2.11.</span> <span class="toc-text">基于 Java API</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Zookeeper%E5%BA%94%E7%94%A8"><span class="toc-number">2.12.</span> <span class="toc-text">Zookeeper应用</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9F%BA%E4%BA%8E-ZK-%E7%9A%84%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81"><span class="toc-number">2.13.</span> <span class="toc-text">基于 ZK 的分布式锁</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%96%B9%E6%A1%88%E4%B8%80%EF%BC%9A"><span class="toc-number">2.13.1.</span> <span class="toc-text">方案一：</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%96%B9%E6%A1%88%E4%BA%8C%EF%BC%9A"><span class="toc-number">2.13.2.</span> <span class="toc-text">方案二：</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88SpringCloud-%E6%9B%B4%E6%8E%A8%E8%8D%90%E4%BD%BF%E7%94%A8-ZK%E5%81%9A%E6%B3%A8%E5%86%8C%E4%B8%AD%E5%BF%83"><span class="toc-number">2.14.</span> <span class="toc-text">为什么SpringCloud 更推荐使用 ZK做注册中心</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%90%84%E6%B3%A8%E5%86%8C%E4%B8%AD%E5%BF%83%E7%9A%84%E5%AF%B9%E6%AF%94"><span class="toc-number">2.14.1.</span> <span class="toc-text">各注册中心的对比</span></a></li></ol></li></ol></li></ol>
+      </div>
+    
+  </span>
+</div>
+
+    
+    <div class="content index py4 ">
+        
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle p-name" itemprop="name headline">
+        Zookeeper笔记整理
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author p-author h-card" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span class="p-name" itemprop="name"><a target="_blank" href="https://zhengyk.cn" rel="author noopener">Yakai Zheng</a></span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2018-04-01T10:01:54.000Z" class="dt-published" itemprop="datePublished">2018-04-01</time>
+        
+      
+    </div>
+
+
+      
+    <div class="article-category">
+        <i class="fa-solid fa-archive"></i>
+        <a class="category-link" href="/categories/Java%E6%A1%86%E6%9E%B6/">Java框架</a>
+    </div>
+
+
+      
+    <div class="article-tag">
+        <i class="fa-solid fa-tag"></i>
+        <a class="p-category" href="/tags/zookeeper/" rel="tag">zookeeper</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content e-content" itemprop="articleBody">
+    <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>本文总结下 Zookeeper 中的一些知识点，便于自己查漏补缺，本篇当做一个笔记来写，所以写的有点乱。</p>
+<h2 id="Zookeeper-总结"><a href="#Zookeeper-总结" class="headerlink" title="Zookeeper 总结"></a>Zookeeper 总结</h2><p>Zookeeper是一个分布式应用协调服务， Dubbo推荐使用它来当做注册中心，kafka 集群也需要它来协调各个节点。 Zookeeper 是基于key-value的文件目录式存储，当有服务注册时，会创建一个节点，每一个节点对应一个 value。</p>
+<h3 id="ZK节点"><a href="#ZK节点" class="headerlink" title="ZK节点"></a>ZK节点</h3><p>ZK中的节点可分为持久节点和临时节点</p>
+<h4 id="持久节点"><a href="#持久节点" class="headerlink" title="持久节点"></a>持久节点</h4><p>创建后不会自动删除，zk 命令：create &#x2F;order 0  ，标识在”&#x2F;“根目录下创建一个 order 节点，值是0。</p>
+<h4 id="临时节点"><a href="#临时节点" class="headerlink" title="临时节点"></a>临时节点</h4><p>临时节点，生命周期存在与客户端和zk服务端一次会话中，会话结束后自动删除。ZK的临时节点实现了服务的上下线感知功能。如下图示例:dubbo的order服务注册到zk上的节点信息是服务的协议地址，他们就是临时节点。</p>
+<p>使用 create -e key value 创建临时节点</p>
+<p><img src="https://www.zhengyk.cn/images/zk-node.jpg"></p>
+<h4 id="ZK-节点的一些特性"><a href="#ZK-节点的一些特性" class="headerlink" title="ZK 节点的一些特性"></a>ZK 节点的一些特性</h4><blockquote>
+<p>同级节点的唯一性，这和操作系统统一目录下不能有重名一个道理。</p>
+<p>节点的有序性，在创建节点时，使用create -s key value， -s 标识sequence</p>
+<p>临时节点不能有子节点。</p>
+</blockquote>
+<h3 id="zoo-cfg"><a href="#zoo-cfg" class="headerlink" title="zoo.cfg"></a>zoo.cfg</h3><p>下载ZK 解压后，在其 conf 目录下有一个 zoo.sample.cfg文件，zk启动会加载 zoo.cfg文件，所以复制一份重新命名为zoo.cfg即可，zoo.cfg中有几个属性需要总结下：</p>
+<blockquote>
+<p> tricktime&#x3D;2000：时间单位 默认2000 即 2秒为一个时间单位</p>
+<p>initLimit&#x3D;10：最大的初始化同步时间 10个tricktime 即默认20秒</p>
+<p>syncLimit&#x3D;5:  Leader 和 Folllower之间的最大心跳检测时间（ZAB协议会给 zk 集群选举一个 leader，其他的节点为follower，leader 可做读写，follower只能读，区别于 kafka 中分区副本的leader和flowder）</p>
+<p>dataDir：持久化节点和事务日志等数据存储位置。默认&#x2F;tmp&#x2F;zookeeper下，建议修改到其他位置</p>
+</blockquote>
+<h3 id="节点详细信息"><a href="#节点详细信息" class="headerlink" title="节点详细信息"></a>节点详细信息</h3><p>使用ZkClient客户端登录 zk，使用 <code>get /order</code>查看先前创建的节点信息：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">cZxid = <span class="number">0x28</span>  <span class="comment">//创建节点时事务 id</span></span><br><span class="line">ctime = Fri Nov <span class="number">23</span> <span class="number">11</span>:<span class="number">03</span>:<span class="number">01</span> CST <span class="number">2018</span></span><br><span class="line">mZxid = <span class="number">0x28</span>  <span class="comment">//修改节点时事务 id</span></span><br><span class="line">mtime = Fri Nov <span class="number">23</span> <span class="number">11</span>:<span class="number">03</span>:<span class="number">01</span> CST <span class="number">2018</span></span><br><span class="line">pZxid = <span class="number">0x28</span>  <span class="comment">//子节点修改时才产生事务 id</span></span><br><span class="line">cversion = <span class="number">0</span>  <span class="comment">//当前节点子节点的版本号(乐观锁)  控制并发</span></span><br><span class="line">dataVersion = <span class="number">0</span> <span class="comment">//当前数据内容版本号(乐观锁)    控制并发</span></span><br><span class="line">aclVersion = <span class="number">0</span> <span class="comment">//当前节点权限版本号(类似linux的文件夹权限)   控制并发</span></span><br><span class="line">ephemeralOwner = <span class="number">0x0</span> <span class="comment">//临时节点的会话标识，会话结束后用其定位要被删除的临时节点</span></span><br><span class="line">dataLength = <span class="number">1</span></span><br><span class="line">numChildren = <span class="number">0</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="ZK集群中的角色"><a href="#ZK集群中的角色" class="headerlink" title="ZK集群中的角色"></a>ZK集群中的角色</h3><blockquote>
+<p> Leader: 可读可写，处理事务请求</p>
+<p>Follower：同步 Leader，只读</p>
+<p>Observer：监控 zk 集群，不参与选举。</p>
+</blockquote>
+<h3 id="leader的选举机制"><a href="#leader的选举机制" class="headerlink" title="leader的选举机制"></a>leader的选举机制</h3><p>zk 集群中的所有节点都会并发创建自己的znode，每个znode是唯一不重复的，value 最小的就是 leader，leader 挂了后，再从其余节点继续选择value 最小的为新 leader。（和分布式锁原理差不多）</p>
+<h3 id="Zookeeper集群节点数量为什么要是奇数个？"><a href="#Zookeeper集群节点数量为什么要是奇数个？" class="headerlink" title="Zookeeper集群节点数量为什么要是奇数个？"></a>Zookeeper集群节点数量为什么要是奇数个？</h3><p>Zookeeper集群容错是指，当宕掉几个 ZK 服务器之后，剩下的个数必须大于宕掉的个数，也就是剩下的服务数必须大于n&#x2F;2，集群中只要有过半的机器是正常工作的，那么整个集群对外就是可用的。所以为了节约资源，集群中部署基数台机器即可。</p>
+<h3 id="Zookeeper脑裂（Split-Brain）问题"><a href="#Zookeeper脑裂（Split-Brain）问题" class="headerlink" title="Zookeeper脑裂（Split-Brain）问题"></a>Zookeeper脑裂（Split-Brain）问题</h3><p>什么是 ZK 的脑裂？</p>
+<p>​	假如集群中有三个节点，一主两从，当主挂掉后，两个从节点通信正常的情况下可以达成共识，从中再选举一个为主，但当两个从节点通信故障，这时双方都认为自己应该应该选为 Leader，这样集群中就出现了两个主节点。</p>
+<p>解决脑裂问题的方式？</p>
+<ol>
+<li>Quorums，法定人数，集群中超过半数投票认为 master 挂掉后才能选举Leader。</li>
+<li>Redundant communications，冗余通信，集群中采用多种通信方式，防止一种协议失效。</li>
+<li>Fencing，共享资源的方式，设置一个共享资源，谁能看到这个共享资源，谁就在集群中，谁能获得此共享资源，谁就是 Leader</li>
+</ol>
+<p>ZK 是如何解决脑裂的？</p>
+<p>ZK 采用 Quorums 方式的方式。​	</p>
+<h3 id="会话状态"><a href="#会话状态" class="headerlink" title="会话状态"></a>会话状态</h3><p>未连接—&gt;连接中–&gt;已连接–&gt;关闭</p>
+<p>Not_Connected–&gt;Connecting–&gt;Connected–&gt;Closed</p>
+<p>连接失败直接关闭</p>
+<h3 id="Watch-事件机制"><a href="#Watch-事件机制" class="headerlink" title="Watch 事件机制"></a>Watch 事件机制</h3><p>zk 节点信息变更时，可以通过 wacth 机制告诉所有的客户端，客户端可以据此来更细自己本地的节点缓存信息。</p>
+<h3 id="数据存储"><a href="#数据存储" class="headerlink" title="数据存储"></a>数据存储</h3><p>使用DataTree ConcurrentHashMap 存储节点信息</p>
+<p>事务日志：zoo.cfg的dataDir</p>
+<p>快照日志：zoo.cfg的dataDir</p>
+<p>运行日志：&#x2F;bin&#x2F;zookeeper.out</p>
+<h3 id="基于-Java-API"><a href="#基于-Java-API" class="headerlink" title="基于 Java API"></a>基于 Java API</h3><p>ZK 原生Java API操作复杂，推荐使用高度封装的Curator。</p>
+<h3 id="Zookeeper应用"><a href="#Zookeeper应用" class="headerlink" title="Zookeeper应用"></a>Zookeeper应用</h3><p>注册中心、配置中心，分布式协调服务（kafka 集群），分布式锁等等。</p>
+<h3 id="基于-ZK-的分布式锁"><a href="#基于-ZK-的分布式锁" class="headerlink" title="基于 ZK 的分布式锁"></a>基于 ZK 的分布式锁</h3><h4 id="方案一："><a href="#方案一：" class="headerlink" title="方案一："></a>方案一：</h4><p>利用 znode 在同一目录下的唯一性，同一时刻所有的客户端都去创建&#x2F;Locks&#x2F;lock 节点，但最终只有一个能创建成功，创建成功的则获得锁；获得锁的客户端释放锁时，将节点 Lock 删除，这时ZK 的 Watch 机制告诉其他所有的客户端 Lock 节点已删除，这样其他的节点再次去竞争创建 Lock 节点进而获得锁，如图所示：</p>
+<p><img src="https://www.zhengyk.cn/images/distribute-lock-01.jpg" alt="image-20181124152739225"></p>
+<p>**缺点： 羊群效应。**当客户端很多的时候，每次都要通知所有的客户端去竞争创建节点，对资源消耗很大，不推荐使用此方案。</p>
+<h4 id="方案二："><a href="#方案二：" class="headerlink" title="方案二："></a>方案二：</h4><p>创建有序节点，所有的客户端都可以创建临时节点znode，znode的 value从小到大排序，谁的 value 最小，谁就获得锁，同时其他未获得锁的节点监听前一个比自己小的节点，当释放锁时，当前代表获取锁的临时节点删除，这样一直监听它的节点就会收到删除事件，然后它再判断当前目录下自己是不是最小的节点，如果是那么获取锁，如果不是则继续监听等待，直到获取锁。</p>
+<p><img src="https://www.zhengyk.cn/images/distribute-lock-02.jpg" alt="image-20181124153525651"></p>
+<p>ZK实现分布式锁代码推荐使用 curator 来实现，也可以参照 ReentrantLock 原理实现可重入锁。</p>
+<h3 id="为什么SpringCloud-更推荐使用-ZK做注册中心"><a href="#为什么SpringCloud-更推荐使用-ZK做注册中心" class="headerlink" title="为什么SpringCloud 更推荐使用 ZK做注册中心"></a>为什么SpringCloud 更推荐使用 ZK做注册中心</h3><p>这两天看小马哥直播中谈到了 SpringCloud 推荐使用 ZK 来做注册中心，并且谈到了Eureka、ZK、Consul 的对比，以及为何推荐使用 ZK，这里记录总结下。</p>
+<h4 id="各注册中心的对比"><a href="#各注册中心的对比" class="headerlink" title="各注册中心的对比"></a>各注册中心的对比</h4><table>
+<thead>
+<tr>
+<th>比较点</th>
+<th>Eureka</th>
+<th>ZK</th>
+<th>Consul</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>熟悉度</td>
+<td>相对陌生</td>
+<td>比较熟悉</td>
+<td>更陌生</td>
+</tr>
+<tr>
+<td>CAP</td>
+<td>AP（最终一致性）</td>
+<td>CP</td>
+<td>AP（最终一致性）</td>
+</tr>
+<tr>
+<td>一致性方式</td>
+<td>Http 轮询</td>
+<td>ZAB</td>
+<td>RAFT</td>
+</tr>
+<tr>
+<td>通信方式</td>
+<td>HTTP REST</td>
+<td>自定义协议</td>
+<td>HTTP REST</td>
+</tr>
+<tr>
+<td>更新机制</td>
+<td>Peer to Peer（服务端之间）、定时轮询（客户端与服务端）</td>
+<td>Watch</td>
+<td>Agent监听</td>
+</tr>
+<tr>
+<td>适用规模</td>
+<td>20k-30k 之间的实例数</td>
+<td>10k-20k</td>
+<td>&lt;3k，超过3k 后，列表更新缓慢</td>
+</tr>
+</tbody></table>
+<p>这个是技术专家小马哥给的数据，也是经过很多实战经历总结出的经验，综合以上对比，在绝大多数项目中使用 ZK 是最合适的，再就是使用 Eureka 注册中心的话，如果项目中再用到了配置中心，还需要额外部署如 Spring Cloud Config，再次增加学习运营成本。而 ZK 不仅可以做注册中心，还可以做配置中心，大大减少了项目成员的开发和运维难度。</p>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">首页</a></li>
+        
+          <li><a href="/about/">关于</a></li>
+        
+          <li><a href="/archives/">归档</a></li>
+        
+          <li><a href="/tags/">标签</a></li>
+        
+          <li><a href="/categories/">分类</a></li>
+        
+          <li><a href="/search/">搜索</a></li>
+        
+      </ul>
+    </div>
+
+    
+    
+      <div id="toc-footer" style="display: none">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Zookeeper-%E6%80%BB%E7%BB%93"><span class="toc-number">2.</span> <span class="toc-text">Zookeeper 总结</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#ZK%E8%8A%82%E7%82%B9"><span class="toc-number">2.1.</span> <span class="toc-text">ZK节点</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%8C%81%E4%B9%85%E8%8A%82%E7%82%B9"><span class="toc-number">2.1.1.</span> <span class="toc-text">持久节点</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%B8%B4%E6%97%B6%E8%8A%82%E7%82%B9"><span class="toc-number">2.1.2.</span> <span class="toc-text">临时节点</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#ZK-%E8%8A%82%E7%82%B9%E7%9A%84%E4%B8%80%E4%BA%9B%E7%89%B9%E6%80%A7"><span class="toc-number">2.1.3.</span> <span class="toc-text">ZK 节点的一些特性</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#zoo-cfg"><span class="toc-number">2.2.</span> <span class="toc-text">zoo.cfg</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%8A%82%E7%82%B9%E8%AF%A6%E7%BB%86%E4%BF%A1%E6%81%AF"><span class="toc-number">2.3.</span> <span class="toc-text">节点详细信息</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#ZK%E9%9B%86%E7%BE%A4%E4%B8%AD%E7%9A%84%E8%A7%92%E8%89%B2"><span class="toc-number">2.4.</span> <span class="toc-text">ZK集群中的角色</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#leader%E7%9A%84%E9%80%89%E4%B8%BE%E6%9C%BA%E5%88%B6"><span class="toc-number">2.5.</span> <span class="toc-text">leader的选举机制</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Zookeeper%E9%9B%86%E7%BE%A4%E8%8A%82%E7%82%B9%E6%95%B0%E9%87%8F%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E6%98%AF%E5%A5%87%E6%95%B0%E4%B8%AA%EF%BC%9F"><span class="toc-number">2.6.</span> <span class="toc-text">Zookeeper集群节点数量为什么要是奇数个？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Zookeeper%E8%84%91%E8%A3%82%EF%BC%88Split-Brain%EF%BC%89%E9%97%AE%E9%A2%98"><span class="toc-number">2.7.</span> <span class="toc-text">Zookeeper脑裂（Split-Brain）问题</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BC%9A%E8%AF%9D%E7%8A%B6%E6%80%81"><span class="toc-number">2.8.</span> <span class="toc-text">会话状态</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Watch-%E4%BA%8B%E4%BB%B6%E6%9C%BA%E5%88%B6"><span class="toc-number">2.9.</span> <span class="toc-text">Watch 事件机制</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E5%AD%98%E5%82%A8"><span class="toc-number">2.10.</span> <span class="toc-text">数据存储</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9F%BA%E4%BA%8E-Java-API"><span class="toc-number">2.11.</span> <span class="toc-text">基于 Java API</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Zookeeper%E5%BA%94%E7%94%A8"><span class="toc-number">2.12.</span> <span class="toc-text">Zookeeper应用</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9F%BA%E4%BA%8E-ZK-%E7%9A%84%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81"><span class="toc-number">2.13.</span> <span class="toc-text">基于 ZK 的分布式锁</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%96%B9%E6%A1%88%E4%B8%80%EF%BC%9A"><span class="toc-number">2.13.1.</span> <span class="toc-text">方案一：</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%96%B9%E6%A1%88%E4%BA%8C%EF%BC%9A"><span class="toc-number">2.13.2.</span> <span class="toc-text">方案二：</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88SpringCloud-%E6%9B%B4%E6%8E%A8%E8%8D%90%E4%BD%BF%E7%94%A8-ZK%E5%81%9A%E6%B3%A8%E5%86%8C%E4%B8%AD%E5%BF%83"><span class="toc-number">2.14.</span> <span class="toc-text">为什么SpringCloud 更推荐使用 ZK做注册中心</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%90%84%E6%B3%A8%E5%86%8C%E4%B8%AD%E5%BF%83%E7%9A%84%E5%AF%B9%E6%AF%94"><span class="toc-number">2.14.1.</span> <span class="toc-text">各注册中心的对比</span></a></li></ol></li></ol></li></ol>
+      </div>
+    
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://www.zhengyk.cn/blog/3452972247.html"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://www.zhengyk.cn/blog/3452972247.html&text=Zookeeper笔记整理"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://www.zhengyk.cn/blog/3452972247.html&title=Zookeeper笔记整理"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://www.zhengyk.cn/blog/3452972247.html&is_video=false&description=Zookeeper笔记整理"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Zookeeper笔记整理&body=Check out this article: https://www.zhengyk.cn/blog/3452972247.html"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://www.zhengyk.cn/blog/3452972247.html&title=Zookeeper笔记整理"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://www.zhengyk.cn/blog/3452972247.html&title=Zookeeper笔记整理"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://www.zhengyk.cn/blog/3452972247.html&title=Zookeeper笔记整理"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://www.zhengyk.cn/blog/3452972247.html&title=Zookeeper笔记整理"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://www.zhengyk.cn/blog/3452972247.html&name=Zookeeper笔记整理&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://www.zhengyk.cn/blog/3452972247.html&t=Zookeeper笔记整理"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> 菜单</a>
+        
+          <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> 目录</a>
+        
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> 分享</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> 返回顶部</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2017-2026
+    薛定谔的汪
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     --><!--
+       --><li><a href="/archives/">归档</a></li><!--
+     --><!--
+       --><li><a href="/tags/">标签</a></li><!--
+     --><!--
+       --><li><a href="/categories/">分类</a></li><!--
+     --><!--
+       --><li><a href="/search/">搜索</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script>
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script>
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"复制到粘贴板！\">";
+    btn += '<i class="fa-regular fa-clone"></i>';
+    btn += '</span>';
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "复制成功！");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+
+<script type="text/javascript">
+(function() {
+  var bar = document.getElementById('reading-progress-bar');
+  if (!bar) return;
+  function update() {
+    var root = document.documentElement;
+    var scrolled = window.scrollY || root.scrollTop;
+    var height = root.scrollHeight - root.clientHeight;
+    bar.style.width = (height > 0 ? (scrolled / height) * 100 : 0) + '%';
+  }
+  window.addEventListener('scroll', update, { passive: true });
+  window.addEventListener('resize', update);
+  update();
+})();
+</script>
+
+<!-- search -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>

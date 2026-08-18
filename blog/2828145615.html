@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="前言在很多微服务分布式项目架构中，一般都会有一个独立的认证中心服务，负责用户身份认证和授权，正好近期公司的一个项目用到了，记录总结下。 在此之前，先了解一些概念。 第三方认证互联网项目经常需要访问外部资源，同样本地系统也经常需要访问外部资源，比如用户使用我们的 APP，但是用户嫌手机号 + 验证码方式注册登录太麻烦，为了用户体验，集成了QQ，微信授权登录。 流程如下：  由图可知，微信不属于我们的">
+<meta property="og:type" content="article">
+<meta property="og:title" content="用 Spring Security Oauth2 + JWT 搭建一个认证中心">
+<meta property="og:url" content="https://www.zhengyk.cn/blog/2828145615.html">
+<meta property="og:site_name" content="薛定谔的汪 - 技术博客">
+<meta property="og:description" content="前言在很多微服务分布式项目架构中，一般都会有一个独立的认证中心服务，负责用户身份认证和授权，正好近期公司的一个项目用到了，记录总结下。 在此之前，先了解一些概念。 第三方认证互联网项目经常需要访问外部资源，同样本地系统也经常需要访问外部资源，比如用户使用我们的 APP，但是用户嫌手机号 + 验证码方式注册登录太麻烦，为了用户体验，集成了QQ，微信授权登录。 流程如下：  由图可知，微信不属于我们的">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://www.zhengyk.cn/images/wx-auth-example.jpg?v=1">
+<meta property="og:image" content="https://www.zhengyk.cn/images/wx-auth-process.jpg?v=1">
+<meta property="og:image" content="https://www.zhengyk.cn/images/oauth2-process.jpg">
+<meta property="og:image" content="https://www.zhengyk.cn/images/oauth2-tables.jpg">
+<meta property="og:image" content="https://www.zhengyk.cn/images/oauth_client_details.jpg">
+<meta property="og:image" content="https://www.zhengyk.cn/images/code-login.jpg">
+<meta property="og:image" content="https://www.zhengyk.cn/images/is_auth.jpg">
+<meta property="og:image" content="https://www.zhengyk.cn/images/getcode.jpg">
+<meta property="og:image" content="https://www.zhengyk.cn/images/post-code-1.png">
+<meta property="og:image" content="https://www.zhengyk.cn/images/post-code-2.png">
+<meta property="og:image" content="https://www.zhengyk.cn/images/post-code-3.png">
+<meta property="og:image" content="https://www.zhengyk.cn/images/post-code-4.png">
+<meta property="og:image" content="https://www.zhengyk.cn/images/post-password.jpg?v=1">
+<meta property="article:published_time" content="2018-11-01T05:20:16.000Z">
+<meta property="article:modified_time" content="2026-08-18T07:42:43.342Z">
+<meta property="article:author" content="薛定谔的汪">
+<meta property="article:tag" content="springcloud">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://www.zhengyk.cn/images/wx-auth-example.jpg?v=1">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/portrait.jpg">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/portrait.jpg" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/portrait.jpg">
+        
+      
+    
+    <!-- title -->
+    <title>用 Spring Security Oauth2 + JWT 搭建一个认证中心</title>
+    <!-- async scripts -->
+    <!-- Google Analytics -->
+
+
+    <!-- Umami Analytics -->
+
+
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    
+<link rel="stylesheet" href="/css/custom.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+<meta name="generator" content="Hexo 8.1.2"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+<div id="reading-progress-bar" aria-hidden="true"></div>
+<style>
+  #reading-progress-bar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 0;
+    height: 5px;
+    background: #37c6c0;
+    z-index: 9999;
+    pointer-events: none;
+  }
+</style>
+
+
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="目录"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="目录"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="顶部" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     --><!--
+       --><li><a href="/archives/">归档</a></li><!--
+     --><!--
+       --><li><a href="/tags/">标签</a></li><!--
+     --><!--
+       --><li><a href="/categories/">分类</a></li><!--
+     --><!--
+       --><li><a href="/search/">搜索</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="上一篇" href="/blog/52355668.html"><i class="fa-solid fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="下一篇" href="/blog/114589203.html"><i class="fa-solid fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="返回顶部" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="分享文章" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">上一篇</span>
+      <span id="i-next" class="info" style="display:none;">下一篇</span>
+      <span id="i-top" class="info" style="display:none;">返回顶部</span>
+      <span id="i-share" class="info" style="display:none;">分享文章</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://www.zhengyk.cn/blog/2828145615.html"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://www.zhengyk.cn/blog/2828145615.html&text=用 Spring Security Oauth2 + JWT 搭建一个认证中心"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://www.zhengyk.cn/blog/2828145615.html&title=用 Spring Security Oauth2 + JWT 搭建一个认证中心"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://www.zhengyk.cn/blog/2828145615.html&is_video=false&description=用 Spring Security Oauth2 + JWT 搭建一个认证中心"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=用 Spring Security Oauth2 + JWT 搭建一个认证中心&body=Check out this article: https://www.zhengyk.cn/blog/2828145615.html"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://www.zhengyk.cn/blog/2828145615.html&title=用 Spring Security Oauth2 + JWT 搭建一个认证中心"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://www.zhengyk.cn/blog/2828145615.html&title=用 Spring Security Oauth2 + JWT 搭建一个认证中心"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://www.zhengyk.cn/blog/2828145615.html&title=用 Spring Security Oauth2 + JWT 搭建一个认证中心"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://www.zhengyk.cn/blog/2828145615.html&title=用 Spring Security Oauth2 + JWT 搭建一个认证中心"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://www.zhengyk.cn/blog/2828145615.html&name=用 Spring Security Oauth2 + JWT 搭建一个认证中心&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://www.zhengyk.cn/blog/2828145615.html&t=用 Spring Security Oauth2 + JWT 搭建一个认证中心"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    
+    
+      <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%AC%AC%E4%B8%89%E6%96%B9%E8%AE%A4%E8%AF%81"><span class="toc-number">2.</span> <span class="toc-text">第三方认证</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E8%AE%A4%E8%AF%81%E6%8A%80%E6%9C%AF%E6%96%B9%E6%A1%88"><span class="toc-number">3.</span> <span class="toc-text">认证技术方案</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8D%95%E7%82%B9%E7%99%BB%E5%BD%95"><span class="toc-number">3.1.</span> <span class="toc-text">单点登录</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#OAuth2-%E8%AE%A4%E8%AF%81"><span class="toc-number">3.2.</span> <span class="toc-text">OAuth2 认证</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BE%AE%E4%BF%A1%E8%AE%A4%E8%AF%81%E6%B5%81%E7%A8%8B"><span class="toc-number">3.3.</span> <span class="toc-text">微信认证流程</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Oauth2-%E8%AE%A4%E8%AF%81%E6%B5%81%E7%A8%8B"><span class="toc-number">3.3.1.</span> <span class="toc-text">Oauth2 认证流程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Oauth2-%E5%9C%A8%E6%88%91%E4%BB%AC%E9%A1%B9%E7%9B%AE%E4%B8%AD%E7%9A%84%E5%BA%94%E7%94%A8"><span class="toc-number">3.3.2.</span> <span class="toc-text">Oauth2 在我们项目中的应用</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Spring-Security-Oauth2"><span class="toc-number">4.</span> <span class="toc-text">Spring Security Oauth2</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%90%AD%E5%BB%BA%E8%AE%A4%E8%AF%81%E4%B8%AD%E5%BF%83%E6%9C%8D%E5%8A%A1%E5%99%A8"><span class="toc-number">4.1.</span> <span class="toc-text">搭建认证中心服务器</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Oauth2-%E6%8E%88%E6%9D%83%E7%B1%BB%E5%9E%8B"><span class="toc-number">4.2.</span> <span class="toc-text">Oauth2 授权类型</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Oauth2-%E6%8E%88%E6%9D%83%E7%A0%81%E6%A8%A1%E5%BC%8F"><span class="toc-number">4.3.</span> <span class="toc-text">Oauth2 授权码模式</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%94%B3%E8%AF%B7%E6%8E%88%E6%9D%83%E7%A0%81"><span class="toc-number">4.3.1.</span> <span class="toc-text">申请授权码</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%94%B3%E8%AF%B7%E4%BB%A4%E7%89%8C"><span class="toc-number">4.3.2.</span> <span class="toc-text">申请令牌</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Oauth2-%E5%AF%86%E7%A0%81%E6%A8%A1%E5%BC%8F"><span class="toc-number">4.4.</span> <span class="toc-text">Oauth2 密码模式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%B7%E6%96%B0%E4%BB%A4%E7%89%8C"><span class="toc-number">4.5.</span> <span class="toc-text">刷新令牌</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#JWT"><span class="toc-number">5.</span> <span class="toc-text">JWT</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%80%E4%B9%88%E6%98%AFJWT"><span class="toc-number">5.1.</span> <span class="toc-text">什么是JWT?</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#JWT%E4%BB%A4%E7%89%8C%E7%9A%84%E4%BC%98%E7%82%B9"><span class="toc-number">5.2.</span> <span class="toc-text">JWT令牌的优点:</span></a></li></ol></li></ol>
+      </div>
+    
+  </span>
+</div>
+
+    
+    <div class="content index py4 ">
+        
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle p-name" itemprop="name headline">
+        用 Spring Security Oauth2 + JWT 搭建一个认证中心
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author p-author h-card" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span class="p-name" itemprop="name"><a target="_blank" href="https://zhengyk.cn" rel="author noopener">Yakai Zheng</a></span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2018-11-01T05:20:16.000Z" class="dt-published" itemprop="datePublished">2018-11-01</time>
+        
+      
+    </div>
+
+
+      
+    <div class="article-category">
+        <i class="fa-solid fa-archive"></i>
+        <a class="category-link" href="/categories/Java%E6%A1%86%E6%9E%B6/">Java框架</a>
+    </div>
+
+
+      
+    <div class="article-tag">
+        <i class="fa-solid fa-tag"></i>
+        <a class="p-category" href="/tags/springcloud/" rel="tag">springcloud</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content e-content" itemprop="articleBody">
+    <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>在很多微服务分布式项目架构中，一般都会有一个独立的认证中心服务，负责用户身份认证和授权，正好近期公司的一个项目用到了，记录总结下。</p>
+<p>在此之前，先了解一些概念。</p>
+<h1 id="第三方认证"><a href="#第三方认证" class="headerlink" title="第三方认证"></a>第三方认证</h1><p>互联网项目经常需要访问外部资源，同样本地系统也经常需要访问外部资源，比如用户使用我们的 APP，但是用户嫌手机号 + 验证码方式注册登录太麻烦，为了用户体验，集成了QQ，微信授权登录。</p>
+<p>流程如下：</p>
+<p><img src="https://www.zhengyk.cn/images/wx-auth-example.jpg?v=1" alt="image-20190214165228781"></p>
+<p>由图可知，微信不属于我们的系统，我们没有存储用户的账号、密码等信息，我们的系统想要获取用户相关信息需要通过微信的认证，认证通过后可以获得用户的昵称、头像等基本信息，之后该用户就可以在我们的系统登录使用了。</p>
+<p>上述过程就是第三方认证。</p>
+<h1 id="认证技术方案"><a href="#认证技术方案" class="headerlink" title="认证技术方案"></a>认证技术方案</h1><h2 id="单点登录"><a href="#单点登录" class="headerlink" title="单点登录"></a>单点登录</h2><p>单点登录，英文SSO，在分布式系统要实现单点登录，通常将认证系统抽取出来作为一个认证中心，用户认证通过后，给用户发放 token，并且将用户身份 token 单独存储（通常是 Redis）这样每次用户访问其他系统时判断 Redis 中是否有合适的 token。</p>
+<p>特点：</p>
+<ol>
+<li>认证系统独立</li>
+<li>各子系统与认证系统通信，完成身份认证。</li>
+<li>用户 token 存储在 Redis 中。</li>
+</ol>
+<p>单点登录框架（不借助框架，自己也能实现）：</p>
+<blockquote>
+<p>CAS</p>
+</blockquote>
+<blockquote>
+<p>Spring Security CAS</p>
+</blockquote>
+<h2 id="OAuth2-认证"><a href="#OAuth2-认证" class="headerlink" title="OAuth2 认证"></a>OAuth2 认证</h2><p>第三方认证技术方案最主要是解决认证协议的通用标准 问题，因为要实现 跨系统认证，各系统之间要遵循一定的接口协议，OAuth2 协议为用户资源的授权提供了一个安全的、开放而又简易的标准。</p>
+<h2 id="微信认证流程"><a href="#微信认证流程" class="headerlink" title="微信认证流程"></a>微信认证流程</h2><p>微信认证、授权也是基于 OAuth2 的，流程如下：</p>
+<p><img src="https://www.zhengyk.cn/images/wx-auth-process.jpg?v=1" alt="image-20190214172414903"></p>
+<h3 id="Oauth2-认证流程"><a href="#Oauth2-认证流程" class="headerlink" title="Oauth2 认证流程"></a>Oauth2 认证流程</h3><p><img src="https://www.zhengyk.cn/images/oauth2-process.jpg" alt="image-20190214172748291"></p>
+<p>Oauth2 包括以下角色：</p>
+<blockquote>
+<p>客户端：本身不存储资源，需要通过资源拥有者的授权去请求资源服务器的资源。</p>
+<p>资源拥有者：通常为用户，也可以是应用程序，即该资源的拥有者。</p>
+<p>认证授权服务器：用来对资源拥有的身份进行认证、对访问资源进行授权。客户端要想访问资源需要通过认证服务器由资源拥有者授权后方可访问。</p>
+<p>资源服务器：存储资源的服务器，比如我们的系统存储了用户、业务相关信息，微信存储了用户的头像、昵称信息。客户端最终访问资源服务器获取资源信息。</p>
+</blockquote>
+<h3 id="Oauth2-在我们项目中的应用"><a href="#Oauth2-在我们项目中的应用" class="headerlink" title="Oauth2 在我们项目中的应用"></a>Oauth2 在我们项目中的应用</h3><ol>
+<li>使用微信登录，获取用户的昵称、头像等基本信息。</li>
+<li>系统客户端访问服务端资源需要请求认证中心获取 token。</li>
+<li>服务端微服务之间的相互访问。</li>
+</ol>
+<h1 id="Spring-Security-Oauth2"><a href="#Spring-Security-Oauth2" class="headerlink" title="Spring Security Oauth2"></a>Spring Security Oauth2</h1><p>我们使用 Spring Security Oauth2 进行构建认证服务，并在其基础上做了扩展，Spring Security Oauth2 生成的 token 功能不够强大，所以在此基础上整合了 JWT 令牌。</p>
+<h2 id="搭建认证中心服务器"><a href="#搭建认证中心服务器" class="headerlink" title="搭建认证中心服务器"></a>搭建认证中心服务器</h2><ol>
+<li>创建 Spring Security Oauth2 需要的数据库表，如图：</li>
+</ol>
+<p><img src="https://www.zhengyk.cn/images/oauth2-tables.jpg" alt="image-20190214174144904"></p>
+<p>sql：<a href="https://www.zhengyk.cn/images/oauth2.sql">https://www.zhengyk.cn/images/oauth2.sql</a></p>
+<p>主要关注 “oauth_client_details” 表：</p>
+<blockquote>
+<p>client_id：客户端id</p>
+<p>resource_id：资源id（暂时不用）</p>
+<p>client_secret：客户端密码</p>
+<p>scop：范围</p>
+<p>access_token_validity：访问token的有效期(秒) </p>
+<p>refresh_token_validity：刷新token的有效期(秒)</p>
+<p> authorized_grant_type：授权类型，authorization_code,password,refresh_token,client_credentials</p>
+</blockquote>
+<ol start="2">
+<li>认证中心代码：<a target="_blank" rel="noopener" href="https://github.com/zhengyakai/auth-center">https://github.com/zhengyakai/auth-center</a></li>
+</ol>
+<h2 id="Oauth2-授权类型"><a href="#Oauth2-授权类型" class="headerlink" title="Oauth2 授权类型"></a>Oauth2 授权类型</h2><p>authorized_grant_type 为 Oauth2 的授权模式，其中授权码（authorization_code）和密码（password）模式应用的比较多，可配置多个，英文逗号分隔：</p>
+<p><img src="https://www.zhengyk.cn/images/oauth_client_details.jpg" alt="image-20190214200534516"></p>
+<h2 id="Oauth2-授权码模式"><a href="#Oauth2-授权码模式" class="headerlink" title="Oauth2 授权码模式"></a>Oauth2 授权码模式</h2><p>上面画的微信认证授权流程其实就是授权码模式。</p>
+<h3 id="申请授权码"><a href="#申请授权码" class="headerlink" title="申请授权码"></a>申请授权码</h3><p>启动认证中心服务，发送 Get 请求：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">localhost:8080/auth/oauth/authorize?client_id=app&amp;response_type=code&amp;scope=app&amp;redirect_uri=http://localhost</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>client_id：客户端id，和数据库中授权配置类中设置的客户端id一致。</p>
+<p>response_type：授权码模式固定为code，数据库中配置为 authorization_code</p>
+<p>scope：客户端范围，和授权配置类中设置的 scope 一致。 </p>
+<p>redirect_uri：跳转uri，当授权码申请成功后会跳转到此地址，并在后边带上code参数(授权码)。</p>
+</blockquote>
+<p>首先跳转到登录界面：</p>
+<p><img src="https://www.zhengyk.cn/images/code-login.jpg" alt="image-20190214201008510"></p>
+<p>这个账户密码是请求认证服务器的时需要输入的 client_id 和 client_secret</p>
+<p>输入后提示是否授权</p>
+<p><img src="https://www.zhengyk.cn/images/is_auth.jpg" alt="image-20190214201244318"></p>
+<p>点击 “Authorize” 获得授权码 code：</p>
+<p><img src="https://www.zhengyk.cn/images/getcode.jpg" alt="image-20190214201334875"></p>
+<h3 id="申请令牌"><a href="#申请令牌" class="headerlink" title="申请令牌"></a>申请令牌</h3><p>post请求：<a target="_blank" rel="noopener" href="http://localhost:8080/auth/oauth/token">http://localhost:8080/auth/oauth/token</a></p>
+<blockquote>
+<p>grant_type：授权类型，填写 authorization_code，表示授权码模式</p>
+<p>code：授权码，就是刚刚获取的授权码，注意:授权码只使用一次就无效了，需要重新申请。</p>
+<p>redirect_uri：申请授权码时的跳转url，一定和申请授权码时用的redirect_uri一致。</p>
+</blockquote>
+<p>需要使用 Basic 认证：http 协议定义的一种认证方式，将客户端id和客户端密码按照“客户端ID:客户端密码”的格式拼接，并用 base64 编码，放在 header 中 Authorization 请求服务端，认证失败返回401错误。</p>
+<p><img src="https://www.zhengyk.cn/images/post-code-1.png" alt="image-20190214201941157"></p>
+<p><img src="https://www.zhengyk.cn/images/post-code-2.png" alt="image-20190214202014705"></p>
+<p><img src="https://www.zhengyk.cn/images/post-code-3.png" alt="image-20190214202045278"></p>
+<p>获取到 token：</p>
+<p><img src="https://www.zhengyk.cn/images/post-code-4.png" alt="image-20190214202107104"></p>
+<blockquote>
+<p>access_token：访问令牌，携带此令牌访问资源</p>
+<p>token_type：token 类型，Oauth2 建议使用 bearer</p>
+<p>refresh_token：刷新令牌，使用此令牌可以延长访问令牌的过期时间（这样可以不需要用户重新登录）</p>
+<p>expires_in：过期时间，单位为秒。</p>
+<p>scope：范围，与定义的客户端范围一致。</p>
+<p>jti：access_token 和 refresh_token 的唯一标识。</p>
+</blockquote>
+<h2 id="Oauth2-密码模式"><a href="#Oauth2-密码模式" class="headerlink" title="Oauth2 密码模式"></a>Oauth2 密码模式</h2><p>与授权码模式区别是申请令牌不再使用授权码，而是直接通过用户名和密码即可申请令牌</p>
+<p>测试如下: </p>
+<p>post请求：<a target="_blank" rel="noopener" href="http://localhost:8080/auth/oauth/token">http://localhost:8080/auth/oauth/token</a></p>
+<p>参数:</p>
+<blockquote>
+<p>grant_type：密码模式授权填写 password </p>
+<p>username：用户注册的账号</p>
+<p>password：用户注册的密码</p>
+</blockquote>
+<p>与授权码模式一样，也是需要 Http Basic 认证。</p>
+<p>如图：</p>
+<p><img src="https://www.zhengyk.cn/images/post-password.jpg?v=1" alt="image-20190214202748091"></p>
+<h2 id="刷新令牌"><a href="#刷新令牌" class="headerlink" title="刷新令牌"></a>刷新令牌</h2><p>当用户申请的 access_token 令牌快过期时，要重新生成一个令牌，这是有两种选择：</p>
+<blockquote>
+<p>用户重新登录，再获取 access_token</p>
+<p>使用 refresh_token 刷新一个新令牌</p>
+</blockquote>
+<p>使用刷新令牌的方式的好处是不需要用户重新登录即可获得新的令牌，具体采用哪种方式视具体业务来定。</p>
+<p>测试：post: <a target="_blank" rel="noopener" href="http://localhost:40400/auth/oauth/token">http://localhost:40400/auth/oauth/token</a></p>
+<blockquote>
+<p>grant_type:：固定为 refresh_token</p>
+<p>refresh_token：申请令牌时获得的 access_token</p>
+</blockquote>
+<h1 id="JWT"><a href="#JWT" class="headerlink" title="JWT"></a>JWT</h1><h2 id="什么是JWT"><a href="#什么是JWT" class="headerlink" title="什么是JWT?"></a>什么是JWT?</h2><p>JSON Web Token(JWT)是一个开放的行业标准(RFC 7519)，它定义了一种简介的、自包含的协议格式，用于 在通信双方传递json对象，传递的信息经过数字签名可以被验证和信任。JWT可以使用HMAC算法或使用RSA的公 钥&#x2F;私钥对来签名，防止被篡改。</p>
+<p>官网:<a target="_blank" rel="noopener" href="https://jwt.io/">https://jwt.io/</a></p>
+<h2 id="JWT令牌的优点"><a href="#JWT令牌的优点" class="headerlink" title="JWT令牌的优点:"></a>JWT令牌的优点:</h2><blockquote>
+<p>jwt基于json，非常方便解析。</p>
+<p>可以在令牌中自定义丰富的内容（如用户权限），易扩展。 </p>
+<p>通过非对称加密算法及数字签名技术，JWT防止篡改，安全性高。 </p>
+<p>资源服务使用 JWT 可不依赖认证服务即可完成授权。</p>
+</blockquote>
+<p>缺点:</p>
+<blockquote>
+<p>JWT令牌较长，占存储空间比较大。</p>
+</blockquote>
+<p>Spring Security 整合了 JWT，上述示例中返回的 token 就是 JWT 令牌，具体实现细节可参考官方文档。</p>
+<p>至此，一个微服务中简易版的认证中心的搭建和核心接口测试已完成， 可在此基础上进行扩展自己的业务。</p>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">首页</a></li>
+        
+          <li><a href="/about/">关于</a></li>
+        
+          <li><a href="/archives/">归档</a></li>
+        
+          <li><a href="/tags/">标签</a></li>
+        
+          <li><a href="/categories/">分类</a></li>
+        
+          <li><a href="/search/">搜索</a></li>
+        
+      </ul>
+    </div>
+
+    
+    
+      <div id="toc-footer" style="display: none">
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%AC%AC%E4%B8%89%E6%96%B9%E8%AE%A4%E8%AF%81"><span class="toc-number">2.</span> <span class="toc-text">第三方认证</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E8%AE%A4%E8%AF%81%E6%8A%80%E6%9C%AF%E6%96%B9%E6%A1%88"><span class="toc-number">3.</span> <span class="toc-text">认证技术方案</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8D%95%E7%82%B9%E7%99%BB%E5%BD%95"><span class="toc-number">3.1.</span> <span class="toc-text">单点登录</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#OAuth2-%E8%AE%A4%E8%AF%81"><span class="toc-number">3.2.</span> <span class="toc-text">OAuth2 认证</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BE%AE%E4%BF%A1%E8%AE%A4%E8%AF%81%E6%B5%81%E7%A8%8B"><span class="toc-number">3.3.</span> <span class="toc-text">微信认证流程</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Oauth2-%E8%AE%A4%E8%AF%81%E6%B5%81%E7%A8%8B"><span class="toc-number">3.3.1.</span> <span class="toc-text">Oauth2 认证流程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Oauth2-%E5%9C%A8%E6%88%91%E4%BB%AC%E9%A1%B9%E7%9B%AE%E4%B8%AD%E7%9A%84%E5%BA%94%E7%94%A8"><span class="toc-number">3.3.2.</span> <span class="toc-text">Oauth2 在我们项目中的应用</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Spring-Security-Oauth2"><span class="toc-number">4.</span> <span class="toc-text">Spring Security Oauth2</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%90%AD%E5%BB%BA%E8%AE%A4%E8%AF%81%E4%B8%AD%E5%BF%83%E6%9C%8D%E5%8A%A1%E5%99%A8"><span class="toc-number">4.1.</span> <span class="toc-text">搭建认证中心服务器</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Oauth2-%E6%8E%88%E6%9D%83%E7%B1%BB%E5%9E%8B"><span class="toc-number">4.2.</span> <span class="toc-text">Oauth2 授权类型</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Oauth2-%E6%8E%88%E6%9D%83%E7%A0%81%E6%A8%A1%E5%BC%8F"><span class="toc-number">4.3.</span> <span class="toc-text">Oauth2 授权码模式</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%94%B3%E8%AF%B7%E6%8E%88%E6%9D%83%E7%A0%81"><span class="toc-number">4.3.1.</span> <span class="toc-text">申请授权码</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%94%B3%E8%AF%B7%E4%BB%A4%E7%89%8C"><span class="toc-number">4.3.2.</span> <span class="toc-text">申请令牌</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Oauth2-%E5%AF%86%E7%A0%81%E6%A8%A1%E5%BC%8F"><span class="toc-number">4.4.</span> <span class="toc-text">Oauth2 密码模式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%B7%E6%96%B0%E4%BB%A4%E7%89%8C"><span class="toc-number">4.5.</span> <span class="toc-text">刷新令牌</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#JWT"><span class="toc-number">5.</span> <span class="toc-text">JWT</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%80%E4%B9%88%E6%98%AFJWT"><span class="toc-number">5.1.</span> <span class="toc-text">什么是JWT?</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#JWT%E4%BB%A4%E7%89%8C%E7%9A%84%E4%BC%98%E7%82%B9"><span class="toc-number">5.2.</span> <span class="toc-text">JWT令牌的优点:</span></a></li></ol></li></ol>
+      </div>
+    
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://www.zhengyk.cn/blog/2828145615.html"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://www.zhengyk.cn/blog/2828145615.html&text=用 Spring Security Oauth2 + JWT 搭建一个认证中心"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://www.zhengyk.cn/blog/2828145615.html&title=用 Spring Security Oauth2 + JWT 搭建一个认证中心"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://www.zhengyk.cn/blog/2828145615.html&is_video=false&description=用 Spring Security Oauth2 + JWT 搭建一个认证中心"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=用 Spring Security Oauth2 + JWT 搭建一个认证中心&body=Check out this article: https://www.zhengyk.cn/blog/2828145615.html"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://www.zhengyk.cn/blog/2828145615.html&title=用 Spring Security Oauth2 + JWT 搭建一个认证中心"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://www.zhengyk.cn/blog/2828145615.html&title=用 Spring Security Oauth2 + JWT 搭建一个认证中心"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://www.zhengyk.cn/blog/2828145615.html&title=用 Spring Security Oauth2 + JWT 搭建一个认证中心"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://www.zhengyk.cn/blog/2828145615.html&title=用 Spring Security Oauth2 + JWT 搭建一个认证中心"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://www.zhengyk.cn/blog/2828145615.html&name=用 Spring Security Oauth2 + JWT 搭建一个认证中心&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://www.zhengyk.cn/blog/2828145615.html&t=用 Spring Security Oauth2 + JWT 搭建一个认证中心"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> 菜单</a>
+        
+          <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> 目录</a>
+        
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> 分享</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> 返回顶部</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2017-2026
+    薛定谔的汪
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     --><!--
+       --><li><a href="/archives/">归档</a></li><!--
+     --><!--
+       --><li><a href="/tags/">标签</a></li><!--
+     --><!--
+       --><li><a href="/categories/">分类</a></li><!--
+     --><!--
+       --><li><a href="/search/">搜索</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script>
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script>
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"复制到粘贴板！\">";
+    btn += '<i class="fa-regular fa-clone"></i>';
+    btn += '</span>';
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "复制成功！");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+
+<script type="text/javascript">
+(function() {
+  var bar = document.getElementById('reading-progress-bar');
+  if (!bar) return;
+  function update() {
+    var root = document.documentElement;
+    var scrolled = window.scrollY || root.scrollTop;
+    var height = root.scrollHeight - root.clientHeight;
+    bar.style.width = (height > 0 ? (scrolled / height) * 100 : 0) + '%';
+  }
+  window.addEventListener('scroll', update, { passive: true });
+  window.addEventListener('resize', update);
+  update();
+})();
+</script>
+
+<!-- search -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>

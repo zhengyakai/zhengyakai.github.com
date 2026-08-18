@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="前言当多线程更新某个共享变量时，可能会出现非预期结果，比如i++这样的操作，解决的办法有使用synchronized 或者 Lock 锁，但这样做其实让多线程不会同时更新这个变量，虽然线程安全了，但存在效率、性能问题。 jdk1.5提供了一系列原子操作类，它们存在于java.util.concurrent.atomic包下，这些原子类具有简单、性能高效、线程安全的优点。 代码示例123456789">
+<meta property="og:type" content="article">
+<meta property="og:title" content="原子类 AtomicInteger">
+<meta property="og:url" content="https://www.zhengyk.cn/blog/1308493211.html">
+<meta property="og:site_name" content="薛定谔的汪 - 技术博客">
+<meta property="og:description" content="前言当多线程更新某个共享变量时，可能会出现非预期结果，比如i++这样的操作，解决的办法有使用synchronized 或者 Lock 锁，但这样做其实让多线程不会同时更新这个变量，虽然线程安全了，但存在效率、性能问题。 jdk1.5提供了一系列原子操作类，它们存在于java.util.concurrent.atomic包下，这些原子类具有简单、性能高效、线程安全的优点。 代码示例123456789">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2018-08-23T10:01:54.000Z">
+<meta property="article:modified_time" content="2026-08-18T07:42:43.332Z">
+<meta property="article:author" content="薛定谔的汪">
+<meta property="article:tag" content="多线程">
+<meta name="twitter:card" content="summary">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/portrait.jpg">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/portrait.jpg" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/portrait.jpg">
+        
+      
+    
+    <!-- title -->
+    <title>原子类 AtomicInteger</title>
+    <!-- async scripts -->
+    <!-- Google Analytics -->
+
+
+    <!-- Umami Analytics -->
+
+
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    
+<link rel="stylesheet" href="/css/custom.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+<meta name="generator" content="Hexo 8.1.2"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+<div id="reading-progress-bar" aria-hidden="true"></div>
+<style>
+  #reading-progress-bar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 0;
+    height: 5px;
+    background: #37c6c0;
+    z-index: 9999;
+    pointer-events: none;
+  }
+</style>
+
+
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="目录"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="目录"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="顶部" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     --><!--
+       --><li><a href="/archives/">归档</a></li><!--
+     --><!--
+       --><li><a href="/tags/">标签</a></li><!--
+     --><!--
+       --><li><a href="/categories/">分类</a></li><!--
+     --><!--
+       --><li><a href="/search/">搜索</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="上一篇" href="/blog/1826674716.html"><i class="fa-solid fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="下一篇" href="/blog/2316232430.html"><i class="fa-solid fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="返回顶部" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="分享文章" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">上一篇</span>
+      <span id="i-next" class="info" style="display:none;">下一篇</span>
+      <span id="i-top" class="info" style="display:none;">返回顶部</span>
+      <span id="i-share" class="info" style="display:none;">分享文章</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://www.zhengyk.cn/blog/1308493211.html"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://www.zhengyk.cn/blog/1308493211.html&text=原子类 AtomicInteger"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://www.zhengyk.cn/blog/1308493211.html&title=原子类 AtomicInteger"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://www.zhengyk.cn/blog/1308493211.html&is_video=false&description=原子类 AtomicInteger"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=原子类 AtomicInteger&body=Check out this article: https://www.zhengyk.cn/blog/1308493211.html"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://www.zhengyk.cn/blog/1308493211.html&title=原子类 AtomicInteger"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://www.zhengyk.cn/blog/1308493211.html&title=原子类 AtomicInteger"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://www.zhengyk.cn/blog/1308493211.html&title=原子类 AtomicInteger"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://www.zhengyk.cn/blog/1308493211.html&title=原子类 AtomicInteger"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://www.zhengyk.cn/blog/1308493211.html&name=原子类 AtomicInteger&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://www.zhengyk.cn/blog/1308493211.html&t=原子类 AtomicInteger"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    
+    
+      <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BB%A3%E7%A0%81%E7%A4%BA%E4%BE%8B"><span class="toc-number">2.</span> <span class="toc-text">代码示例</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#AtomicInteger-%E5%B8%B8%E7%94%A8%E6%96%B9%E6%B3%95"><span class="toc-number">3.</span> <span class="toc-text">AtomicInteger 常用方法</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#int-get"><span class="toc-number">3.1.</span> <span class="toc-text">int get()</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#void-lazySet-int-newValue"><span class="toc-number">3.2.</span> <span class="toc-text">void lazySet(int newValue)</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#int-getAndSet-int-newValue"><span class="toc-number">3.3.</span> <span class="toc-text">int getAndSet(int newValue)</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#boolean-compareAndSet-int-expect-int-update"><span class="toc-number">3.4.</span> <span class="toc-text">boolean compareAndSet(int expect, int update)</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#int-getAndIncrement"><span class="toc-number">3.5.</span> <span class="toc-text">int getAndIncrement()</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#int-getAndDecrement"><span class="toc-number">3.6.</span> <span class="toc-text">int getAndDecrement()</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#int-getAndAdd-int-delta"><span class="toc-number">3.7.</span> <span class="toc-text">int getAndAdd(int delta)</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#int-incrementAndGet"><span class="toc-number">3.8.</span> <span class="toc-text">int incrementAndGet()</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#AtomicInteger-%E5%8E%9F%E7%90%86"><span class="toc-number">4.</span> <span class="toc-text">AtomicInteger 原理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%87%AA%E6%97%8B-CAS-%E7%9A%84%E7%BC%BA%E7%82%B9"><span class="toc-number">5.</span> <span class="toc-text">自旋+CAS 的缺点</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#LongAdder"><span class="toc-number">6.</span> <span class="toc-text">LongAdder</span></a></li></ol>
+      </div>
+    
+  </span>
+</div>
+
+    
+    <div class="content index py4 ">
+        
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle p-name" itemprop="name headline">
+        原子类 AtomicInteger
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author p-author h-card" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span class="p-name" itemprop="name"><a target="_blank" href="https://zhengyk.cn" rel="author noopener">Yakai Zheng</a></span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2018-08-23T10:01:54.000Z" class="dt-published" itemprop="datePublished">2018-08-23</time>
+        
+      
+    </div>
+
+
+      
+    <div class="article-category">
+        <i class="fa-solid fa-archive"></i>
+        <a class="category-link" href="/categories/Java%E6%8A%80%E6%9C%AF/">Java技术</a>
+    </div>
+
+
+      
+    <div class="article-tag">
+        <i class="fa-solid fa-tag"></i>
+        <a class="p-category" href="/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B/" rel="tag">多线程</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content e-content" itemprop="articleBody">
+    <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>当多线程更新某个共享变量时，可能会出现非预期结果，比如i++这样的操作，解决的办法有使用synchronized 或者 Lock 锁，但这样做其实让多线程不会同时更新这个变量，虽然线程安全了，但存在效率、性能问题。</p>
+<p>jdk1.5提供了一系列原子操作类，它们存在于java.util.concurrent.atomic包下，这些原子类具有简单、性能高效、线程安全的优点。</p>
+<h3 id="代码示例"><a href="#代码示例" class="headerlink" title="代码示例"></a>代码示例</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">IntTest</span> <span class="keyword">implements</span> <span class="title class_">Runnable</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="type">int</span> num;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="type">CountDownLatch</span> <span class="variable">countDownLatch</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">CountDownLatch</span>(<span class="number">1000</span>);</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">run</span><span class="params">()</span> &#123;</span><br><span class="line">        num++;</span><br><span class="line">        countDownLatch.countDown();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> InterruptedException &#123;</span><br><span class="line">        <span class="type">IntTest</span> <span class="variable">atomicIntegerTest</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">IntTest</span>();</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt; <span class="number">1000</span>; i++) &#123;</span><br><span class="line">           <span class="keyword">new</span> <span class="title class_">Thread</span>(atomicIntegerTest).start();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">//等待1000个线程都执行完</span></span><br><span class="line">        countDownLatch.await();</span><br><span class="line">        System.out.println(num);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>预期打印1000，但多次运行，总得到小于1000的值，这是因为成员变量num ，存在线程安全问题。</p>
+<p>修改为用 AtomicInteger：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">AtomicIntegerTest</span> <span class="keyword">implements</span> <span class="title class_">Runnable</span> &#123;</span><br><span class="line">	</span><br><span class="line">    <span class="comment">//初始值0</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="type">AtomicInteger</span> <span class="variable">num</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">AtomicInteger</span>(<span class="number">0</span>);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="type">CountDownLatch</span> <span class="variable">countDownLatch</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">CountDownLatch</span>(<span class="number">1000</span>);</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">run</span><span class="params">()</span> &#123;</span><br><span class="line">        num.getAndIncrement();</span><br><span class="line">        countDownLatch.countDown();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> InterruptedException &#123;</span><br><span class="line">        <span class="type">AtomicIntegerTest</span> <span class="variable">atomicIntegerTest</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">AtomicIntegerTest</span>();</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt; <span class="number">1000</span>; i++) &#123;</span><br><span class="line">           <span class="keyword">new</span> <span class="title class_">Thread</span>(atomicIntegerTest).start();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">//等待1000个线程都执行完</span></span><br><span class="line">        countDownLatch.await();</span><br><span class="line">        System.out.println(num);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>反复运行得到的结果都是1000，保证了原子性。</p>
+<h3 id="AtomicInteger-常用方法"><a href="#AtomicInteger-常用方法" class="headerlink" title="AtomicInteger 常用方法"></a>AtomicInteger 常用方法</h3><h4 id="int-get"><a href="#int-get" class="headerlink" title="int get()"></a>int get()</h4><p>获取 AtomicInteger 的值value</p>
+<h4 id="void-lazySet-int-newValue"><a href="#void-lazySet-int-newValue" class="headerlink" title="void lazySet(int newValue)"></a>void lazySet(int newValue)</h4><p> 最终会设置成newValue，但是可能导致其他线程在一段时间内仍可以读到旧的值。</p>
+<h4 id="int-getAndSet-int-newValue"><a href="#int-getAndSet-int-newValue" class="headerlink" title="int getAndSet(int newValue)"></a>int getAndSet(int newValue)</h4><p>以原子的方式设置为newValue，并返回旧值</p>
+<h4 id="boolean-compareAndSet-int-expect-int-update"><a href="#boolean-compareAndSet-int-expect-int-update" class="headerlink" title="boolean compareAndSet(int expect, int update)"></a>boolean compareAndSet(int expect, int update)</h4><p>如果输入的值等于预期值，则以原子的方式更新为新的值update</p>
+<p><em><strong>CAS有3个操作数，内存值V，旧的预期值A，要修改的新值B。当且仅当预期值A和内存值V相同时，将内存值V修改为B，否则什么都不做</strong></em>。</p>
+<h4 id="int-getAndIncrement"><a href="#int-getAndIncrement" class="headerlink" title="int getAndIncrement()"></a>int getAndIncrement()</h4><p>返回旧值，自增1</p>
+<h4 id="int-getAndDecrement"><a href="#int-getAndDecrement" class="headerlink" title="int getAndDecrement()"></a>int getAndDecrement()</h4><p>返回旧值，自减1</p>
+<h4 id="int-getAndAdd-int-delta"><a href="#int-getAndAdd-int-delta" class="headerlink" title="int getAndAdd(int delta)"></a>int getAndAdd(int delta)</h4><p>返回旧值，自增步长 delta</p>
+<h4 id="int-incrementAndGet"><a href="#int-incrementAndGet" class="headerlink" title="int incrementAndGet()"></a>int incrementAndGet()</h4><p>自增1，返回新的值</p>
+<h3 id="AtomicInteger-原理"><a href="#AtomicInteger-原理" class="headerlink" title="AtomicInteger 原理"></a>AtomicInteger 原理</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">volatile</span> <span class="type">int</span> value;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="title function_">AtomicInteger</span><span class="params">(<span class="type">int</span> initialValue)</span> &#123;</span><br><span class="line">    value = initialValue;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="title function_">AtomicInteger</span><span class="params">()</span> &#123;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">final</span> <span class="type">int</span> <span class="title function_">get</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> value;</span><br><span class="line">&#125;</span><br><span class="line">......</span><br></pre></td></tr></table></figure>
+
+<p>属性 value 是 AtomicInteger 包装类真正的值，在初始化时可以指定其初始值，默认为0；</p>
+<p>value用 volatile 修饰，我们知道 volatile可以保证可见性，但不能保证原子性，因为i++这种不是原子操作。</p>
+<p>以方法<code>getAndIncrement()</code>为例：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">final</span> <span class="type">int</span> <span class="title function_">getAndIncrement</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> unsafe.getAndAddInt(<span class="built_in">this</span>, valueOffset, <span class="number">1</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>查看unsafe.getAndAddInt(…)源码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">final</span> <span class="type">int</span> <span class="title function_">getAndAddInt</span><span class="params">(Object var1, <span class="type">long</span> var2, <span class="type">int</span> var4)</span> &#123;</span><br><span class="line">    <span class="type">int</span> var5;</span><br><span class="line">    <span class="comment">//自旋</span></span><br><span class="line">    <span class="keyword">do</span> &#123;</span><br><span class="line">        <span class="comment">//获取旧值</span></span><br><span class="line">        var5 = <span class="built_in">this</span>.getIntVolatile(var1, var2);</span><br><span class="line">        <span class="comment">//CAS</span></span><br><span class="line">    &#125; <span class="keyword">while</span>(!<span class="built_in">this</span>.compareAndSwapInt(var1, var2, var5, var5 + var4));</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> var5;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>getIntVolatile(var1, var2)</code>和<code>compareAndSwapInt(var1, var2, var5, var5 + var4)</code>是 native 方法，调用 C 语言。</p>
+<p>在<code>getAndAddInt(...)</code>方法中，通过不断自旋CAS 的方式去更新。</p>
+<p>AtomicInteger的其他原子更新方法也都是基于此。</p>
+<h3 id="自旋-CAS-的缺点"><a href="#自旋-CAS-的缺点" class="headerlink" title="自旋+CAS 的缺点"></a>自旋+CAS 的缺点</h3><p>并发情况下，对于更新变量，竞争锁的线程较多的时候，每个线程都要去进行自旋，很消耗 CPU。</p>
+<h3 id="LongAdder"><a href="#LongAdder" class="headerlink" title="LongAdder"></a>LongAdder</h3><p>jkd8引入 LongAdder，在线程较多的并发情况下，它的性能要比Atomic*使用自旋+CAS 的方式要高，其核心原理是在自旋+CAS 的基础上，引用了锁分段技术。</p>
+<p>LongAdder 比 AtomicLong 更高效，缺点是如果有并发更新，可能导致最终的数据有误差。</p>
+<p>更适合在高并发下、没有并发更新时进行统计的需求。</p>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">首页</a></li>
+        
+          <li><a href="/about/">关于</a></li>
+        
+          <li><a href="/archives/">归档</a></li>
+        
+          <li><a href="/tags/">标签</a></li>
+        
+          <li><a href="/categories/">分类</a></li>
+        
+          <li><a href="/search/">搜索</a></li>
+        
+      </ul>
+    </div>
+
+    
+    
+      <div id="toc-footer" style="display: none">
+        <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BB%A3%E7%A0%81%E7%A4%BA%E4%BE%8B"><span class="toc-number">2.</span> <span class="toc-text">代码示例</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#AtomicInteger-%E5%B8%B8%E7%94%A8%E6%96%B9%E6%B3%95"><span class="toc-number">3.</span> <span class="toc-text">AtomicInteger 常用方法</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#int-get"><span class="toc-number">3.1.</span> <span class="toc-text">int get()</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#void-lazySet-int-newValue"><span class="toc-number">3.2.</span> <span class="toc-text">void lazySet(int newValue)</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#int-getAndSet-int-newValue"><span class="toc-number">3.3.</span> <span class="toc-text">int getAndSet(int newValue)</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#boolean-compareAndSet-int-expect-int-update"><span class="toc-number">3.4.</span> <span class="toc-text">boolean compareAndSet(int expect, int update)</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#int-getAndIncrement"><span class="toc-number">3.5.</span> <span class="toc-text">int getAndIncrement()</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#int-getAndDecrement"><span class="toc-number">3.6.</span> <span class="toc-text">int getAndDecrement()</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#int-getAndAdd-int-delta"><span class="toc-number">3.7.</span> <span class="toc-text">int getAndAdd(int delta)</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#int-incrementAndGet"><span class="toc-number">3.8.</span> <span class="toc-text">int incrementAndGet()</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#AtomicInteger-%E5%8E%9F%E7%90%86"><span class="toc-number">4.</span> <span class="toc-text">AtomicInteger 原理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%87%AA%E6%97%8B-CAS-%E7%9A%84%E7%BC%BA%E7%82%B9"><span class="toc-number">5.</span> <span class="toc-text">自旋+CAS 的缺点</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#LongAdder"><span class="toc-number">6.</span> <span class="toc-text">LongAdder</span></a></li></ol>
+      </div>
+    
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://www.zhengyk.cn/blog/1308493211.html"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://www.zhengyk.cn/blog/1308493211.html&text=原子类 AtomicInteger"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://www.zhengyk.cn/blog/1308493211.html&title=原子类 AtomicInteger"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://www.zhengyk.cn/blog/1308493211.html&is_video=false&description=原子类 AtomicInteger"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=原子类 AtomicInteger&body=Check out this article: https://www.zhengyk.cn/blog/1308493211.html"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://www.zhengyk.cn/blog/1308493211.html&title=原子类 AtomicInteger"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://www.zhengyk.cn/blog/1308493211.html&title=原子类 AtomicInteger"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://www.zhengyk.cn/blog/1308493211.html&title=原子类 AtomicInteger"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://www.zhengyk.cn/blog/1308493211.html&title=原子类 AtomicInteger"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://www.zhengyk.cn/blog/1308493211.html&name=原子类 AtomicInteger&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://www.zhengyk.cn/blog/1308493211.html&t=原子类 AtomicInteger"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> 菜单</a>
+        
+          <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> 目录</a>
+        
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> 分享</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> 返回顶部</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2017-2026
+    薛定谔的汪
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     --><!--
+       --><li><a href="/archives/">归档</a></li><!--
+     --><!--
+       --><li><a href="/tags/">标签</a></li><!--
+     --><!--
+       --><li><a href="/categories/">分类</a></li><!--
+     --><!--
+       --><li><a href="/search/">搜索</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script>
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script>
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"复制到粘贴板！\">";
+    btn += '<i class="fa-regular fa-clone"></i>';
+    btn += '</span>';
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "复制成功！");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+
+<script type="text/javascript">
+(function() {
+  var bar = document.getElementById('reading-progress-bar');
+  if (!bar) return;
+  function update() {
+    var root = document.documentElement;
+    var scrolled = window.scrollY || root.scrollTop;
+    var height = root.scrollHeight - root.clientHeight;
+    bar.style.width = (height > 0 ? (scrolled / height) * 100 : 0) + '%';
+  }
+  window.addEventListener('scroll', update, { passive: true });
+  window.addEventListener('resize', update);
+  update();
+})();
+</script>
+
+<!-- search -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>
