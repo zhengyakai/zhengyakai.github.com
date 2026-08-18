@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="项目背景Spring Cloud 项目，有前端，有后端，后端服务整合了 Cloud Security OAuth2 ，请求后端的服务需要携带认证信息，即请求头中需要携带” Authorization Bearer …“ 的Token 头信息。 后台微服务还存在服务之间采用 Fegin 的调用，在前端请求后端时，是携带 Token，可以正常请求响应的，但是当微服务之间调用时，报： 1234&amp;#123">
+<meta property="og:type" content="article">
+<meta property="og:title" content="配置 Fegin 拦截器解决微服务之间需要认证才能访问得问题">
+<meta property="og:url" content="https://www.zhengyk.cn/114589203.html">
+<meta property="og:site_name" content="薛定谔的汪 - 技术博客">
+<meta property="og:description" content="项目背景Spring Cloud 项目，有前端，有后端，后端服务整合了 Cloud Security OAuth2 ，请求后端的服务需要携带认证信息，即请求头中需要携带” Authorization Bearer …“ 的Token 头信息。 后台微服务还存在服务之间采用 Fegin 的调用，在前端请求后端时，是携带 Token，可以正常请求响应的，但是当微服务之间调用时，报： 1234&amp;#123">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://www.zhengyk.cn/images/fegin-interceptor-01.jpg">
+<meta property="article:published_time" content="2018-10-20T05:20:16.000Z">
+<meta property="article:modified_time" content="2026-08-18T07:42:43.341Z">
+<meta property="article:author" content="薛定谔的汪">
+<meta property="article:tag" content="springcloud">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://www.zhengyk.cn/images/fegin-interceptor-01.jpg">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/portrait.jpg">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/portrait.jpg" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/portrait.jpg">
+        
+      
+    
+    <!-- title -->
+    <title>配置 Fegin 拦截器解决微服务之间需要认证才能访问得问题</title>
+    <!-- async scripts -->
+    <!-- Google Analytics -->
+
+
+    <!-- Umami Analytics -->
+
+
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    
+<link rel="stylesheet" href="/css/custom.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+<meta name="generator" content="Hexo 8.1.2"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+<div id="reading-progress-bar" aria-hidden="true"></div>
+<style>
+  #reading-progress-bar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 0;
+    height: 5px;
+    background: #37c6c0;
+    z-index: 9999;
+    pointer-events: none;
+  }
+</style>
+
+
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="目录"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="目录"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="顶部" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     --><!--
+       --><li><a href="/archives/">归档</a></li><!--
+     --><!--
+       --><li><a href="/tags/">标签</a></li><!--
+     --><!--
+       --><li><a href="/categories/">分类</a></li><!--
+     --><!--
+       --><li><a href="/search/">搜索</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="上一篇" href="/2828145615.html"><i class="fa-solid fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="下一篇" href="/376368787.html"><i class="fa-solid fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="返回顶部" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="分享文章" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">上一篇</span>
+      <span id="i-next" class="info" style="display:none;">下一篇</span>
+      <span id="i-top" class="info" style="display:none;">返回顶部</span>
+      <span id="i-share" class="info" style="display:none;">分享文章</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://www.zhengyk.cn/114589203.html"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://www.zhengyk.cn/114589203.html&text=配置 Fegin 拦截器解决微服务之间需要认证才能访问得问题"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://www.zhengyk.cn/114589203.html&title=配置 Fegin 拦截器解决微服务之间需要认证才能访问得问题"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://www.zhengyk.cn/114589203.html&is_video=false&description=配置 Fegin 拦截器解决微服务之间需要认证才能访问得问题"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=配置 Fegin 拦截器解决微服务之间需要认证才能访问得问题&body=Check out this article: https://www.zhengyk.cn/114589203.html"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://www.zhengyk.cn/114589203.html&title=配置 Fegin 拦截器解决微服务之间需要认证才能访问得问题"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://www.zhengyk.cn/114589203.html&title=配置 Fegin 拦截器解决微服务之间需要认证才能访问得问题"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://www.zhengyk.cn/114589203.html&title=配置 Fegin 拦截器解决微服务之间需要认证才能访问得问题"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://www.zhengyk.cn/114589203.html&title=配置 Fegin 拦截器解决微服务之间需要认证才能访问得问题"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://www.zhengyk.cn/114589203.html&name=配置 Fegin 拦截器解决微服务之间需要认证才能访问得问题&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://www.zhengyk.cn/114589203.html&t=配置 Fegin 拦截器解决微服务之间需要认证才能访问得问题"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    
+    
+      <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%A1%B9%E7%9B%AE%E8%83%8C%E6%99%AF"><span class="toc-number">1.</span> <span class="toc-text">项目背景</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Fegin-%E6%8B%A6%E6%88%AA%E5%99%A8"><span class="toc-number">2.</span> <span class="toc-text">Fegin 拦截器</span></a></li></ol>
+      </div>
+    
+  </span>
+</div>
+
+    
+    <div class="content index py4 ">
+        
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle p-name" itemprop="name headline">
+        配置 Fegin 拦截器解决微服务之间需要认证才能访问得问题
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author p-author h-card" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span class="p-name" itemprop="name"><a target="_blank" href="https://zhengyk.cn" rel="author noopener">Yakai Zheng</a></span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2018-10-20T05:20:16.000Z" class="dt-published" itemprop="datePublished">2018-10-20</time>
+        
+      
+    </div>
+
+
+      
+    <div class="article-category">
+        <i class="fa-solid fa-archive"></i>
+        <a class="category-link" href="/categories/%E9%A1%B9%E7%9B%AE%E5%AE%9E%E6%88%98/">项目实战</a>
+    </div>
+
+
+      
+    <div class="article-tag">
+        <i class="fa-solid fa-tag"></i>
+        <a class="p-category" href="/tags/springcloud/" rel="tag">springcloud</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content e-content" itemprop="articleBody">
+    <h2 id="项目背景"><a href="#项目背景" class="headerlink" title="项目背景"></a>项目背景</h2><p>Spring Cloud 项目，有前端，有后端，后端服务整合了 Cloud Security OAuth2 ，请求后端的服务需要携带认证信息，即请求头中需要携带” Authorization Bearer …“ 的Token 头信息。</p>
+<p>后台微服务还存在服务之间采用 Fegin 的调用，在前端请求后端时，是携带 Token，可以正常请求响应的，但是当微服务之间调用时，报：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;error&quot;</span><span class="punctuation">:</span><span class="string">&quot;unauthorized&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;error_description&quot;</span><span class="punctuation">:</span><span class="string">&quot;Full authentication is required to access this resource&quot;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p>调用关系简图：</p>
+<p><img src="https://www.zhengyk.cn/images/fegin-interceptor-01.jpg"></p>
+<p>这是因为微服务之间的调用默认是不携带 令牌 Token 导致的（令牌信息存在 Authorization 请求头中），如果要传递 header 信息，可以采用 Fegin拦截器实现。</p>
+<h2 id="Fegin-拦截器"><a href="#Fegin-拦截器" class="headerlink" title="Fegin 拦截器"></a>Fegin 拦截器</h2><p>可以在 Common 项目中定义一个 Fegin 拦截器：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Slf4j</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">FeignClientInterceptor</span> <span class="keyword">implements</span> <span class="title class_">RequestInterceptor</span> &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">apply</span><span class="params">(RequestTemplate requestTemplate)</span> &#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="comment">//使用RequestContextHolder工具获取request相关变量</span></span><br><span class="line">            <span class="type">ServletRequestAttributes</span> <span class="variable">attributes</span> <span class="operator">=</span> (ServletRequestAttributes)RequestContextHolder.getRequestAttributes();</span><br><span class="line">            <span class="keyword">if</span>(attributes!=<span class="literal">null</span>)&#123;</span><br><span class="line">                <span class="comment">//取出request</span></span><br><span class="line">                <span class="type">HttpServletRequest</span> <span class="variable">request</span> <span class="operator">=</span> attributes.getRequest();</span><br><span class="line">                Enumeration&lt;String&gt; headerNames = request.getHeaderNames();</span><br><span class="line">                <span class="keyword">if</span> (headerNames != <span class="literal">null</span>) &#123;</span><br><span class="line">                    <span class="keyword">while</span> (headerNames.hasMoreElements()) &#123;</span><br><span class="line">                        <span class="type">String</span> <span class="variable">name</span> <span class="operator">=</span> headerNames.nextElement();</span><br><span class="line">                        <span class="type">String</span> <span class="variable">values</span> <span class="operator">=</span> request.getHeader(name);</span><br><span class="line">                        <span class="keyword">if</span>(<span class="string">&quot;authorization&quot;</span>.equalsIgnoreCase(name))&#123;</span><br><span class="line">                            <span class="comment">//System.out.println(&quot;name=&quot;+name+&quot;values=&quot;+values)s</span></span><br><span class="line">                            <span class="comment">//调用其他服务时携带 authorization 头信息</span></span><br><span class="line">                            requestTemplate.header(name, values);</span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;<span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">            log.error(<span class="string">&quot;Fegin拦截器异常:&quot;</span>,e);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>回到项目简图，因为 ”微服务1“ 调用 ”微服务2“，所以只要在 ”微服务1“ 中装载该 Fegin 拦截器即可：</p>
+ <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Bean</span></span><br><span class="line"><span class="keyword">public</span> FeignClientInterceptor <span class="title function_">feignClientInterceptor</span><span class="params">()</span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">FeignClientInterceptor</span>();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">首页</a></li>
+        
+          <li><a href="/about/">关于</a></li>
+        
+          <li><a href="/archives/">归档</a></li>
+        
+          <li><a href="/tags/">标签</a></li>
+        
+          <li><a href="/categories/">分类</a></li>
+        
+          <li><a href="/search/">搜索</a></li>
+        
+      </ul>
+    </div>
+
+    
+    
+      <div id="toc-footer" style="display: none">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%A1%B9%E7%9B%AE%E8%83%8C%E6%99%AF"><span class="toc-number">1.</span> <span class="toc-text">项目背景</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Fegin-%E6%8B%A6%E6%88%AA%E5%99%A8"><span class="toc-number">2.</span> <span class="toc-text">Fegin 拦截器</span></a></li></ol>
+      </div>
+    
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://www.zhengyk.cn/114589203.html"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://www.zhengyk.cn/114589203.html&text=配置 Fegin 拦截器解决微服务之间需要认证才能访问得问题"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://www.zhengyk.cn/114589203.html&title=配置 Fegin 拦截器解决微服务之间需要认证才能访问得问题"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://www.zhengyk.cn/114589203.html&is_video=false&description=配置 Fegin 拦截器解决微服务之间需要认证才能访问得问题"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=配置 Fegin 拦截器解决微服务之间需要认证才能访问得问题&body=Check out this article: https://www.zhengyk.cn/114589203.html"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://www.zhengyk.cn/114589203.html&title=配置 Fegin 拦截器解决微服务之间需要认证才能访问得问题"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://www.zhengyk.cn/114589203.html&title=配置 Fegin 拦截器解决微服务之间需要认证才能访问得问题"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://www.zhengyk.cn/114589203.html&title=配置 Fegin 拦截器解决微服务之间需要认证才能访问得问题"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://www.zhengyk.cn/114589203.html&title=配置 Fegin 拦截器解决微服务之间需要认证才能访问得问题"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://www.zhengyk.cn/114589203.html&name=配置 Fegin 拦截器解决微服务之间需要认证才能访问得问题&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://www.zhengyk.cn/114589203.html&t=配置 Fegin 拦截器解决微服务之间需要认证才能访问得问题"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> 菜单</a>
+        
+          <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> 目录</a>
+        
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> 分享</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> 返回顶部</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2017-2026
+    薛定谔的汪
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     --><!--
+       --><li><a href="/archives/">归档</a></li><!--
+     --><!--
+       --><li><a href="/tags/">标签</a></li><!--
+     --><!--
+       --><li><a href="/categories/">分类</a></li><!--
+     --><!--
+       --><li><a href="/search/">搜索</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script>
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script>
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"复制到粘贴板！\">";
+    btn += '<i class="fa-regular fa-clone"></i>';
+    btn += '</span>';
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "复制成功！");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+
+<script type="text/javascript">
+(function() {
+  var bar = document.getElementById('reading-progress-bar');
+  if (!bar) return;
+  function update() {
+    var root = document.documentElement;
+    var scrolled = window.scrollY || root.scrollTop;
+    var height = root.scrollHeight - root.clientHeight;
+    bar.style.width = (height > 0 ? (scrolled / height) * 100 : 0) + '%';
+  }
+  window.addEventListener('scroll', update, { passive: true });
+  window.addEventListener('resize', update);
+  update();
+})();
+</script>
+
+<!-- search -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>

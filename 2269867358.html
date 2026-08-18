@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="在Java中处理异常并不是一个简单的事情。不仅仅初学者很难理解，即使一些有经验的开发者也需要花费很多时间来思考如何处理异常，包括需要处理哪些异常，怎样处理等等。这也是绝大多数开发团队都会制定一些规则来规范对异常的处理的原因。而团队之间的这些规范往往是截然不同的。 本文给出几个被很多团队使用的异常处理最佳实践。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Java中9个处理Exception的最佳实践--转">
+<meta property="og:url" content="https://www.zhengyk.cn/2269867358.html">
+<meta property="og:site_name" content="薛定谔的汪 - 技术博客">
+<meta property="og:description" content="在Java中处理异常并不是一个简单的事情。不仅仅初学者很难理解，即使一些有经验的开发者也需要花费很多时间来思考如何处理异常，包括需要处理哪些异常，怎样处理等等。这也是绝大多数开发团队都会制定一些规则来规范对异常的处理的原因。而团队之间的这些规范往往是截然不同的。 本文给出几个被很多团队使用的异常处理最佳实践。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2017-11-01T02:20:31.000Z">
+<meta property="article:modified_time" content="2026-08-18T07:42:43.333Z">
+<meta property="article:author" content="薛定谔的汪">
+<meta property="article:tag" content="java">
+<meta name="twitter:card" content="summary">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/portrait.jpg">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/portrait.jpg" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/portrait.jpg">
+        
+      
+    
+    <!-- title -->
+    <title>Java中9个处理Exception的最佳实践--转</title>
+    <!-- async scripts -->
+    <!-- Google Analytics -->
+
+
+    <!-- Umami Analytics -->
+
+
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    
+<link rel="stylesheet" href="/css/custom.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+<meta name="generator" content="Hexo 8.1.2"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+<div id="reading-progress-bar" aria-hidden="true"></div>
+<style>
+  #reading-progress-bar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 0;
+    height: 5px;
+    background: #37c6c0;
+    z-index: 9999;
+    pointer-events: none;
+  }
+</style>
+
+
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="目录"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="目录"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="顶部" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     --><!--
+       --><li><a href="/archives/">归档</a></li><!--
+     --><!--
+       --><li><a href="/tags/">标签</a></li><!--
+     --><!--
+       --><li><a href="/categories/">分类</a></li><!--
+     --><!--
+       --><li><a href="/search/">搜索</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="上一篇" href="/2605777822.html"><i class="fa-solid fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="下一篇" href="/4131658618.html"><i class="fa-solid fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="返回顶部" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="分享文章" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">上一篇</span>
+      <span id="i-next" class="info" style="display:none;">下一篇</span>
+      <span id="i-top" class="info" style="display:none;">返回顶部</span>
+      <span id="i-share" class="info" style="display:none;">分享文章</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://www.zhengyk.cn/2269867358.html"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://www.zhengyk.cn/2269867358.html&text=Java中9个处理Exception的最佳实践--转"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://www.zhengyk.cn/2269867358.html&title=Java中9个处理Exception的最佳实践--转"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://www.zhengyk.cn/2269867358.html&is_video=false&description=Java中9个处理Exception的最佳实践--转"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Java中9个处理Exception的最佳实践--转&body=Check out this article: https://www.zhengyk.cn/2269867358.html"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://www.zhengyk.cn/2269867358.html&title=Java中9个处理Exception的最佳实践--转"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://www.zhengyk.cn/2269867358.html&title=Java中9个处理Exception的最佳实践--转"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://www.zhengyk.cn/2269867358.html&title=Java中9个处理Exception的最佳实践--转"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://www.zhengyk.cn/2269867358.html&title=Java中9个处理Exception的最佳实践--转"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://www.zhengyk.cn/2269867358.html&name=Java中9个处理Exception的最佳实践--转&description=&lt;p&gt;在Java中处理异常并不是一个简单的事情。不仅仅初学者很难理解，即使一些有经验的开发者也需要花费很多时间来思考如何处理异常，包括需要处理哪些异常，怎样处理等等。这也是绝大多数开发团队都会制定一些规则来规范对异常的处理的原因。而团队之间的这些规范往往是截然不同的。&lt;/p&gt;
+&lt;p&gt;本文给出几个被很多团队使用的异常处理最佳实践。"><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://www.zhengyk.cn/2269867358.html&t=Java中9个处理Exception的最佳实践--转"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    
+    
+      <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E5%9C%A8Finall%E5%9D%97%E4%B8%AD%E4%BD%BF%E6%B8%85%E7%90%86%E8%B5%84%E6%BA%90%E6%88%96%E8%80%85%E4%BD%BF%E7%94%A8try-with-resource%E8%AF%AD%E5%8F%A5"><span class="toc-number">1.</span> <span class="toc-text">1. 在Finall块中使清理资源或者使用try-with-resource语句</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E6%8C%87%E5%AE%9A%E5%85%B7%E4%BD%93%E7%9A%84%E5%BC%82%E5%B8%B8"><span class="toc-number">2.</span> <span class="toc-text">2. 指定具体的异常</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-%E5%AF%B9%E5%BC%82%E5%B8%B8%E8%BF%9B%E8%A1%8C%E6%96%87%E6%A1%A3%E8%AF%B4%E6%98%8E"><span class="toc-number">3.</span> <span class="toc-text">3. 对异常进行文档说明</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-%E6%8A%9B%E5%87%BA%E5%BC%82%E5%B8%B8%E7%9A%84%E6%97%B6%E5%80%99%E5%8C%85%E5%90%AB%E6%8F%8F%E8%BF%B0%E4%BF%A1%E6%81%AF"><span class="toc-number">4.</span> <span class="toc-text">4. 抛出异常的时候包含描述信息</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-%E9%A6%96%E5%85%88%E6%8D%95%E8%8E%B7%E6%9C%80%E5%85%B7%E4%BD%93%E7%9A%84%E5%BC%82%E5%B8%B8"><span class="toc-number">5.</span> <span class="toc-text">5. 首先捕获最具体的异常</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-%E4%B8%8D%E8%A6%81%E6%8D%95%E8%8E%B7Throwable"><span class="toc-number">6.</span> <span class="toc-text">6. 不要捕获Throwable</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#7-%E4%B8%8D%E8%A6%81%E5%BF%BD%E7%95%A5%E5%BC%82%E5%B8%B8"><span class="toc-number">7.</span> <span class="toc-text">7. 不要忽略异常</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#8-%E4%B8%8D%E8%A6%81%E8%AE%B0%E5%BD%95%E5%B9%B6%E6%8A%9B%E5%87%BA%E5%BC%82%E5%B8%B8"><span class="toc-number">8.</span> <span class="toc-text">8. 不要记录并抛出异常</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#9-%E5%8C%85%E8%A3%85%E5%BC%82%E5%B8%B8%E6%97%B6%E4%B8%8D%E8%A6%81%E5%8E%BB%E5%A4%84%E7%90%86%E6%AD%A4%E5%BC%82%E5%B8%B8"><span class="toc-number">9.</span> <span class="toc-text">9. 包装异常时不要去处理此异常</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-number">10.</span> <span class="toc-text">总结</span></a></li></ol>
+      </div>
+    
+  </span>
+</div>
+
+    
+    <div class="content index py4 ">
+        
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle p-name" itemprop="name headline">
+        Java中9个处理Exception的最佳实践--转
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author p-author h-card" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span class="p-name" itemprop="name"><a target="_blank" href="https://zhengyk.cn" rel="author noopener">Yakai Zheng</a></span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2017-11-01T02:20:31.000Z" class="dt-published" itemprop="datePublished">2017-11-01</time>
+        
+      
+    </div>
+
+
+      
+    <div class="article-category">
+        <i class="fa-solid fa-archive"></i>
+        <a class="category-link" href="/categories/Java%E6%8A%80%E6%9C%AF/">Java技术</a>
+    </div>
+
+
+      
+    <div class="article-tag">
+        <i class="fa-solid fa-tag"></i>
+        <a class="p-category" href="/tags/java/" rel="tag">java</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content e-content" itemprop="articleBody">
+    <p>在Java中处理异常并不是一个简单的事情。不仅仅初学者很难理解，即使一些有经验的开发者也需要花费很多时间来思考如何处理异常，包括需要处理哪些异常，怎样处理等等。这也是绝大多数开发团队都会制定一些规则来规范对异常的处理的原因。而团队之间的这些规范往往是截然不同的。</p>
+<p>本文给出几个被很多团队使用的异常处理最佳实践。<span id="more"></span></p>
+<h2 id="1-在Finall块中使清理资源或者使用try-with-resource语句"><a href="#1-在Finall块中使清理资源或者使用try-with-resource语句" class="headerlink" title="1. 在Finall块中使清理资源或者使用try-with-resource语句"></a>1. 在Finall块中使清理资源或者使用try-with-resource语句</h2><p>当使用类似InputStream这种需要使用后关闭的资源时，一个常见的错误就是在try块的最后关闭资源。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">doNotCloseResourceInTry</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="type">FileInputStream</span> <span class="variable">inputStream</span> <span class="operator">=</span> <span class="literal">null</span>;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="type">File</span> <span class="variable">file</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">File</span>(<span class="string">&quot;./tmp.txt&quot;</span>);</span><br><span class="line">        inputStream = <span class="keyword">new</span> <span class="title class_">FileInputStream</span>(file);</span><br><span class="line">        <span class="comment">// use the inputStream to read a file</span></span><br><span class="line">        <span class="comment">// do NOT do this</span></span><br><span class="line">        inputStream.close();</span><br><span class="line">    &#125; <span class="keyword">catch</span> (FileNotFoundException e) &#123;</span><br><span class="line">        log.error(e);</span><br><span class="line">    &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">        log.error(e);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>上述代码在没有任何exception的时候运行时没有问题的。但是当try块中的语句抛出异常或者自己实现的代码抛出异常，那么久不会执行最后的关闭语句，从而资源也无法释放。</p>
+<p>合理的做法则是将所有清理的代码都放到finally块中或者使用try-with-resource语句。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">closeResourceInFinally</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="type">FileInputStream</span> <span class="variable">inputStream</span> <span class="operator">=</span> <span class="literal">null</span>;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="type">File</span> <span class="variable">file</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">File</span>(<span class="string">&quot;./tmp.txt&quot;</span>);</span><br><span class="line">        inputStream = <span class="keyword">new</span> <span class="title class_">FileInputStream</span>(file);</span><br><span class="line">        <span class="comment">// use the inputStream to read a file</span></span><br><span class="line">    &#125; <span class="keyword">catch</span> (FileNotFoundException e) &#123;</span><br><span class="line">        log.error(e);</span><br><span class="line">    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> (inputStream != <span class="literal">null</span>) &#123;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                inputStream.close();</span><br><span class="line">            &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">                log.error(e);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">automaticallyCloseResource</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="type">File</span> <span class="variable">file</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">File</span>(<span class="string">&quot;./tmp.txt&quot;</span>);</span><br><span class="line">    <span class="keyword">try</span> (<span class="type">FileInputStream</span> <span class="variable">inputStream</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">FileInputStream</span>(file);) &#123;</span><br><span class="line">        <span class="comment">// use the inputStream to read a file</span></span><br><span class="line">    &#125; <span class="keyword">catch</span> (FileNotFoundException e) &#123;</span><br><span class="line">        log.error(e);</span><br><span class="line">    &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">        log.error(e);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="2-指定具体的异常"><a href="#2-指定具体的异常" class="headerlink" title="2. 指定具体的异常"></a>2. 指定具体的异常</h2><p>尽可能的使用最具体的异常来声明方法，这样才能使得代码更容易理解。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">doNotDoThis</span><span class="params">()</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">doThis</span><span class="params">()</span> <span class="keyword">throws</span> NumberFormatException &#123;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="3-对异常进行文档说明"><a href="#3-对异常进行文档说明" class="headerlink" title="3. 对异常进行文档说明"></a>3. 对异常进行文档说明</h2><p>当在方法上声明抛出异常时，也需要进行文档说明。和前面的一点一样，都是为了给调用者提供尽可能多的信息，从而可以更好地避免&#x2F;处理异常。</p>
+<p>在Javadoc中加入throws声明，并且描述抛出异常的场景。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * This method does something extremely useful ...</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> input</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@throws</span> MyBusinessException if ... happens</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">doSomething</span><span class="params">(String input)</span> <span class="keyword">throws</span> MyBusinessException &#123;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="4-抛出异常的时候包含描述信息"><a href="#4-抛出异常的时候包含描述信息" class="headerlink" title="4. 抛出异常的时候包含描述信息"></a>4. 抛出异常的时候包含描述信息</h2><p>在抛出异常时，需要尽可能精确地描述问题和相关信息，这样无论是打印到日志中还是监控工具中，都能够更容易被人阅读被定位具体信息、错误的严重程度等。</p>
+<p>但这里并不是说你要对错误信息长篇大论，因为本来Exception的类名就能够反映错误的原因，因此只需要用一到两句话描述即可。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">try</span> &#123;</span><br><span class="line">    <span class="keyword">new</span> <span class="title class_">Long</span>(<span class="string">&quot;xyz&quot;</span>);</span><br><span class="line">&#125; <span class="keyword">catch</span> (NumberFormatException e) &#123;</span><br><span class="line">    log.error(<span class="string">&quot;msg...&quot;</span>,e);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>NumberFormatException即告诉了这个异常是格式化错误，异常的额外信息只需要提供这个错误字符串即可。当异常的名称不够明显的时候，则需要提供尽可能具体的错误信息。</p>
+<h2 id="5-首先捕获最具体的异常"><a href="#5-首先捕获最具体的异常" class="headerlink" title="5. 首先捕获最具体的异常"></a>5. 首先捕获最具体的异常</h2><p>现在很多IDE都能智能提示这个最佳实践，当你试图首先捕获最笼统的异常时，会提示<code>不能达到的代码</code>。</p>
+<p>当有多个catch块中，按照捕获顺序只有第一个匹配到的catch块才能执行。因此，如果先捕获IllegalArgumentException，那么则无法运行到对NumberFormatException的捕获。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">catchMostSpecificExceptionFirst</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        doSomething(<span class="string">&quot;A message&quot;</span>);</span><br><span class="line">    &#125; <span class="keyword">catch</span> (NumberFormatException e) &#123;</span><br><span class="line">        log.error(<span class="string">&quot;msg...&quot;</span>,e);</span><br><span class="line">    &#125; <span class="keyword">catch</span> (IllegalArgumentException e) &#123;</span><br><span class="line">        log.error(<span class="string">&quot;msg...&quot;</span>,e)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="6-不要捕获Throwable"><a href="#6-不要捕获Throwable" class="headerlink" title="6. 不要捕获Throwable"></a>6. 不要捕获Throwable</h2><p>Throwable是所有异常和错误的父类。你可以在catch语句中捕获，但是永远不要这么做。</p>
+<p>如果catch了throwable，那么不仅仅会捕获所有exception，还会捕获error。而error是表明无法恢复的jvm错误。因此除非绝对肯定能够处理或者被要求处理error，不要捕获throwable。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">doNotCatchThrowable</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="comment">// do something</span></span><br><span class="line">    &#125; <span class="keyword">catch</span> (Throwable t) &#123;</span><br><span class="line">        <span class="comment">// don&#x27;t do this!</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="7-不要忽略异常"><a href="#7-不要忽略异常" class="headerlink" title="7. 不要忽略异常"></a>7. 不要忽略异常</h2><p>很多时候，开发者很有自信不会抛出异常，因此写了一个catch块，但是没有做任何处理或者日志。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">doNotIgnoreExceptions</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="comment">// do something</span></span><br><span class="line">    &#125; <span class="keyword">catch</span> (NumberFormatException e) &#123;</span><br><span class="line">        <span class="comment">// this will never happen</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>但现实是经常会出现无法预料的异常或者无法确定这里的代码未来是不是会改动(删除了阻止异常抛出的代码)，而此时异常由于被捕获了，因此无法拿到足够的错误信息来定位问题。</p>
+<p>合理的做法是至少要记录异常的信息。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">logAnException</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="comment">// do something</span></span><br><span class="line">    &#125; <span class="keyword">catch</span> (NumberFormatException e) &#123;</span><br><span class="line">        log.error(<span class="string">&quot;This should never happen: &quot;</span>,e);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="8-不要记录并抛出异常"><a href="#8-不要记录并抛出异常" class="headerlink" title="8. 不要记录并抛出异常"></a>8. 不要记录并抛出异常</h2><p>可以发现很多代码甚至类库中都会有捕获异常、日志记录并再次抛出的逻辑。如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">try</span> &#123;</span><br><span class="line">    <span class="keyword">new</span> <span class="title class_">Long</span>(<span class="string">&quot;xyz&quot;</span>);</span><br><span class="line">&#125; <span class="keyword">catch</span> (NumberFormatException e) &#123;</span><br><span class="line">    log.error(<span class="string">&quot;msg...&quot;</span>,e);</span><br><span class="line">    <span class="keyword">throw</span> e;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这个处理逻辑看着是合理的。但这经常会给同一个异常输出多条日志。如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">17</span>:<span class="number">44</span>:<span class="number">28</span>,<span class="number">945</span> ERROR TestExceptionHandling:<span class="number">65</span> - java.lang.NumberFormatException: For input string: <span class="string">&quot;xyz&quot;</span></span><br><span class="line">Exception in thread <span class="string">&quot;main&quot;</span> java.lang.NumberFormatException: For input string: <span class="string">&quot;xyz&quot;</span></span><br><span class="line">at java.lang.NumberFormatException.forInputString(NumberFormatException.java:<span class="number">65</span>)</span><br><span class="line">at java.lang.Long.parseLong(Long.java:<span class="number">589</span>)</span><br><span class="line">at java.lang.Long.(Long.java:<span class="number">965</span>)</span><br><span class="line">at com.stackify.example.TestExceptionHandling.logAndThrowException(TestExceptionHandling.java:<span class="number">63</span>)</span><br><span class="line">at com.stackify.example.TestExceptionHandling.main(TestExceptionHandling.java:<span class="number">58</span>)</span><br></pre></td></tr></table></figure>
+
+<p>如上所示，后面的日志也没有附加更有用的信息。如果想要提供更加有用的信息，那么可以将异常包装为自定义异常。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">wrapException</span><span class="params">(String input)</span> <span class="keyword">throws</span> MyBusinessException &#123;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="comment">// do something</span></span><br><span class="line">    &#125; <span class="keyword">catch</span> (NumberFormatException e) &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">MyBusinessException</span>(<span class="string">&quot;A message that describes the error.&quot;</span>, e);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>因此，仅仅当想要处理异常时才去捕获，否则只需要在方法签名中声明让调用者去处理。</p>
+<h2 id="9-包装异常时不要去处理此异常"><a href="#9-包装异常时不要去处理此异常" class="headerlink" title="9. 包装异常时不要去处理此异常"></a>9. 包装异常时不要去处理此异常</h2><p>捕获标准异常并包装为自定义异常是一个很常见的做法。这样可以添加更为具体的异常信息并能够做针对的异常处理。</p>
+<p>需要注意的是，包装异常时，一定要把原始的异常设置为cause(Exception有构造方法可以传入cause)。否则，丢失了原始的异常信息会让错误的分析变得困难。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">wrapException</span><span class="params">(String input)</span> <span class="keyword">throws</span> MyBusinessException &#123;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="comment">// do something</span></span><br><span class="line">    &#125; <span class="keyword">catch</span> (NumberFormatException e) &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">MyBusinessException</span>(<span class="string">&quot;A message that describes the error.&quot;</span>, e);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>综上可知，当抛出或者捕获异常时，这里有很多不一样的东西需要考虑。其中的许多点都是为了提升代码的可阅读性或者api的可用性。</p>
+<p>异常不仅仅是一个错误控制机制，也是一个沟通媒介，因此与你的协作者讨论这些最佳实践并制定一些规范能够让每个人都理解通用的概念并且能够按照同样的方式使用它们。</p>
+<p>原文链接: <a target="_blank" rel="noopener" href="https://dzone.com/articles/9-best-practices-to-handle-exceptions-in-java">https://dzone.com/articles/9-best-practices-to-handle-exceptions-in-java</a></p>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">首页</a></li>
+        
+          <li><a href="/about/">关于</a></li>
+        
+          <li><a href="/archives/">归档</a></li>
+        
+          <li><a href="/tags/">标签</a></li>
+        
+          <li><a href="/categories/">分类</a></li>
+        
+          <li><a href="/search/">搜索</a></li>
+        
+      </ul>
+    </div>
+
+    
+    
+      <div id="toc-footer" style="display: none">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E5%9C%A8Finall%E5%9D%97%E4%B8%AD%E4%BD%BF%E6%B8%85%E7%90%86%E8%B5%84%E6%BA%90%E6%88%96%E8%80%85%E4%BD%BF%E7%94%A8try-with-resource%E8%AF%AD%E5%8F%A5"><span class="toc-number">1.</span> <span class="toc-text">1. 在Finall块中使清理资源或者使用try-with-resource语句</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E6%8C%87%E5%AE%9A%E5%85%B7%E4%BD%93%E7%9A%84%E5%BC%82%E5%B8%B8"><span class="toc-number">2.</span> <span class="toc-text">2. 指定具体的异常</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-%E5%AF%B9%E5%BC%82%E5%B8%B8%E8%BF%9B%E8%A1%8C%E6%96%87%E6%A1%A3%E8%AF%B4%E6%98%8E"><span class="toc-number">3.</span> <span class="toc-text">3. 对异常进行文档说明</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-%E6%8A%9B%E5%87%BA%E5%BC%82%E5%B8%B8%E7%9A%84%E6%97%B6%E5%80%99%E5%8C%85%E5%90%AB%E6%8F%8F%E8%BF%B0%E4%BF%A1%E6%81%AF"><span class="toc-number">4.</span> <span class="toc-text">4. 抛出异常的时候包含描述信息</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-%E9%A6%96%E5%85%88%E6%8D%95%E8%8E%B7%E6%9C%80%E5%85%B7%E4%BD%93%E7%9A%84%E5%BC%82%E5%B8%B8"><span class="toc-number">5.</span> <span class="toc-text">5. 首先捕获最具体的异常</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-%E4%B8%8D%E8%A6%81%E6%8D%95%E8%8E%B7Throwable"><span class="toc-number">6.</span> <span class="toc-text">6. 不要捕获Throwable</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#7-%E4%B8%8D%E8%A6%81%E5%BF%BD%E7%95%A5%E5%BC%82%E5%B8%B8"><span class="toc-number">7.</span> <span class="toc-text">7. 不要忽略异常</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#8-%E4%B8%8D%E8%A6%81%E8%AE%B0%E5%BD%95%E5%B9%B6%E6%8A%9B%E5%87%BA%E5%BC%82%E5%B8%B8"><span class="toc-number">8.</span> <span class="toc-text">8. 不要记录并抛出异常</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#9-%E5%8C%85%E8%A3%85%E5%BC%82%E5%B8%B8%E6%97%B6%E4%B8%8D%E8%A6%81%E5%8E%BB%E5%A4%84%E7%90%86%E6%AD%A4%E5%BC%82%E5%B8%B8"><span class="toc-number">9.</span> <span class="toc-text">9. 包装异常时不要去处理此异常</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-number">10.</span> <span class="toc-text">总结</span></a></li></ol>
+      </div>
+    
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://www.zhengyk.cn/2269867358.html"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://www.zhengyk.cn/2269867358.html&text=Java中9个处理Exception的最佳实践--转"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://www.zhengyk.cn/2269867358.html&title=Java中9个处理Exception的最佳实践--转"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://www.zhengyk.cn/2269867358.html&is_video=false&description=Java中9个处理Exception的最佳实践--转"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Java中9个处理Exception的最佳实践--转&body=Check out this article: https://www.zhengyk.cn/2269867358.html"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://www.zhengyk.cn/2269867358.html&title=Java中9个处理Exception的最佳实践--转"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://www.zhengyk.cn/2269867358.html&title=Java中9个处理Exception的最佳实践--转"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://www.zhengyk.cn/2269867358.html&title=Java中9个处理Exception的最佳实践--转"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://www.zhengyk.cn/2269867358.html&title=Java中9个处理Exception的最佳实践--转"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://www.zhengyk.cn/2269867358.html&name=Java中9个处理Exception的最佳实践--转&description=&lt;p&gt;在Java中处理异常并不是一个简单的事情。不仅仅初学者很难理解，即使一些有经验的开发者也需要花费很多时间来思考如何处理异常，包括需要处理哪些异常，怎样处理等等。这也是绝大多数开发团队都会制定一些规则来规范对异常的处理的原因。而团队之间的这些规范往往是截然不同的。&lt;/p&gt;
+&lt;p&gt;本文给出几个被很多团队使用的异常处理最佳实践。"><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://www.zhengyk.cn/2269867358.html&t=Java中9个处理Exception的最佳实践--转"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> 菜单</a>
+        
+          <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> 目录</a>
+        
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> 分享</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> 返回顶部</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2017-2026
+    薛定谔的汪
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     --><!--
+       --><li><a href="/archives/">归档</a></li><!--
+     --><!--
+       --><li><a href="/tags/">标签</a></li><!--
+     --><!--
+       --><li><a href="/categories/">分类</a></li><!--
+     --><!--
+       --><li><a href="/search/">搜索</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script>
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script>
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"复制到粘贴板！\">";
+    btn += '<i class="fa-regular fa-clone"></i>';
+    btn += '</span>';
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "复制成功！");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+
+<script type="text/javascript">
+(function() {
+  var bar = document.getElementById('reading-progress-bar');
+  if (!bar) return;
+  function update() {
+    var root = document.documentElement;
+    var scrolled = window.scrollY || root.scrollTop;
+    var height = root.scrollHeight - root.clientHeight;
+    bar.style.width = (height > 0 ? (scrolled / height) * 100 : 0) + '%';
+  }
+  window.addEventListener('scroll', update, { passive: true });
+  window.addEventListener('resize', update);
+  update();
+})();
+</script>
+
+<!-- search -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>

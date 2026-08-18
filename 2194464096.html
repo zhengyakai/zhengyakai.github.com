@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="深度解读：AI 圈疯传的 “Agent”，到底是什么？引言最近，”Agent” 可以说是 AI 领域最炙手可热的概念。 打开任何技术社区，创业者在做它，大模型公司在推它，ChatGPT、Claude、Gemini 纷纷说自己支持“生成 Agent”。似乎不提 Agent，就不够前沿。 但冷静下来想一个问题：  Agent 到底指的是什么？  是给大模型接几个外部工具就叫 Agent？还是说，这背">
+<meta property="og:type" content="article">
+<meta property="og:title" content="AI Agent 到底是什么？">
+<meta property="og:url" content="https://www.zhengyk.cn/2194464096.html">
+<meta property="og:site_name" content="薛定谔的汪 - 技术博客">
+<meta property="og:description" content="深度解读：AI 圈疯传的 “Agent”，到底是什么？引言最近，”Agent” 可以说是 AI 领域最炙手可热的概念。 打开任何技术社区，创业者在做它，大模型公司在推它，ChatGPT、Claude、Gemini 纷纷说自己支持“生成 Agent”。似乎不提 Agent，就不够前沿。 但冷静下来想一个问题：  Agent 到底指的是什么？  是给大模型接几个外部工具就叫 Agent？还是说，这背">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://www.zhengyk.cn/images/ai-agent.png">
+<meta property="article:published_time" content="2026-01-20T10:01:54.000Z">
+<meta property="article:modified_time" content="2026-08-18T07:42:43.324Z">
+<meta property="article:author" content="薛定谔的汪">
+<meta property="article:tag" content="ai">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://www.zhengyk.cn/images/ai-agent.png">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/portrait.jpg">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/portrait.jpg" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/portrait.jpg">
+        
+      
+    
+    <!-- title -->
+    <title>AI Agent 到底是什么？</title>
+    <!-- async scripts -->
+    <!-- Google Analytics -->
+
+
+    <!-- Umami Analytics -->
+
+
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    
+<link rel="stylesheet" href="/css/custom.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+<meta name="generator" content="Hexo 8.1.2"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+<div id="reading-progress-bar" aria-hidden="true"></div>
+<style>
+  #reading-progress-bar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 0;
+    height: 5px;
+    background: #37c6c0;
+    z-index: 9999;
+    pointer-events: none;
+  }
+</style>
+
+
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="目录"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="目录"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="顶部" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     --><!--
+       --><li><a href="/archives/">归档</a></li><!--
+     --><!--
+       --><li><a href="/tags/">标签</a></li><!--
+     --><!--
+       --><li><a href="/categories/">分类</a></li><!--
+     --><!--
+       --><li><a href="/search/">搜索</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="上一篇" href="/1501271315.html"><i class="fa-solid fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="下一篇" href="/889951615.html"><i class="fa-solid fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="返回顶部" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="分享文章" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">上一篇</span>
+      <span id="i-next" class="info" style="display:none;">下一篇</span>
+      <span id="i-top" class="info" style="display:none;">返回顶部</span>
+      <span id="i-share" class="info" style="display:none;">分享文章</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://www.zhengyk.cn/2194464096.html"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://www.zhengyk.cn/2194464096.html&text=AI Agent 到底是什么？"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://www.zhengyk.cn/2194464096.html&title=AI Agent 到底是什么？"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://www.zhengyk.cn/2194464096.html&is_video=false&description=AI Agent 到底是什么？"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=AI Agent 到底是什么？&body=Check out this article: https://www.zhengyk.cn/2194464096.html"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://www.zhengyk.cn/2194464096.html&title=AI Agent 到底是什么？"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://www.zhengyk.cn/2194464096.html&title=AI Agent 到底是什么？"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://www.zhengyk.cn/2194464096.html&title=AI Agent 到底是什么？"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://www.zhengyk.cn/2194464096.html&title=AI Agent 到底是什么？"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://www.zhengyk.cn/2194464096.html&name=AI Agent 到底是什么？&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://www.zhengyk.cn/2194464096.html&t=AI Agent 到底是什么？"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    
+    
+      <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%B7%B1%E5%BA%A6%E8%A7%A3%E8%AF%BB%EF%BC%9AAI-%E5%9C%88%E7%96%AF%E4%BC%A0%E7%9A%84-%E2%80%9CAgent%E2%80%9D%EF%BC%8C%E5%88%B0%E5%BA%95%E6%98%AF%E4%BB%80%E4%B9%88%EF%BC%9F"><span class="toc-number">1.</span> <span class="toc-text">深度解读：AI 圈疯传的 “Agent”，到底是什么？</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BC%95%E8%A8%80"><span class="toc-number">1.1.</span> <span class="toc-text">引言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E3%80%81%E8%AF%8D%E6%BA%90%E8%BF%BD%E6%BA%AF%EF%BC%9AAgent-%E7%9A%84%E6%9C%AC%E6%84%8F%E6%98%AF%E2%80%9D%E8%A1%8C%E5%8A%A8%E8%80%85%E2%80%9D"><span class="toc-number">1.2.</span> <span class="toc-text">一、词源追溯：Agent 的本意是”行动者”</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8C%E3%80%81%E7%BB%8F%E5%85%B8-AI%EF%BC%9AAgent-%E4%BD%9C%E4%B8%BA%E2%80%9D%E6%99%BA%E8%83%BD%E7%9A%84%E5%9F%BA%E6%9C%AC%E5%8D%95%E5%85%83%E2%80%9D"><span class="toc-number">1.3.</span> <span class="toc-text">二、经典 AI：Agent 作为”智能的基本单元”</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%89%E3%80%81%E5%B7%A5%E7%A8%8B%E5%8C%96%E9%98%B6%E6%AE%B5%EF%BC%9AAgent-%E4%BB%8E%E7%90%86%E8%AE%BA%E8%B5%B0%E5%90%91%E8%BD%AF%E4%BB%B6%E4%BB%A3%E7%90%86"><span class="toc-number">1.4.</span> <span class="toc-text">三、工程化阶段：Agent 从理论走向软件代理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9B%9B%E3%80%81%E8%B4%A8%E5%8F%98%E6%97%B6%E5%88%BB%EF%BC%9A%E5%A4%A7%E6%A8%A1%E5%9E%8B%E8%AE%A9-Agent-%E9%87%8D%E8%8E%B7%E6%96%B0%E7%94%9F"><span class="toc-number">1.5.</span> <span class="toc-text">四、质变时刻：大模型让 Agent 重获新生</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%94%E3%80%81%E5%BD%93%E4%BB%A3%E5%AE%9A%E4%B9%89%EF%BC%9A%E5%A4%A7%E6%A8%A1%E5%9E%8B%E6%97%B6%E4%BB%A3%EF%BC%8CAgent-%E7%9A%84%E5%AE%8C%E6%95%B4%E7%94%BB%E5%83%8F"><span class="toc-number">1.6.</span> <span class="toc-text">五、当代定义：大模型时代，Agent 的完整画像</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%AD%E3%80%81%E4%B8%BA%E4%BB%80%E4%B9%88%E5%81%8F%E5%81%8F%E6%98%AF%E7%8E%B0%E5%9C%A8%E7%81%AB%E4%BA%86%EF%BC%9F"><span class="toc-number">1.7.</span> <span class="toc-text">六、为什么偏偏是现在火了？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%83%E3%80%81%E5%86%99%E5%9C%A8%E6%9C%80%E5%90%8E"><span class="toc-number">1.8.</span> <span class="toc-text">七、写在最后</span></a></li></ol></li></ol>
+      </div>
+    
+  </span>
+</div>
+
+    
+    <div class="content index py4 ">
+        
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle p-name" itemprop="name headline">
+        AI Agent 到底是什么？
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author p-author h-card" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span class="p-name" itemprop="name"><a target="_blank" href="https://zhengyk.cn" rel="author noopener">Yakai Zheng</a></span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2026-01-20T10:01:54.000Z" class="dt-published" itemprop="datePublished">2026-01-20</time>
+        
+      
+    </div>
+
+
+      
+    <div class="article-category">
+        <i class="fa-solid fa-archive"></i>
+        <a class="category-link" href="/categories/%E4%BA%BA%E5%B7%A5%E6%99%BA%E8%83%BD/">人工智能</a>
+    </div>
+
+
+      
+    <div class="article-tag">
+        <i class="fa-solid fa-tag"></i>
+        <a class="p-category" href="/tags/ai/" rel="tag">ai</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content e-content" itemprop="articleBody">
+    <hr>
+<h1 id="深度解读：AI-圈疯传的-“Agent”，到底是什么？"><a href="#深度解读：AI-圈疯传的-“Agent”，到底是什么？" class="headerlink" title="深度解读：AI 圈疯传的 “Agent”，到底是什么？"></a>深度解读：AI 圈疯传的 “Agent”，到底是什么？</h1><h2 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h2><p>最近，”Agent” 可以说是 AI 领域最炙手可热的概念。</p>
+<p>打开任何技术社区，创业者在做它，大模型公司在推它，ChatGPT、Claude、Gemini 纷纷说自己支持“生成 Agent”。似乎不提 Agent，就不够前沿。</p>
+<p>但冷静下来想一个问题：</p>
+<blockquote>
+<p><strong>Agent 到底指的是什么？</strong></p>
+</blockquote>
+<p>是给大模型接几个外部工具就叫 Agent？还是说，这背后代表着 AI 范式的根本性进化？</p>
+<p>这篇文章带你从头梳理这个概念——从哲学源头，到经典人工智能，再到今天的大模型时代，看看 Agent 到底经历了怎样的演变。</p>
+<hr>
+<h2 id="一、词源追溯：Agent-的本意是”行动者”"><a href="#一、词源追溯：Agent-的本意是”行动者”" class="headerlink" title="一、词源追溯：Agent 的本意是”行动者”"></a>一、词源追溯：Agent 的本意是”行动者”</h2><p>Agent 这个词，并非 AI 领域的原创。它源于拉丁语 <strong>agere</strong>，本意是”去做、去行动、去驱动”。</p>
+<p>在西方哲学中，Agent 指的是一个能够感知外部世界、形成内在意图、并主动采取行动的主体。</p>
+<p>最典型的例子就是人本身——我们被称为 <strong>moral agent（道德行为体）</strong>，能够辨别善恶、做出选择、并对自己的行为负责。</p>
+<p>所以从根源上说，Agent 的定义很朴素：<strong>一个能主动做事的实体。</strong></p>
+<p>这个看似简单的定义，实际上为后来所有的 AI 系统提供了一个核心思维模型。</p>
+<hr>
+<h2 id="二、经典-AI：Agent-作为”智能的基本单元”"><a href="#二、经典-AI：Agent-作为”智能的基本单元”" class="headerlink" title="二、经典 AI：Agent 作为”智能的基本单元”"></a>二、经典 AI：Agent 作为”智能的基本单元”</h2><p>20 世纪 50 年代，人工智能研究刚刚起步，科学家们开始尝试用机器来复现人类的”感知—思考—行动”闭环。</p>
+<p>到了 1995 年，Russell 和 Norvig 在他们的权威教材《人工智能：一种现代方法》中给出了一个经典定义：</p>
+<blockquote>
+<p>Agent 是任何通过传感器感知环境、并通过执行器对环境施加影响的实体。</p>
+</blockquote>
+<p>这就是人工智能领域最经典的 <strong>智能体模型</strong>。它的运作逻辑是一个闭环：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">感知环境 → 分析推理 → 执行动作 → 接收反馈 → 调整策略 →（循环）。</span><br></pre></td></tr></table></figure>
+
+<p>早期的机器人控制、博弈程序、自动化系统，本质上都遵循这一框架。</p>
+<p>它们的核心特征不在于”有多聪明”，而在于<strong>能够独立完成闭环操作</strong>。</p>
+<hr>
+<h2 id="三、工程化阶段：Agent-从理论走向软件代理"><a href="#三、工程化阶段：Agent-从理论走向软件代理" class="headerlink" title="三、工程化阶段：Agent 从理论走向软件代理"></a>三、工程化阶段：Agent 从理论走向软件代理</h2><p>时间推进到 1990 年代至 2010 年代，Agent 逐渐从学术研究走向工程应用。这一时期最流行的概念是 <strong>软件代理（Software Agent）</strong>，典型应用包括：</p>
+<ul>
+<li>邮件代理：自动筛选和分类邮件</li>
+<li>网络爬虫：自动抓取网页内容</li>
+<li>交易代理：自动化下单和撮合</li>
+<li>监控代理：后台持续检测系统状态</li>
+</ul>
+<p>这些 Agent 确实能自动执行任务，但它们本质上依赖<strong>预定义的规则、脚本或有限状态机</strong>来运作。</p>
+<p>简单说就是：<strong>它们能”动”，但不会”思考”。</strong></p>
+<hr>
+<h2 id="四、质变时刻：大模型让-Agent-重获新生"><a href="#四、质变时刻：大模型让-Agent-重获新生" class="headerlink" title="四、质变时刻：大模型让 Agent 重获新生"></a>四、质变时刻：大模型让 Agent 重获新生</h2><p>真正的转折出现在 GPT-3 和 GPT-4 问世之后。这些大语言模型第一次让机器具备了理解上下文、逻辑推理、甚至规划行动路径的能力。</p>
+<p>研究者们突然意识到一个关键问题：”如果大模型能像人类一样思考，那它是不是也能自己去执行任务？”</p>
+<p>基于这一思路，一批全新的 Agent 架构应运而生：</p>
+<ul>
+<li><strong>ReAct</strong>（Reason + Act 融合框架）</li>
+<li><strong>AutoGPT</strong>（自主任务分解与执行）</li>
+<li><strong>LangChain Agent</strong>（工具调用与链式推理）</li>
+<li><strong>CrewAI &#x2F; LangGraph &#x2F; Autogen</strong>（多智能体协作框架）</li>
+</ul>
+<p>它们的共同特征是：不再把 AI 限制在”被动回答问题”的角色里，而是让它能够<strong>自主决定下一步做什么，并真正付诸行动</strong>。</p>
+<hr>
+<h2 id="五、当代定义：大模型时代，Agent-的完整画像"><a href="#五、当代定义：大模型时代，Agent-的完整画像" class="headerlink" title="五、当代定义：大模型时代，Agent 的完整画像"></a>五、当代定义：大模型时代，Agent 的完整画像</h2><p>站在今天的时间点，我们可以给出一个更具体的定义：</p>
+<blockquote>
+<p><strong>Agent &#x3D; 大模型（大脑中枢） + 记忆系统（存储模块） + 工具调用（执行模块） + 反馈循环（学习机制）。</strong></p>
+</blockquote>
+<p>一个系统如果同时具备以下四项能力，就可以被称为 Agent：</p>
+<table>
+<thead>
+<tr>
+<th>核心能力</th>
+<th>具体含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>自主性</strong></td>
+<td>能够根据目标自行判断下一步行动</td>
+</tr>
+<tr>
+<td><strong>记忆能力</strong></td>
+<td>记住对话历史、用户偏好、过往决策</td>
+</tr>
+<tr>
+<td><strong>工具使用</strong></td>
+<td>调用外部 API、脚本、数据库等资源</td>
+</tr>
+<tr>
+<td><strong>反馈修正</strong></td>
+<td>根据执行结果调整策略、优化行为</td>
+</tr>
+</tbody></table>
+<p>所以用一句话概括就是：<strong>大模型提供智商，外围系统提供行动力。</strong></p>
+<p><img src="https://www.zhengyk.cn/images/ai-agent.png" alt="image-20260515171444718"></p>
+<hr>
+<h2 id="六、为什么偏偏是现在火了？"><a href="#六、为什么偏偏是现在火了？" class="headerlink" title="六、为什么偏偏是现在火了？"></a>六、为什么偏偏是现在火了？</h2><p>回顾 Agent 的发展史会发现，它本身并不是一个新概念。从早期的机器人到软件代理，再到今天的自主智能体，Agent 一直都在，只是受限于技术条件，始终没有真正”活”起来。</p>
+<ul>
+<li>第一代 Agent：能动，但不能思考；</li>
+<li>第二代 Agent（机器学习时代）：能学习，但无法自然沟通；</li>
+<li>第三代 Agent（大模型时代）：既能思考，又能沟通，还能动手执行。</li>
+</ul>
+<p>之所以在今天迎来爆发，是因为三个关键条件同时成熟了：</p>
+<ol>
+<li><strong>大模型的推理能力足够强</strong>——能理解复杂任务、分解目标、制定计划；</li>
+<li><strong>工具调用机制足够稳定</strong>——Function Calling 让 AI 能主动执行具体操作；</li>
+<li><strong>开源框架生态足够完善</strong>——LangChain、CrewAI、Autogen 大幅降低了开发门槛。</li>
+</ol>
+<p>于是，Agent 终于从”回答问题”进化到了”解决问题”。它不再只是一个对话模型，而是一套<strong>能理解目标、规划路径、执行任务、自我优化</strong>的完整系统。</p>
+<hr>
+<h2 id="七、写在最后"><a href="#七、写在最后" class="headerlink" title="七、写在最后"></a>七、写在最后</h2><blockquote>
+<p><strong>Agent，本质上是大模型从”会说话”走向”会做事”的那一层能力。</strong></p>
+</blockquote>
+<p>它让 AI 能够感知现实世界、理解用户意图、执行具体操作、并根据反馈持续改进。换句话说，AI 不再只是一个语言模型——它开始拥有了真正的 <strong>行动力</strong>，能够”主动去完成一件事情”。</p>
+<p>而这，或许才是 AI 走向通用智能的真正起点。</p>
+<hr>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">首页</a></li>
+        
+          <li><a href="/about/">关于</a></li>
+        
+          <li><a href="/archives/">归档</a></li>
+        
+          <li><a href="/tags/">标签</a></li>
+        
+          <li><a href="/categories/">分类</a></li>
+        
+          <li><a href="/search/">搜索</a></li>
+        
+      </ul>
+    </div>
+
+    
+    
+      <div id="toc-footer" style="display: none">
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%B7%B1%E5%BA%A6%E8%A7%A3%E8%AF%BB%EF%BC%9AAI-%E5%9C%88%E7%96%AF%E4%BC%A0%E7%9A%84-%E2%80%9CAgent%E2%80%9D%EF%BC%8C%E5%88%B0%E5%BA%95%E6%98%AF%E4%BB%80%E4%B9%88%EF%BC%9F"><span class="toc-number">1.</span> <span class="toc-text">深度解读：AI 圈疯传的 “Agent”，到底是什么？</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BC%95%E8%A8%80"><span class="toc-number">1.1.</span> <span class="toc-text">引言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E3%80%81%E8%AF%8D%E6%BA%90%E8%BF%BD%E6%BA%AF%EF%BC%9AAgent-%E7%9A%84%E6%9C%AC%E6%84%8F%E6%98%AF%E2%80%9D%E8%A1%8C%E5%8A%A8%E8%80%85%E2%80%9D"><span class="toc-number">1.2.</span> <span class="toc-text">一、词源追溯：Agent 的本意是”行动者”</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8C%E3%80%81%E7%BB%8F%E5%85%B8-AI%EF%BC%9AAgent-%E4%BD%9C%E4%B8%BA%E2%80%9D%E6%99%BA%E8%83%BD%E7%9A%84%E5%9F%BA%E6%9C%AC%E5%8D%95%E5%85%83%E2%80%9D"><span class="toc-number">1.3.</span> <span class="toc-text">二、经典 AI：Agent 作为”智能的基本单元”</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%89%E3%80%81%E5%B7%A5%E7%A8%8B%E5%8C%96%E9%98%B6%E6%AE%B5%EF%BC%9AAgent-%E4%BB%8E%E7%90%86%E8%AE%BA%E8%B5%B0%E5%90%91%E8%BD%AF%E4%BB%B6%E4%BB%A3%E7%90%86"><span class="toc-number">1.4.</span> <span class="toc-text">三、工程化阶段：Agent 从理论走向软件代理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9B%9B%E3%80%81%E8%B4%A8%E5%8F%98%E6%97%B6%E5%88%BB%EF%BC%9A%E5%A4%A7%E6%A8%A1%E5%9E%8B%E8%AE%A9-Agent-%E9%87%8D%E8%8E%B7%E6%96%B0%E7%94%9F"><span class="toc-number">1.5.</span> <span class="toc-text">四、质变时刻：大模型让 Agent 重获新生</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%94%E3%80%81%E5%BD%93%E4%BB%A3%E5%AE%9A%E4%B9%89%EF%BC%9A%E5%A4%A7%E6%A8%A1%E5%9E%8B%E6%97%B6%E4%BB%A3%EF%BC%8CAgent-%E7%9A%84%E5%AE%8C%E6%95%B4%E7%94%BB%E5%83%8F"><span class="toc-number">1.6.</span> <span class="toc-text">五、当代定义：大模型时代，Agent 的完整画像</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%AD%E3%80%81%E4%B8%BA%E4%BB%80%E4%B9%88%E5%81%8F%E5%81%8F%E6%98%AF%E7%8E%B0%E5%9C%A8%E7%81%AB%E4%BA%86%EF%BC%9F"><span class="toc-number">1.7.</span> <span class="toc-text">六、为什么偏偏是现在火了？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%83%E3%80%81%E5%86%99%E5%9C%A8%E6%9C%80%E5%90%8E"><span class="toc-number">1.8.</span> <span class="toc-text">七、写在最后</span></a></li></ol></li></ol>
+      </div>
+    
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://www.zhengyk.cn/2194464096.html"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://www.zhengyk.cn/2194464096.html&text=AI Agent 到底是什么？"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://www.zhengyk.cn/2194464096.html&title=AI Agent 到底是什么？"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://www.zhengyk.cn/2194464096.html&is_video=false&description=AI Agent 到底是什么？"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=AI Agent 到底是什么？&body=Check out this article: https://www.zhengyk.cn/2194464096.html"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://www.zhengyk.cn/2194464096.html&title=AI Agent 到底是什么？"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://www.zhengyk.cn/2194464096.html&title=AI Agent 到底是什么？"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://www.zhengyk.cn/2194464096.html&title=AI Agent 到底是什么？"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://www.zhengyk.cn/2194464096.html&title=AI Agent 到底是什么？"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://www.zhengyk.cn/2194464096.html&name=AI Agent 到底是什么？&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://www.zhengyk.cn/2194464096.html&t=AI Agent 到底是什么？"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> 菜单</a>
+        
+          <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> 目录</a>
+        
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> 分享</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> 返回顶部</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2017-2026
+    薛定谔的汪
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     --><!--
+       --><li><a href="/archives/">归档</a></li><!--
+     --><!--
+       --><li><a href="/tags/">标签</a></li><!--
+     --><!--
+       --><li><a href="/categories/">分类</a></li><!--
+     --><!--
+       --><li><a href="/search/">搜索</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script>
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script>
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"复制到粘贴板！\">";
+    btn += '<i class="fa-regular fa-clone"></i>';
+    btn += '</span>';
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "复制成功！");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+
+<script type="text/javascript">
+(function() {
+  var bar = document.getElementById('reading-progress-bar');
+  if (!bar) return;
+  function update() {
+    var root = document.documentElement;
+    var scrolled = window.scrollY || root.scrollTop;
+    var height = root.scrollHeight - root.clientHeight;
+    bar.style.width = (height > 0 ? (scrolled / height) * 100 : 0) + '%';
+  }
+  window.addEventListener('scroll', update, { passive: true });
+  window.addEventListener('resize', update);
+  update();
+})();
+</script>
+
+<!-- search -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>

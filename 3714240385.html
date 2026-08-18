@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="在我们公司业务里，积累了大量用户话术（比如客服对话、用户反馈、评论留言等），当话术量级达到一定量级时，一个核心需求就会浮现：如何找出这些话术中，相似语义的话术占比最高的那些？ 比如客服场景中，我们想知道用户最常咨询的几类问题（如“登录失败”“改绑手机号”“退款申请”），以及每类问题的占比，从而针对性优化服务；再比如用户反馈分析，快速定位核心痛点话题。 很多人初次接触这个需求，会陷入两个误区：一是不">
+<meta property="og:type" content="article">
+<meta property="og:title" content="百万条用户话术，如何快速找到相似语义占比TopN？（ES向量检索实操全方案）">
+<meta property="og:url" content="https://www.zhengyk.cn/3714240385.html">
+<meta property="og:site_name" content="薛定谔的汪 - 技术博客">
+<meta property="og:description" content="在我们公司业务里，积累了大量用户话术（比如客服对话、用户反馈、评论留言等），当话术量级达到一定量级时，一个核心需求就会浮现：如何找出这些话术中，相似语义的话术占比最高的那些？ 比如客服场景中，我们想知道用户最常咨询的几类问题（如“登录失败”“改绑手机号”“退款申请”），以及每类问题的占比，从而针对性优化服务；再比如用户反馈分析，快速定位核心痛点话题。 很多人初次接触这个需求，会陷入两个误区：一是不">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2024-12-10T10:01:54.000Z">
+<meta property="article:modified_time" content="2026-08-18T07:42:43.325Z">
+<meta property="article:author" content="薛定谔的汪">
+<meta property="article:tag" content="elasticsearch">
+<meta name="twitter:card" content="summary">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/portrait.jpg">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/portrait.jpg" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/portrait.jpg">
+        
+      
+    
+    <!-- title -->
+    <title>百万条用户话术，如何快速找到相似语义占比TopN？（ES向量检索实操全方案）</title>
+    <!-- async scripts -->
+    <!-- Google Analytics -->
+
+
+    <!-- Umami Analytics -->
+
+
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    
+<link rel="stylesheet" href="/css/custom.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+<meta name="generator" content="Hexo 8.1.2"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+<div id="reading-progress-bar" aria-hidden="true"></div>
+<style>
+  #reading-progress-bar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 0;
+    height: 5px;
+    background: #37c6c0;
+    z-index: 9999;
+    pointer-events: none;
+  }
+</style>
+
+
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="目录"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="目录"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="顶部" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     --><!--
+       --><li><a href="/archives/">归档</a></li><!--
+     --><!--
+       --><li><a href="/tags/">标签</a></li><!--
+     --><!--
+       --><li><a href="/categories/">分类</a></li><!--
+     --><!--
+       --><li><a href="/search/">搜索</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="上一篇" href="/251318187.html"><i class="fa-solid fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="下一篇" href="/3977191429.html"><i class="fa-solid fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="返回顶部" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="分享文章" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">上一篇</span>
+      <span id="i-next" class="info" style="display:none;">下一篇</span>
+      <span id="i-top" class="info" style="display:none;">返回顶部</span>
+      <span id="i-share" class="info" style="display:none;">分享文章</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://www.zhengyk.cn/3714240385.html"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://www.zhengyk.cn/3714240385.html&text=百万条用户话术，如何快速找到相似语义占比TopN？（ES向量检索实操全方案）"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://www.zhengyk.cn/3714240385.html&title=百万条用户话术，如何快速找到相似语义占比TopN？（ES向量检索实操全方案）"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://www.zhengyk.cn/3714240385.html&is_video=false&description=百万条用户话术，如何快速找到相似语义占比TopN？（ES向量检索实操全方案）"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=百万条用户话术，如何快速找到相似语义占比TopN？（ES向量检索实操全方案）&body=Check out this article: https://www.zhengyk.cn/3714240385.html"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://www.zhengyk.cn/3714240385.html&title=百万条用户话术，如何快速找到相似语义占比TopN？（ES向量检索实操全方案）"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://www.zhengyk.cn/3714240385.html&title=百万条用户话术，如何快速找到相似语义占比TopN？（ES向量检索实操全方案）"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://www.zhengyk.cn/3714240385.html&title=百万条用户话术，如何快速找到相似语义占比TopN？（ES向量检索实操全方案）"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://www.zhengyk.cn/3714240385.html&title=百万条用户话术，如何快速找到相似语义占比TopN？（ES向量检索实操全方案）"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://www.zhengyk.cn/3714240385.html&name=百万条用户话术，如何快速找到相似语义占比TopN？（ES向量检索实操全方案）&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://www.zhengyk.cn/3714240385.html&t=百万条用户话术，如何快速找到相似语义占比TopN？（ES向量检索实操全方案）"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    
+    
+      <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E3%80%81%E6%A0%B8%E5%BF%83%E9%9C%80%E6%B1%82%E6%8B%86%E8%A7%A3"><span class="toc-number">1.</span> <span class="toc-text">一、核心需求拆解</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8C%E3%80%81%E5%85%B3%E9%94%AE%E8%AE%A4%E7%9F%A5%EF%BC%9A%E8%AF%AD%E4%B9%89%E7%9B%B8%E4%BC%BC%E6%80%8E%E4%B9%88%E9%87%8F%E5%8C%96%EF%BC%9F%EF%BC%88%E5%90%91%E9%87%8F%E5%9F%BA%E7%A1%80%E5%9B%9E%E9%A1%BE%EF%BC%89"><span class="toc-number">2.</span> <span class="toc-text">二、关键认知：语义相似怎么量化？（向量基础回顾）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E5%90%91%E9%87%8FEmbedding%E4%B8%8D%E4%BB%85%E4%BB%85%E6%98%AF%E5%8F%AA%E9%9D%A0%E5%9C%A8%E7%BA%BFAI"><span class="toc-number">2.1.</span> <span class="toc-text">1. 向量Embedding不仅仅是只靠在线AI</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E5%90%91%E9%87%8F%E7%9A%84%E7%BB%B4%E5%BA%A6"><span class="toc-number">2.2.</span> <span class="toc-text">2. 向量的维度?</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%89%E3%80%81%E5%AE%8C%E6%95%B4%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88"><span class="toc-number">3.</span> <span class="toc-text">三、完整解决方案</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Step-1%EF%BC%9A%E7%8E%AF%E5%A2%83%E5%87%86%E5%A4%87%EF%BC%88%E7%AE%80%E5%8D%95%E6%98%93%E6%90%AD%EF%BC%8C%E6%96%B0%E6%89%8B%E4%B9%9F%E8%83%BD%E6%90%9E%E5%AE%9A%EF%BC%89"><span class="toc-number">3.1.</span> <span class="toc-text">Step 1：环境准备（简单易搭，新手也能搞定）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Step-2%EF%BC%9A%E6%9C%AC%E5%9C%B0%E7%94%9F%E6%88%90%E5%90%91%E9%87%8F%EF%BC%88%E6%A0%B8%E5%BF%83%E6%AD%A5%E9%AA%A4%EF%BC%8C%E4%B8%8D%E8%B0%83%E4%BB%BB%E4%BD%95%E5%9C%A8%E7%BA%BF%E6%8E%A5%E5%8F%A3%EF%BC%89"><span class="toc-number">3.2.</span> <span class="toc-text">Step 2：本地生成向量（核心步骤，不调任何在线接口）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Step-3%EF%BC%9A%E5%88%9B%E5%BB%BAES%E5%90%91%E9%87%8F%E7%B4%A2%E5%BC%95%EF%BC%8C%E5%AD%98%E5%85%A5%E6%95%B0%E6%8D%AE"><span class="toc-number">3.3.</span> <span class="toc-text">Step 3：创建ES向量索引，存入数据</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Step-4%EF%BC%9A%E8%81%9A%E7%B1%BB%E5%88%86%E7%BB%84%EF%BC%8C%E6%89%BE%E5%87%BA%E7%9B%B8%E4%BC%BC%E8%AF%AD%E4%B9%89%E7%B0%87"><span class="toc-number">3.4.</span> <span class="toc-text">Step 4：聚类分组，找出相似语义簇</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Step-5%EF%BC%9A%E5%85%A8%E9%87%8F%E7%B1%BB%E5%88%AB%E5%88%86%E9%85%8D-%E7%BB%9F%E8%AE%A1%E5%8D%A0%E6%AF%94%EF%BC%8C%E5%8F%96Top20"><span class="toc-number">3.5.</span> <span class="toc-text">Step 5：全量类别分配 + 统计占比，取Top20</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9B%9B%E3%80%81%E6%9C%80%E7%BB%88%E7%BB%93%E6%9E%9C%E7%A4%BA%E4%BE%8B"><span class="toc-number">4.</span> <span class="toc-text">四、最终结果示例</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%94%E3%80%81%E9%81%BF%E5%9D%91"><span class="toc-number">5.</span> <span class="toc-text">五、避坑</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%AD%E3%80%81%E6%80%BB%E7%BB%93"><span class="toc-number">6.</span> <span class="toc-text">六、总结</span></a></li></ol>
+      </div>
+    
+  </span>
+</div>
+
+    
+    <div class="content index py4 ">
+        
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle p-name" itemprop="name headline">
+        百万条用户话术，如何快速找到相似语义占比TopN？（ES向量检索实操全方案）
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author p-author h-card" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span class="p-name" itemprop="name"><a target="_blank" href="https://zhengyk.cn" rel="author noopener">Yakai Zheng</a></span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2024-12-10T10:01:54.000Z" class="dt-published" itemprop="datePublished">2024-12-10</time>
+        
+      
+    </div>
+
+
+      
+    <div class="article-category">
+        <i class="fa-solid fa-archive"></i>
+        <a class="category-link" href="/categories/%E6%90%9C%E7%B4%A2%E5%BC%95%E6%93%8E/">搜索引擎</a>
+    </div>
+
+
+      
+    <div class="article-tag">
+        <i class="fa-solid fa-tag"></i>
+        <a class="p-category" href="/tags/elasticsearch/" rel="tag">elasticsearch</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content e-content" itemprop="articleBody">
+    <p>在我们公司业务里，积累了大量用户话术（比如客服对话、用户反馈、评论留言等），当话术量级达到一定量级时，一个核心需求就会浮现：<strong>如何找出这些话术中，相似语义的话术占比最高的那些？</strong></p>
+<p>比如客服场景中，我们想知道用户最常咨询的几类问题（如“登录失败”“改绑手机号”“退款申请”），以及每类问题的占比，从而针对性优化服务；再比如用户反馈分析，快速定位核心痛点话题。</p>
+<p>很多人初次接触这个需求，会陷入两个误区：一是不知道如何量化“语义相似”，二是误以为生成向量必须调用ChatGPT等在线AI接口，既花钱又麻烦。今天就结合Elasticsearch向量检索、开源本地Embedding模型，给大家一套可落地、高可用、零成本的完整解决方案，全程不依赖在线AI接口，百万条数据也能轻松扛住。</p>
+<h2 id="一、核心需求拆解"><a href="#一、核心需求拆解" class="headerlink" title="一、核心需求拆解"></a>一、核心需求拆解</h2><ul>
+<li>数据规模：百万条用户话术（文本格式，单条话术长度10-50字为主）；</li>
+<li>核心目标：找出语义相似的话术簇，筛选出占比最高的20个簇，输出每个簇的语义主题和占比；</li>
+<li>约束条件：不依赖在线AI接口（避免成本、隐私泄露、接口限流），方案要简单可落地，无需复杂组件；</li>
+<li>性能要求：百万条数据可在1小时内完成处理，结果准确可解释。</li>
+</ul>
+<h2 id="二、关键认知：语义相似怎么量化？（向量基础回顾）"><a href="#二、关键认知：语义相似怎么量化？（向量基础回顾）" class="headerlink" title="二、关键认知：语义相似怎么量化？（向量基础回顾）"></a>二、关键认知：语义相似怎么量化？（向量基础回顾）</h2><p>在解决问题前，先理清一个核心概念：<strong>语义相似无法通过关键词匹配实现</strong>（比如“登录不上”和“登录报错”，关键词不同但语义一致），必须通过“向量Embedding”将文本转化为可计算的数字，再通过特定算法计算向量相似度判断语义相似度。</p>
+<p>这里补充两个关键知识点，避免大家踩坑：</p>
+<h3 id="1-向量Embedding不仅仅是只靠在线AI"><a href="#1-向量Embedding不仅仅是只靠在线AI" class="headerlink" title="1. 向量Embedding不仅仅是只靠在线AI"></a>1. 向量Embedding不仅仅是只靠在线AI</h3><p>很多人生成向量必须调用ChatGPT、文心一言等在线Embedding接口（比如我这个需求实际用的还是 openai 的向量生成），在成本有限的情况下我们可以用开源的中文Embedding模型，在本地运行，不联网、不花钱、不限次数，百万条话术随便处理。</p>
+<p>推荐中文开源模型（按优先级排序）：</p>
+<ul>
+<li>BGE-base-zh-v1.5：效果最优，中文语义识别准确率高，输出维度768，轻量易运行；</li>
+<li>text2vec-large-chinese：速度快，轻量，适合对速度要求高的场景；</li>
+<li>m3e-base：国产小而强，资源占用低，适合普通电脑运行。</li>
+</ul>
+<h3 id="2-向量的维度"><a href="#2-向量的维度" class="headerlink" title="2. 向量的维度?"></a>2. 向量的维度?</h3><p>dim是“向量维度”的缩写，dim&#x3D;768表示：<strong>一条话术被模型转换成包含768个数字的数组</strong>（比如“我登录不上去”→ [0.12, 0.55, -0.31, …, 共768个数字]）。</p>
+<p>这个维度是模型的固定输出，768维是中文开源模型的黄金选择——语义表达足够强，同时不会占用过多存储空间和计算资源；如果需要更强的语义表达，也可以选择1024维的模型（如bge-large-zh），但会增加存储和计算成本。</p>
+<h2 id="三、完整解决方案"><a href="#三、完整解决方案" class="headerlink" title="三、完整解决方案"></a>三、完整解决方案</h2><p>整体思路：<strong>文本向量化（本地开源模型）→ 向量存储（ES）→ 聚类分组（MiniBatch K-Means）→ 类别分配（ES向量检索）→ 统计占比（Top20）</strong>，全程本地运行，零成本、高可用。</p>
+<h3 id="Step-1：环境准备（简单易搭，新手也能搞定）"><a href="#Step-1：环境准备（简单易搭，新手也能搞定）" class="headerlink" title="Step 1：环境准备（简单易搭，新手也能搞定）"></a>Step 1：环境准备（简单易搭，新手也能搞定）</h3><p>需要准备3个核心工具，全部免费开源：</p>
+<ol>
+<li>Python 3.10+：用于加载开源模型、生成向量、数据处理；</li>
+<li>开源Embedding模型：推荐BGE-base-zh-v1.5（第一次运行会自动下载，之后完全离线）；</li>
+<li>Elasticsearch 8.0+：用于存储向量、执行向量检索（聚类后分配类别）。</li>
+</ol>
+<p>Python依赖安装（终端执行）：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pip install torch transformers sentence-transformers pandas elasticsearch</span><br></pre></td></tr></table></figure>
+
+<h3 id="Step-2：本地生成向量（核心步骤，不调任何在线接口）"><a href="#Step-2：本地生成向量（核心步骤，不调任何在线接口）" class="headerlink" title="Step 2：本地生成向量（核心步骤，不调任何在线接口）"></a>Step 2：本地生成向量（核心步骤，不调任何在线接口）</h3><p>用Python加载本地开源模型，将百万条话术批量转换成768维向量，全程离线，速度快、无成本。</p>
+<p>示例代码（可直接复制运行，替换自己的话术数据即可）：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> sentence_transformers <span class="keyword">import</span> SentenceTransformer</span><br><span class="line"><span class="keyword">import</span> pandas <span class="keyword">as</span> pd</span><br><span class="line"></span><br><span class="line"><span class="comment"># 1. 加载本地开源Embedding模型（第一次下载后，后续完全离线）</span></span><br><span class="line">model = SentenceTransformer(<span class="string">&quot;BAAI/bge-base-zh-v1.5&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 2. 读取百万条用户话术（这里用示例数据，实际替换成自己的CSV/Excel文件）</span></span><br><span class="line"><span class="comment"># 假设话术存在&quot;text&quot;列，数据量100万条</span></span><br><span class="line">df = pd.read_csv(<span class="string">&quot;user_texts.csv&quot;</span>)</span><br><span class="line">texts = df[<span class="string">&quot;text&quot;</span>].tolist()</span><br><span class="line"></span><br><span class="line"><span class="comment"># 3. 批量生成向量（normalize_embeddings=True：归一化，提升相似度计算准确性）</span></span><br><span class="line"><span class="comment"># 百万条数据：CPU（普通电脑）约30-60分钟，GPU约3-10分钟</span></span><br><span class="line">embeddings = model.encode(texts, normalize_embeddings=<span class="literal">True</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 4. 将向量和话术合并，保存为CSV（方便后续存入ES）</span></span><br><span class="line">df[<span class="string">&quot;embedding&quot;</span>] = embeddings.tolist()</span><br><span class="line">df.to_csv(<span class="string">&quot;user_texts_with_embedding.csv&quot;</span>, index=<span class="literal">False</span>)</span><br></pre></td></tr></table></figure>
+
+<p>运行后，你会得到一个包含“话术文本”和“768维向量”的CSV文件，接下来将这些数据存入ES。</p>
+<h3 id="Step-3：创建ES向量索引，存入数据"><a href="#Step-3：创建ES向量索引，存入数据" class="headerlink" title="Step 3：创建ES向量索引，存入数据"></a>Step 3：创建ES向量索引，存入数据</h3><p>ES 8.0+ 支持dense_vector类型，专门用于存储向量，同时支持HNSW算法，可快速执行向量相似检索。</p>
+<p>第一步：创建ES向量索引（用Kibana Dev Tools或Python代码执行）：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">PUT /user_texts_vector</span><br><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;mappings&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;properties&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">      <span class="attr">&quot;text&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span> <span class="attr">&quot;type&quot;</span><span class="punctuation">:</span> <span class="string">&quot;text&quot;</span><span class="punctuation">,</span> <span class="attr">&quot;analyzer&quot;</span><span class="punctuation">:</span> <span class="string">&quot;ik_max_word&quot;</span> <span class="punctuation">&#125;</span><span class="punctuation">,</span>  <span class="comment">// 话术文本，支持全文检索</span></span><br><span class="line">      <span class="attr">&quot;embedding&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;type&quot;</span><span class="punctuation">:</span> <span class="string">&quot;dense_vector&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;dims&quot;</span><span class="punctuation">:</span> <span class="number">768</span><span class="punctuation">,</span>  <span class="comment">// 对应模型输出的768维向量</span></span><br><span class="line">        <span class="attr">&quot;index&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">true</span></span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;similarity&quot;</span><span class="punctuation">:</span> <span class="string">&quot;cosine&quot;</span>  <span class="comment">// 相似度算法，余弦相似度最适合语义匹配</span></span><br><span class="line">      <span class="punctuation">&#125;</span></span><br><span class="line">    <span class="punctuation">&#125;</span></span><br><span class="line">  <span class="punctuation">&#125;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p>第二步：将带向量的话术批量存入ES（Python代码）：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> elasticsearch <span class="keyword">import</span> Elasticsearch</span><br><span class="line"><span class="keyword">import</span> pandas <span class="keyword">as</span> pd</span><br><span class="line"></span><br><span class="line"><span class="comment"># 1. 连接ES（替换成自己的ES地址和端口）</span></span><br><span class="line">es = Elasticsearch(<span class="string">&quot;http://localhost:9200&quot;</span>, basic_auth=(<span class="string">&quot;username&quot;</span>, <span class="string">&quot;password&quot;</span>))</span><br><span class="line"></span><br><span class="line"><span class="comment"># 2. 读取带向量的话术数据</span></span><br><span class="line">df = pd.read_csv(<span class="string">&quot;user_texts_with_embedding.csv&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 3. 批量存入ES（批量提交，提升效率）</span></span><br><span class="line">batch_size = <span class="number">1000</span></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">0</span>, <span class="built_in">len</span>(df), batch_size):</span><br><span class="line">    batch = df.iloc[i:i+batch_size]</span><br><span class="line">    actions = []</span><br><span class="line">    <span class="keyword">for</span> _, row <span class="keyword">in</span> batch.iterrows():</span><br><span class="line">        action = &#123;</span><br><span class="line">            <span class="string">&quot;index&quot;</span>: &#123;</span><br><span class="line">                <span class="string">&quot;_index&quot;</span>: <span class="string">&quot;user_texts_vector&quot;</span>,</span><br><span class="line">                <span class="string">&quot;_id&quot;</span>: <span class="built_in">str</span>(row.name)  <span class="comment"># 用行号作为ES文档ID</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        doc = &#123;</span><br><span class="line">            <span class="string">&quot;text&quot;</span>: row[<span class="string">&quot;text&quot;</span>],</span><br><span class="line">            <span class="string">&quot;embedding&quot;</span>: row[<span class="string">&quot;embedding&quot;</span>]</span><br><span class="line">        &#125;</span><br><span class="line">        actions.append(action)</span><br><span class="line">        actions.append(doc)</span><br><span class="line">    <span class="comment"># 批量提交</span></span><br><span class="line">    es.bulk(body=actions)</span><br></pre></td></tr></table></figure>
+
+<p>百万条数据批量存入ES，约30分钟内可完成（根据ES性能调整批量大小）。</p>
+<h3 id="Step-4：聚类分组，找出相似语义簇"><a href="#Step-4：聚类分组，找出相似语义簇" class="headerlink" title="Step 4：聚类分组，找出相似语义簇"></a>Step 4：聚类分组，找出相似语义簇</h3><p>百万条数据无法暴力两两比较相似性，必须用“聚类算法”将语义相似的向量聚成一组（簇）。这里推荐MiniBatch K-Means算法，适合海量数据，速度快、效果稳定。</p>
+<p>核心思路：先采样1-5万条向量做聚类，得到若干个“聚类中心”（每个中心代表一个语义主题），再用ES向量检索，将百万条向量分配到最近的聚类中心，实现分组。</p>
+<p>示例代码：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> sklearn.cluster <span class="keyword">import</span> MiniBatchKMeans</span><br><span class="line"><span class="keyword">import</span> pandas <span class="keyword">as</span> pd</span><br><span class="line"></span><br><span class="line"><span class="comment"># 1. 读取带向量的话术数据</span></span><br><span class="line">df = pd.read_csv(<span class="string">&quot;user_texts_with_embedding.csv&quot;</span>)</span><br><span class="line">embeddings = df[<span class="string">&quot;embedding&quot;</span>].tolist()</span><br><span class="line"></span><br><span class="line"><span class="comment"># 2. 采样聚类（采样1万条，避免全量聚类过慢）</span></span><br><span class="line">sample_size = <span class="number">10000</span></span><br><span class="line">sample_embeddings = embeddings[:sample_size]</span><br><span class="line"></span><br><span class="line"><span class="comment"># 3. MiniBatch K-Means聚类（n_clusters=100，可根据实际情况调整，越多越精细）</span></span><br><span class="line">kmeans = MiniBatchKMeans(n_clusters=<span class="number">100</span>, random_state=<span class="number">42</span>)</span><br><span class="line">cluster_labels = kmeans.fit_predict(sample_embeddings)</span><br><span class="line">cluster_centers = kmeans.cluster_centers_  <span class="comment"># 得到100个聚类中心（768维）</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 4. 将聚类中心存入ES（用于后续全量数据分配类别）</span></span><br><span class="line"><span class="keyword">from</span> elasticsearch <span class="keyword">import</span> Elasticsearch</span><br><span class="line">es = Elasticsearch(<span class="string">&quot;http://localhost:9200&quot;</span>, basic_auth=(<span class="string">&quot;username&quot;</span>, <span class="string">&quot;password&quot;</span>))</span><br><span class="line"></span><br><span class="line"><span class="comment"># 创建聚类中心索引</span></span><br><span class="line">es.indices.create(</span><br><span class="line">    index=<span class="string">&quot;cluster_centers&quot;</span>,</span><br><span class="line">    body=&#123;</span><br><span class="line">        <span class="string">&quot;mappings&quot;</span>: &#123;</span><br><span class="line">            <span class="string">&quot;properties&quot;</span>: &#123;</span><br><span class="line">                <span class="string">&quot;center_id&quot;</span>: &#123;<span class="string">&quot;type&quot;</span>: <span class="string">&quot;integer&quot;</span>&#125;,</span><br><span class="line">                <span class="string">&quot;embedding&quot;</span>: &#123;</span><br><span class="line">                    <span class="string">&quot;type&quot;</span>: <span class="string">&quot;dense_vector&quot;</span>,</span><br><span class="line">                    <span class="string">&quot;dims&quot;</span>: <span class="number">768</span>,</span><br><span class="line">                    <span class="string">&quot;similarity&quot;</span>: <span class="string">&quot;cosine&quot;</span></span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 存入聚类中心</span></span><br><span class="line"><span class="keyword">for</span> i, center <span class="keyword">in</span> <span class="built_in">enumerate</span>(cluster_centers):</span><br><span class="line">    es.index(</span><br><span class="line">        index=<span class="string">&quot;cluster_centers&quot;</span>,</span><br><span class="line">        <span class="built_in">id</span>=i,</span><br><span class="line">        document=&#123;</span><br><span class="line">            <span class="string">&quot;center_id&quot;</span>: i,</span><br><span class="line">            <span class="string">&quot;embedding&quot;</span>: center.tolist()</span><br><span class="line">        &#125;</span><br><span class="line">    )</span><br></pre></td></tr></table></figure>
+
+<h3 id="Step-5：全量类别分配-统计占比，取Top20"><a href="#Step-5：全量类别分配-统计占比，取Top20" class="headerlink" title="Step 5：全量类别分配 + 统计占比，取Top20"></a>Step 5：全量类别分配 + 统计占比，取Top20</h3><p>将百万条话术向量，通过ES的KNN向量检索，找到每个向量最近的聚类中心（即所属语义簇），然后统计每个簇的话术数量和占比，最终筛选出占比最高的20个簇。</p>
+<p>示例代码：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> elasticsearch <span class="keyword">import</span> Elasticsearch</span><br><span class="line"><span class="keyword">import</span> pandas <span class="keyword">as</span> pd</span><br><span class="line"><span class="keyword">from</span> collections <span class="keyword">import</span> Counter</span><br><span class="line"></span><br><span class="line"><span class="comment"># 1. 连接ES</span></span><br><span class="line">es = Elasticsearch(<span class="string">&quot;http://localhost:9200&quot;</span>, basic_auth=(<span class="string">&quot;username&quot;</span>, <span class="string">&quot;password&quot;</span>))</span><br><span class="line"></span><br><span class="line"><span class="comment"># 2. 读取百万条话术和向量</span></span><br><span class="line">df = pd.read_csv(<span class="string">&quot;user_texts_with_embedding.csv&quot;</span>)</span><br><span class="line">total_count = <span class="built_in">len</span>(df)  <span class="comment"># 总话术数量</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 3. 批量分配类别（每个向量找最近的聚类中心）</span></span><br><span class="line">batch_size = <span class="number">1000</span></span><br><span class="line">cluster_ids = []</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">0</span>, <span class="built_in">len</span>(df), batch_size):</span><br><span class="line">    batch = df.iloc[i:i+batch_size]</span><br><span class="line">    <span class="keyword">for</span> _, row <span class="keyword">in</span> batch.iterrows():</span><br><span class="line">        <span class="comment"># KNN查询：找到最近的1个聚类中心</span></span><br><span class="line">        response = es.search(</span><br><span class="line">            index=<span class="string">&quot;cluster_centers&quot;</span>,</span><br><span class="line">            body=&#123;</span><br><span class="line">                <span class="string">&quot;knn&quot;</span>: &#123;</span><br><span class="line">                    <span class="string">&quot;field&quot;</span>: <span class="string">&quot;embedding&quot;</span>,</span><br><span class="line">                    <span class="string">&quot;query_vector&quot;</span>: row[<span class="string">&quot;embedding&quot;</span>],</span><br><span class="line">                    <span class="string">&quot;k&quot;</span>: <span class="number">1</span>,  <span class="comment"># 只取最近的1个中心</span></span><br><span class="line">                    <span class="string">&quot;num_candidates&quot;</span>: <span class="number">10</span></span><br><span class="line">                &#125;,</span><br><span class="line">                <span class="string">&quot;_source&quot;</span>: [<span class="string">&quot;center_id&quot;</span>]</span><br><span class="line">            &#125;</span><br><span class="line">        )</span><br><span class="line">        <span class="comment"># 获取所属聚类ID</span></span><br><span class="line">        center_id = response[<span class="string">&quot;hits&quot;</span>][<span class="string">&quot;hits&quot;</span>][<span class="number">0</span>][<span class="string">&quot;_source&quot;</span>][<span class="string">&quot;center_id&quot;</span>]</span><br><span class="line">        cluster_ids.append(center_id)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 4. 统计每个聚类的数量和占比</span></span><br><span class="line">cluster_counter = Counter(cluster_ids)</span><br><span class="line">cluster_stats = []</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> center_id, count <span class="keyword">in</span> cluster_counter.items():</span><br><span class="line">    ratio = (count / total_count) * <span class="number">100</span>  <span class="comment"># 占比（百分比）</span></span><br><span class="line">    <span class="comment"># 取每个聚类的代表性话术（随便选一条）</span></span><br><span class="line">    representative_text = df.iloc[cluster_ids.index(center_id)][<span class="string">&quot;text&quot;</span>]</span><br><span class="line">    cluster_stats.append(&#123;</span><br><span class="line">        <span class="string">&quot;cluster_id&quot;</span>: center_id,</span><br><span class="line">        <span class="string">&quot;count&quot;</span>: count,</span><br><span class="line">        <span class="string">&quot;ratio&quot;</span>: <span class="built_in">round</span>(ratio, <span class="number">2</span>),</span><br><span class="line">        <span class="string">&quot;representative_text&quot;</span>: representative_text  <span class="comment"># 语义主题代表话术</span></span><br><span class="line">    &#125;)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 5. 按占比降序排序，取Top20</span></span><br><span class="line">top20_clusters = <span class="built_in">sorted</span>(cluster_stats, key=<span class="keyword">lambda</span> x: x[<span class="string">&quot;ratio&quot;</span>], reverse=<span class="literal">True</span>)[:<span class="number">20</span>]</span><br><span class="line"></span><br><span class="line"><span class="comment"># 6. 输出结果（可保存为Excel，方便查看）</span></span><br><span class="line">top20_df = pd.DataFrame(top20_clusters)</span><br><span class="line">top20_df.to_excel(<span class="string">&quot;top20_similar_text_clusters.xlsx&quot;</span>, index=<span class="literal">False</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 打印Top20结果</span></span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;相似语义话术占比Top20：&quot;</span>)</span><br><span class="line"><span class="keyword">for</span> i, cluster <span class="keyword">in</span> <span class="built_in">enumerate</span>(top20_clusters, <span class="number">1</span>):</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&quot;<span class="subst">&#123;i&#125;</span>. 语义主题（代表话术）：<span class="subst">&#123;cluster[<span class="string">&#x27;representative_text&#x27;</span>]&#125;</span>&quot;</span>)</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&quot;   数量：<span class="subst">&#123;cluster[<span class="string">&#x27;count&#x27;</span>]&#125;</span> 条，占比：<span class="subst">&#123;cluster[<span class="string">&#x27;ratio&#x27;</span>]&#125;</span>%&quot;</span>)</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;-&quot;</span> * <span class="number">50</span>)</span><br></pre></td></tr></table></figure>
+
+<h2 id="四、最终结果示例"><a href="#四、最终结果示例" class="headerlink" title="四、最终结果示例"></a>四、最终结果示例</h2><p>运行完成后，你会得到一个Excel文件和控制台输出，类似这样：</p>
+<ol>
+<li>语义主题（代表话术）：我的账号登不上        数量：123000 条，占比：12.30%      </li>
+<li>语义主题（代表话术）：想改绑手机号         数量：98000 条，占比：9.80%      </li>
+<li>语义主题（代表话术）：申请退款怎么操作         数量：73000 条，占比：7.30%      </li>
+<li>…</li>
+<li>\20. 语义主题（代表话术）：查询订单物流         数量：12000 条，占比：1.20%</li>
+</ol>
+<h2 id="五、避坑"><a href="#五、避坑" class="headerlink" title="五、避坑"></a>五、避坑</h2><ul>
+<li>不要全量K-Means聚类：百万条向量全量聚类会非常慢，采样5万条聚类即可，结果足够准确；</li>
+<li>ES批量提交大小：批量存入ES时，batch_size设为1000-2000，避免过大导致ES崩溃；</li>
+<li>向量归一化：生成向量时一定要加normalize_embeddings&#x3D;True，否则相似度计算会失真；</li>
+<li>聚类数量选择：n_clusters建议设为50-100，太少会导致语义簇太粗，太多会导致占比分散。</li>
+</ul>
+<h2 id="六、总结"><a href="#六、总结" class="headerlink" title="六、总结"></a>六、总结</h2><p>百万条用户话术找相似语义占比TopN，核心是“向量量化语义 + 聚类分组 + 向量检索分配”，全程不用调用任何在线AI接口，用开源模型+ES就能零成本落地。</p>
+<p>整个方案的优势的是：简单易搭、性能可控、隐私安全，既适合新手实操，也能满足工业级场景需求。如果你的话术数据量更大（千万级），可以适当优化ES集群配置、增加GPU加速向量生成，整体流程完全通用。</p>
+<p>最后，附上整套方案的核心逻辑总结，方便大家记忆和面试复用：</p>
+<p><strong>对百万条用户话术，用本地开源Embedding模型生成768维向量，存入ES向量索引；通过MiniBatch K-Means聚类获取语义中心，再利用ES KNN检索对全量数据做类别分配，统计各类别数量与占比，最终筛选出占比最高的N个相似语义簇。</strong></p>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">首页</a></li>
+        
+          <li><a href="/about/">关于</a></li>
+        
+          <li><a href="/archives/">归档</a></li>
+        
+          <li><a href="/tags/">标签</a></li>
+        
+          <li><a href="/categories/">分类</a></li>
+        
+          <li><a href="/search/">搜索</a></li>
+        
+      </ul>
+    </div>
+
+    
+    
+      <div id="toc-footer" style="display: none">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E3%80%81%E6%A0%B8%E5%BF%83%E9%9C%80%E6%B1%82%E6%8B%86%E8%A7%A3"><span class="toc-number">1.</span> <span class="toc-text">一、核心需求拆解</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8C%E3%80%81%E5%85%B3%E9%94%AE%E8%AE%A4%E7%9F%A5%EF%BC%9A%E8%AF%AD%E4%B9%89%E7%9B%B8%E4%BC%BC%E6%80%8E%E4%B9%88%E9%87%8F%E5%8C%96%EF%BC%9F%EF%BC%88%E5%90%91%E9%87%8F%E5%9F%BA%E7%A1%80%E5%9B%9E%E9%A1%BE%EF%BC%89"><span class="toc-number">2.</span> <span class="toc-text">二、关键认知：语义相似怎么量化？（向量基础回顾）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E5%90%91%E9%87%8FEmbedding%E4%B8%8D%E4%BB%85%E4%BB%85%E6%98%AF%E5%8F%AA%E9%9D%A0%E5%9C%A8%E7%BA%BFAI"><span class="toc-number">2.1.</span> <span class="toc-text">1. 向量Embedding不仅仅是只靠在线AI</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E5%90%91%E9%87%8F%E7%9A%84%E7%BB%B4%E5%BA%A6"><span class="toc-number">2.2.</span> <span class="toc-text">2. 向量的维度?</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%89%E3%80%81%E5%AE%8C%E6%95%B4%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88"><span class="toc-number">3.</span> <span class="toc-text">三、完整解决方案</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Step-1%EF%BC%9A%E7%8E%AF%E5%A2%83%E5%87%86%E5%A4%87%EF%BC%88%E7%AE%80%E5%8D%95%E6%98%93%E6%90%AD%EF%BC%8C%E6%96%B0%E6%89%8B%E4%B9%9F%E8%83%BD%E6%90%9E%E5%AE%9A%EF%BC%89"><span class="toc-number">3.1.</span> <span class="toc-text">Step 1：环境准备（简单易搭，新手也能搞定）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Step-2%EF%BC%9A%E6%9C%AC%E5%9C%B0%E7%94%9F%E6%88%90%E5%90%91%E9%87%8F%EF%BC%88%E6%A0%B8%E5%BF%83%E6%AD%A5%E9%AA%A4%EF%BC%8C%E4%B8%8D%E8%B0%83%E4%BB%BB%E4%BD%95%E5%9C%A8%E7%BA%BF%E6%8E%A5%E5%8F%A3%EF%BC%89"><span class="toc-number">3.2.</span> <span class="toc-text">Step 2：本地生成向量（核心步骤，不调任何在线接口）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Step-3%EF%BC%9A%E5%88%9B%E5%BB%BAES%E5%90%91%E9%87%8F%E7%B4%A2%E5%BC%95%EF%BC%8C%E5%AD%98%E5%85%A5%E6%95%B0%E6%8D%AE"><span class="toc-number">3.3.</span> <span class="toc-text">Step 3：创建ES向量索引，存入数据</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Step-4%EF%BC%9A%E8%81%9A%E7%B1%BB%E5%88%86%E7%BB%84%EF%BC%8C%E6%89%BE%E5%87%BA%E7%9B%B8%E4%BC%BC%E8%AF%AD%E4%B9%89%E7%B0%87"><span class="toc-number">3.4.</span> <span class="toc-text">Step 4：聚类分组，找出相似语义簇</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Step-5%EF%BC%9A%E5%85%A8%E9%87%8F%E7%B1%BB%E5%88%AB%E5%88%86%E9%85%8D-%E7%BB%9F%E8%AE%A1%E5%8D%A0%E6%AF%94%EF%BC%8C%E5%8F%96Top20"><span class="toc-number">3.5.</span> <span class="toc-text">Step 5：全量类别分配 + 统计占比，取Top20</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9B%9B%E3%80%81%E6%9C%80%E7%BB%88%E7%BB%93%E6%9E%9C%E7%A4%BA%E4%BE%8B"><span class="toc-number">4.</span> <span class="toc-text">四、最终结果示例</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%94%E3%80%81%E9%81%BF%E5%9D%91"><span class="toc-number">5.</span> <span class="toc-text">五、避坑</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%AD%E3%80%81%E6%80%BB%E7%BB%93"><span class="toc-number">6.</span> <span class="toc-text">六、总结</span></a></li></ol>
+      </div>
+    
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://www.zhengyk.cn/3714240385.html"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://www.zhengyk.cn/3714240385.html&text=百万条用户话术，如何快速找到相似语义占比TopN？（ES向量检索实操全方案）"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://www.zhengyk.cn/3714240385.html&title=百万条用户话术，如何快速找到相似语义占比TopN？（ES向量检索实操全方案）"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://www.zhengyk.cn/3714240385.html&is_video=false&description=百万条用户话术，如何快速找到相似语义占比TopN？（ES向量检索实操全方案）"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=百万条用户话术，如何快速找到相似语义占比TopN？（ES向量检索实操全方案）&body=Check out this article: https://www.zhengyk.cn/3714240385.html"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://www.zhengyk.cn/3714240385.html&title=百万条用户话术，如何快速找到相似语义占比TopN？（ES向量检索实操全方案）"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://www.zhengyk.cn/3714240385.html&title=百万条用户话术，如何快速找到相似语义占比TopN？（ES向量检索实操全方案）"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://www.zhengyk.cn/3714240385.html&title=百万条用户话术，如何快速找到相似语义占比TopN？（ES向量检索实操全方案）"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://www.zhengyk.cn/3714240385.html&title=百万条用户话术，如何快速找到相似语义占比TopN？（ES向量检索实操全方案）"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://www.zhengyk.cn/3714240385.html&name=百万条用户话术，如何快速找到相似语义占比TopN？（ES向量检索实操全方案）&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://www.zhengyk.cn/3714240385.html&t=百万条用户话术，如何快速找到相似语义占比TopN？（ES向量检索实操全方案）"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> 菜单</a>
+        
+          <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> 目录</a>
+        
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> 分享</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> 返回顶部</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2017-2026
+    薛定谔的汪
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     --><!--
+       --><li><a href="/archives/">归档</a></li><!--
+     --><!--
+       --><li><a href="/tags/">标签</a></li><!--
+     --><!--
+       --><li><a href="/categories/">分类</a></li><!--
+     --><!--
+       --><li><a href="/search/">搜索</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script>
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script>
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"复制到粘贴板！\">";
+    btn += '<i class="fa-regular fa-clone"></i>';
+    btn += '</span>';
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "复制成功！");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+
+<script type="text/javascript">
+(function() {
+  var bar = document.getElementById('reading-progress-bar');
+  if (!bar) return;
+  function update() {
+    var root = document.documentElement;
+    var scrolled = window.scrollY || root.scrollTop;
+    var height = root.scrollHeight - root.clientHeight;
+    bar.style.width = (height > 0 ? (scrolled / height) * 100 : 0) + '%';
+  }
+  window.addEventListener('scroll', update, { passive: true });
+  window.addEventListener('resize', update);
+  update();
+})();
+</script>
+
+<!-- search -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>

@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="前言在微服务系统里，随着业务的发展，服务拆分成越来越多的微服务时，服务之间的调用关系也越来越复杂，经常一个业务流程要调用 N 个微服务才能完成，当一个业务流程请求变慢或者卡死时，我们需要知道到底是哪里调用出现了问题，所以需要服务链路追踪功能，帮助我们解决问题，Spring CLoud Sleuth应运而生。 Spring CLoud SleuthSpring CLoud Sleuth是一个服务链路">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Spring Cloud F 版整合 Sleuth服务链路追踪 Zipkin 组件">
+<meta property="og:url" content="https://www.zhengyk.cn/342130469.html">
+<meta property="og:site_name" content="薛定谔的汪 - 技术博客">
+<meta property="og:description" content="前言在微服务系统里，随着业务的发展，服务拆分成越来越多的微服务时，服务之间的调用关系也越来越复杂，经常一个业务流程要调用 N 个微服务才能完成，当一个业务流程请求变慢或者卡死时，我们需要知道到底是哪里调用出现了问题，所以需要服务链路追踪功能，帮助我们解决问题，Spring CLoud Sleuth应运而生。 Spring CLoud SleuthSpring CLoud Sleuth是一个服务链路">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://www.zhengyk.cn/images/zipkin.jpg">
+<meta property="og:image" content="https://www.zhengyk.cn/images/zipkin-call.jpg">
+<meta property="og:image" content="https://www.zhengyk.cn/images/zipkin-call-detail.jpg">
+<meta property="og:image" content="https://www.zhengyk.cn/images/zipkin-dependence.jpg">
+<meta property="article:published_time" content="2018-06-21T05:20:16.000Z">
+<meta property="article:modified_time" content="2026-08-18T07:42:43.342Z">
+<meta property="article:author" content="薛定谔的汪">
+<meta property="article:tag" content="springcloud">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://www.zhengyk.cn/images/zipkin.jpg">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/portrait.jpg">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/portrait.jpg" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/portrait.jpg">
+        
+      
+    
+    <!-- title -->
+    <title>Spring Cloud F 版整合 Sleuth服务链路追踪 Zipkin 组件</title>
+    <!-- async scripts -->
+    <!-- Google Analytics -->
+
+
+    <!-- Umami Analytics -->
+
+
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    
+<link rel="stylesheet" href="/css/custom.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+<meta name="generator" content="Hexo 8.1.2"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+<div id="reading-progress-bar" aria-hidden="true"></div>
+<style>
+  #reading-progress-bar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 0;
+    height: 5px;
+    background: #37c6c0;
+    z-index: 9999;
+    pointer-events: none;
+  }
+</style>
+
+
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="目录"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="目录"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="顶部" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     --><!--
+       --><li><a href="/archives/">归档</a></li><!--
+     --><!--
+       --><li><a href="/tags/">标签</a></li><!--
+     --><!--
+       --><li><a href="/categories/">分类</a></li><!--
+     --><!--
+       --><li><a href="/search/">搜索</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="上一篇" href="/1778482812.html"><i class="fa-solid fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="下一篇" href="/4247340417.html"><i class="fa-solid fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="返回顶部" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="分享文章" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">上一篇</span>
+      <span id="i-next" class="info" style="display:none;">下一篇</span>
+      <span id="i-top" class="info" style="display:none;">返回顶部</span>
+      <span id="i-share" class="info" style="display:none;">分享文章</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://www.zhengyk.cn/342130469.html"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://www.zhengyk.cn/342130469.html&text=Spring Cloud F 版整合 Sleuth服务链路追踪 Zipkin 组件"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://www.zhengyk.cn/342130469.html&title=Spring Cloud F 版整合 Sleuth服务链路追踪 Zipkin 组件"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://www.zhengyk.cn/342130469.html&is_video=false&description=Spring Cloud F 版整合 Sleuth服务链路追踪 Zipkin 组件"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Spring Cloud F 版整合 Sleuth服务链路追踪 Zipkin 组件&body=Check out this article: https://www.zhengyk.cn/342130469.html"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://www.zhengyk.cn/342130469.html&title=Spring Cloud F 版整合 Sleuth服务链路追踪 Zipkin 组件"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://www.zhengyk.cn/342130469.html&title=Spring Cloud F 版整合 Sleuth服务链路追踪 Zipkin 组件"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://www.zhengyk.cn/342130469.html&title=Spring Cloud F 版整合 Sleuth服务链路追踪 Zipkin 组件"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://www.zhengyk.cn/342130469.html&title=Spring Cloud F 版整合 Sleuth服务链路追踪 Zipkin 组件"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://www.zhengyk.cn/342130469.html&name=Spring Cloud F 版整合 Sleuth服务链路追踪 Zipkin 组件&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://www.zhengyk.cn/342130469.html&t=Spring Cloud F 版整合 Sleuth服务链路追踪 Zipkin 组件"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    
+    
+      <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Spring-CLoud-Sleuth"><span class="toc-number">1.1.</span> <span class="toc-text">Spring CLoud Sleuth</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Zipkin"><span class="toc-number">1.2.</span> <span class="toc-text">Zipkin</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Zipkin%E6%95%B0%E6%8D%AE%E5%AD%98%E5%82%A8%E6%96%B9%E5%BC%8F"><span class="toc-number">1.3.</span> <span class="toc-text">Zipkin数据存储方式</span></a></li></ol></li></ol>
+      </div>
+    
+  </span>
+</div>
+
+    
+    <div class="content index py4 ">
+        
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle p-name" itemprop="name headline">
+        Spring Cloud F 版整合 Sleuth服务链路追踪 Zipkin 组件
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author p-author h-card" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span class="p-name" itemprop="name"><a target="_blank" href="https://zhengyk.cn" rel="author noopener">Yakai Zheng</a></span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2018-06-21T05:20:16.000Z" class="dt-published" itemprop="datePublished">2018-06-21</time>
+        
+      
+    </div>
+
+
+      
+    <div class="article-category">
+        <i class="fa-solid fa-archive"></i>
+        <a class="category-link" href="/categories/Java%E6%A1%86%E6%9E%B6/">Java框架</a>
+    </div>
+
+
+      
+    <div class="article-tag">
+        <i class="fa-solid fa-tag"></i>
+        <a class="p-category" href="/tags/springcloud/" rel="tag">springcloud</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content e-content" itemprop="articleBody">
+    <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在微服务系统里，随着业务的发展，服务拆分成越来越多的微服务时，服务之间的调用关系也越来越复杂，经常一个业务流程要调用 N 个微服务才能完成，当一个业务流程请求变慢或者卡死时，我们需要知道到底是哪里调用出现了问题，所以需要服务链路追踪功能，帮助我们解决问题，Spring CLoud Sleuth应运而生。</p>
+<h3 id="Spring-CLoud-Sleuth"><a href="#Spring-CLoud-Sleuth" class="headerlink" title="Spring CLoud Sleuth"></a>Spring CLoud Sleuth</h3><p>Spring CLoud Sleuth是一个服务链路追踪框架，可以结合 Zipkin 使用，将服务链路信息发送给 zipkin，通过zip-ui展示服务调用信息，只要各个服务添加依赖即可使用。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&lt;dependency&gt;</span><br><span class="line">    &lt;groupId&gt;org.springframework.cloud&lt;/groupId&gt;</span><br><span class="line">    &lt;artifactId&gt;spring-cloud-starter-zipkin&lt;/artifactId&gt;</span><br><span class="line">&lt;/dependency&gt;</span><br></pre></td></tr></table></figure>
+
+<h3 id="Zipkin"><a href="#Zipkin" class="headerlink" title="Zipkin"></a>Zipkin</h3><p>Zipkin 是一个由Twitter公司开源开源的分布式的跟踪系统，，它可以以解决微服务架构中的延迟问题，包括数据的收集、存储、查找和展现。</p>
+<p>Spring Cloud F 版已经不用自己构建 Zipkin 服务了，只需要下载相应 jar 包，启动即可。</p>
+<p>下载地址：<a target="_blank" rel="noopener" href="https://dl.bintray.com/openzipkin/maven/io/zipkin/java/zipkin-server/">https://dl.bintray.com/openzipkin/maven/io/zipkin/java/zipkin-server/</a></p>
+<p>如图：</p>
+<p><img src="https://www.zhengyk.cn/images/zipkin.jpg"></p>
+<p>服务引入依赖后，默认 zipkin 的地址是 <a target="_blank" rel="noopener" href="http://localhosty:9411/%EF%BC%8C%E5%8F%AF%E4%BB%A5%E9%80%9A%E8%BF%87%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6%E4%BF%AE%E6%94%B9%EF%BC%9A">http://localhosty:9411/，可以通过配置文件修改：</a></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">spring:</span><br><span class="line">  zipkin:</span><br><span class="line">    base-url: http://localhost:9411/</span><br><span class="line">  sleuth:</span><br><span class="line">    sampler:</span><br><span class="line">      probability: 1.0</span><br></pre></td></tr></table></figure>
+
+<p>这里有个坑是zipkin默认采样比率是0.1，也就是10次调用才采样一次，为了让每次调用都能被监控到，需要配置</p>
+<p><code>spring.sleuth.sampler.probability</code>的值，取值范围是 0.1到1.0，默认为0.1，这里配置成1.0。使其全部采样。</p>
+<p>调用一次服务，观察页面：</p>
+<p><img src="https://www.zhengyk.cn/images/zipkin-call.jpg"></p>
+<p>调用详情</p>
+<p><img src="https://www.zhengyk.cn/images/zipkin-call-detail.jpg"></p>
+<p>依赖关系</p>
+<p><img src="https://www.zhengyk.cn/images/zipkin-dependence.jpg"></p>
+<h3 id="Zipkin数据存储方式"><a href="#Zipkin数据存储方式" class="headerlink" title="Zipkin数据存储方式"></a>Zipkin数据存储方式</h3><p>本次测试直接用的in-Memory 方式，在 Zipkin 服务重启后先前的调用数据就丢失了。</p>
+<p>Zipkin提供了可插拔数据存储方式：In-Memory、Cassandra、MySql以及Elasticsearch。生产上比较推荐使用 Elasticseach。</p>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">首页</a></li>
+        
+          <li><a href="/about/">关于</a></li>
+        
+          <li><a href="/archives/">归档</a></li>
+        
+          <li><a href="/tags/">标签</a></li>
+        
+          <li><a href="/categories/">分类</a></li>
+        
+          <li><a href="/search/">搜索</a></li>
+        
+      </ul>
+    </div>
+
+    
+    
+      <div id="toc-footer" style="display: none">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Spring-CLoud-Sleuth"><span class="toc-number">1.1.</span> <span class="toc-text">Spring CLoud Sleuth</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Zipkin"><span class="toc-number">1.2.</span> <span class="toc-text">Zipkin</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Zipkin%E6%95%B0%E6%8D%AE%E5%AD%98%E5%82%A8%E6%96%B9%E5%BC%8F"><span class="toc-number">1.3.</span> <span class="toc-text">Zipkin数据存储方式</span></a></li></ol></li></ol>
+      </div>
+    
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://www.zhengyk.cn/342130469.html"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://www.zhengyk.cn/342130469.html&text=Spring Cloud F 版整合 Sleuth服务链路追踪 Zipkin 组件"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://www.zhengyk.cn/342130469.html&title=Spring Cloud F 版整合 Sleuth服务链路追踪 Zipkin 组件"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://www.zhengyk.cn/342130469.html&is_video=false&description=Spring Cloud F 版整合 Sleuth服务链路追踪 Zipkin 组件"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Spring Cloud F 版整合 Sleuth服务链路追踪 Zipkin 组件&body=Check out this article: https://www.zhengyk.cn/342130469.html"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://www.zhengyk.cn/342130469.html&title=Spring Cloud F 版整合 Sleuth服务链路追踪 Zipkin 组件"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://www.zhengyk.cn/342130469.html&title=Spring Cloud F 版整合 Sleuth服务链路追踪 Zipkin 组件"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://www.zhengyk.cn/342130469.html&title=Spring Cloud F 版整合 Sleuth服务链路追踪 Zipkin 组件"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://www.zhengyk.cn/342130469.html&title=Spring Cloud F 版整合 Sleuth服务链路追踪 Zipkin 组件"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://www.zhengyk.cn/342130469.html&name=Spring Cloud F 版整合 Sleuth服务链路追踪 Zipkin 组件&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://www.zhengyk.cn/342130469.html&t=Spring Cloud F 版整合 Sleuth服务链路追踪 Zipkin 组件"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> 菜单</a>
+        
+          <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> 目录</a>
+        
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> 分享</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> 返回顶部</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2017-2026
+    薛定谔的汪
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     --><!--
+       --><li><a href="/archives/">归档</a></li><!--
+     --><!--
+       --><li><a href="/tags/">标签</a></li><!--
+     --><!--
+       --><li><a href="/categories/">分类</a></li><!--
+     --><!--
+       --><li><a href="/search/">搜索</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script>
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script>
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"复制到粘贴板！\">";
+    btn += '<i class="fa-regular fa-clone"></i>';
+    btn += '</span>';
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "复制成功！");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+
+<script type="text/javascript">
+(function() {
+  var bar = document.getElementById('reading-progress-bar');
+  if (!bar) return;
+  function update() {
+    var root = document.documentElement;
+    var scrolled = window.scrollY || root.scrollTop;
+    var height = root.scrollHeight - root.clientHeight;
+    bar.style.width = (height > 0 ? (scrolled / height) * 100 : 0) + '%';
+  }
+  window.addEventListener('scroll', update, { passive: true });
+  window.addEventListener('resize', update);
+  update();
+})();
+</script>
+
+<!-- search -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>

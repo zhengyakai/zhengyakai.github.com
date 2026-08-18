@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="MySQL索引失效？10大高频场景+避坑指南，看完再也不踩坑作为后端开发者，我们每天都在和MySQL打交道，索引更是优化SQL性能的“神器”——合理的索引能让查询速度提升10倍、100倍，而一旦索引失效，原本毫秒级的查询可能会变成秒级、甚至分钟级，直接拖垮整个系统。 但实际开发中，我经常遇到这样的困惑：明明给字段建了索引，查询还是走全表扫描？最近项目中生产数据整理、迁移就遇到，明明测试环境都ok为">
+<meta property="og:type" content="article">
+<meta property="og:title" content="常见的MySQL索引失效案例总结与分析">
+<meta property="og:url" content="https://www.zhengyk.cn/1109165779.html">
+<meta property="og:site_name" content="薛定谔的汪 - 技术博客">
+<meta property="og:description" content="MySQL索引失效？10大高频场景+避坑指南，看完再也不踩坑作为后端开发者，我们每天都在和MySQL打交道，索引更是优化SQL性能的“神器”——合理的索引能让查询速度提升10倍、100倍，而一旦索引失效，原本毫秒级的查询可能会变成秒级、甚至分钟级，直接拖垮整个系统。 但实际开发中，我经常遇到这样的困惑：明明给字段建了索引，查询还是走全表扫描？最近项目中生产数据整理、迁移就遇到，明明测试环境都ok为">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-03-01T08:39:03.000Z">
+<meta property="article:modified_time" content="2026-08-18T07:42:43.331Z">
+<meta property="article:author" content="薛定谔的汪">
+<meta property="article:tag" content="MySQL">
+<meta name="twitter:card" content="summary">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/portrait.jpg">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/portrait.jpg" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/portrait.jpg">
+        
+      
+    
+    <!-- title -->
+    <title>常见的MySQL索引失效案例总结与分析</title>
+    <!-- async scripts -->
+    <!-- Google Analytics -->
+
+
+    <!-- Umami Analytics -->
+
+
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    
+<link rel="stylesheet" href="/css/custom.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+<meta name="generator" content="Hexo 8.1.2"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+<div id="reading-progress-bar" aria-hidden="true"></div>
+<style>
+  #reading-progress-bar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 0;
+    height: 5px;
+    background: #37c6c0;
+    z-index: 9999;
+    pointer-events: none;
+  }
+</style>
+
+
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="目录"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="目录"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="顶部" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     --><!--
+       --><li><a href="/archives/">归档</a></li><!--
+     --><!--
+       --><li><a href="/tags/">标签</a></li><!--
+     --><!--
+       --><li><a href="/categories/">分类</a></li><!--
+     --><!--
+       --><li><a href="/search/">搜索</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="上一篇" href="/3206429556.html"><i class="fa-solid fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="下一篇" href="/1755625955.html"><i class="fa-solid fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="返回顶部" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="分享文章" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">上一篇</span>
+      <span id="i-next" class="info" style="display:none;">下一篇</span>
+      <span id="i-top" class="info" style="display:none;">返回顶部</span>
+      <span id="i-share" class="info" style="display:none;">分享文章</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://www.zhengyk.cn/1109165779.html"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://www.zhengyk.cn/1109165779.html&text=常见的MySQL索引失效案例总结与分析"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://www.zhengyk.cn/1109165779.html&title=常见的MySQL索引失效案例总结与分析"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://www.zhengyk.cn/1109165779.html&is_video=false&description=常见的MySQL索引失效案例总结与分析"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=常见的MySQL索引失效案例总结与分析&body=Check out this article: https://www.zhengyk.cn/1109165779.html"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://www.zhengyk.cn/1109165779.html&title=常见的MySQL索引失效案例总结与分析"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://www.zhengyk.cn/1109165779.html&title=常见的MySQL索引失效案例总结与分析"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://www.zhengyk.cn/1109165779.html&title=常见的MySQL索引失效案例总结与分析"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://www.zhengyk.cn/1109165779.html&title=常见的MySQL索引失效案例总结与分析"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://www.zhengyk.cn/1109165779.html&name=常见的MySQL索引失效案例总结与分析&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://www.zhengyk.cn/1109165779.html&t=常见的MySQL索引失效案例总结与分析"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    
+    
+      <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#MySQL%E7%B4%A2%E5%BC%95%E5%A4%B1%E6%95%88%EF%BC%9F10%E5%A4%A7%E9%AB%98%E9%A2%91%E5%9C%BA%E6%99%AF-%E9%81%BF%E5%9D%91%E6%8C%87%E5%8D%97%EF%BC%8C%E7%9C%8B%E5%AE%8C%E5%86%8D%E4%B9%9F%E4%B8%8D%E8%B8%A9%E5%9D%91"><span class="toc-number">1.</span> <span class="toc-text">MySQL索引失效？10大高频场景+避坑指南，看完再也不踩坑</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E3%80%81%E5%85%88%E6%98%8E%E7%A1%AE%EF%BC%9A%E4%BB%80%E4%B9%88%E6%98%AF%E7%B4%A2%E5%BC%95%E5%A4%B1%E6%95%88%EF%BC%9F"><span class="toc-number">1.1.</span> <span class="toc-text">一、先明确：什么是索引失效？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8C%E3%80%8110%E5%A4%A7%E9%AB%98%E9%A2%91%E7%B4%A2%E5%BC%95%E5%A4%B1%E6%95%88%E5%9C%BA%E6%99%AF%EF%BC%88%E9%99%84%E6%A1%88%E4%BE%8B-%E5%8E%9F%E5%9B%A0%EF%BC%89"><span class="toc-number">1.2.</span> <span class="toc-text">二、10大高频索引失效场景（附案例+原因）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9C%BA%E6%99%AF1%EF%BC%9A%E8%BF%9D%E5%8F%8D%E6%9C%80%E5%B7%A6%E5%89%8D%E7%BC%80%E6%B3%95%E5%88%99%EF%BC%88%E6%9C%80%E5%B8%B8%E8%80%83%E3%80%81%E6%9C%80%E6%98%93%E8%B8%A9%E5%9D%91%EF%BC%89"><span class="toc-number">1.2.1.</span> <span class="toc-text">场景1：违反最左前缀法则（最常考、最易踩坑）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9C%BA%E6%99%AF2%EF%BC%9A%E7%B4%A2%E5%BC%95%E5%88%97%E4%B8%8A%E5%81%9A%E8%AE%A1%E7%AE%97%E3%80%81%E5%87%BD%E6%95%B0%E3%80%81%E7%B1%BB%E5%9E%8B%E8%BD%AC%E6%8D%A2"><span class="toc-number">1.2.2.</span> <span class="toc-text">场景2：索引列上做计算、函数、类型转换</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9C%BA%E6%99%AF3%EF%BC%9A%E6%A8%A1%E7%B3%8A%E6%9F%A5%E8%AF%A2like%E4%BB%A5-%E5%BC%80%E5%A4%B4"><span class="toc-number">1.2.3.</span> <span class="toc-text">场景3：模糊查询like以%开头</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9C%BA%E6%99%AF4%EF%BC%9A%E4%BD%BF%E7%94%A8-%E3%80%81%E3%80%81not-in%E3%80%81not-exists"><span class="toc-number">1.2.4.</span> <span class="toc-text">场景4：使用!&#x3D;、&lt;&gt;、not in、not exists</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9C%BA%E6%99%AF5%EF%BC%9Ais-null-is-not-null-%E6%9C%89%E6%97%B6%E5%A4%B1%E6%95%88"><span class="toc-number">1.2.5.</span> <span class="toc-text">场景5：is null &#x2F; is not null 有时失效</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9C%BA%E6%99%AF6%EF%BC%9Aor%E8%BF%9E%E6%8E%A5%E7%9A%84%E6%9D%A1%E4%BB%B6%E6%9C%89%E4%B8%80%E6%96%B9%E6%B2%A1%E6%9C%89%E7%B4%A2%E5%BC%95"><span class="toc-number">1.2.6.</span> <span class="toc-text">场景6：or连接的条件有一方没有索引</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9C%BA%E6%99%AF7%EF%BC%9Aorder-by-group-by-%E8%BF%9D%E5%8F%8D%E6%9C%80%E5%B7%A6%E5%89%8D%E7%BC%80"><span class="toc-number">1.2.7.</span> <span class="toc-text">场景7：order by &#x2F; group by 违反最左前缀</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9C%BA%E6%99%AF8%EF%BC%9AMySQL%E4%BC%98%E5%8C%96%E5%99%A8%E5%88%A4%E6%96%AD%EF%BC%9A%E5%85%A8%E8%A1%A8%E6%89%AB%E6%8F%8F%E6%9B%B4%E5%BF%AB"><span class="toc-number">1.2.8.</span> <span class="toc-text">场景8：MySQL优化器判断：全表扫描更快</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9C%BA%E6%99%AF9%EF%BC%9Ajoin%E5%85%B3%E8%81%94%E5%AD%97%E6%AE%B5%E7%B1%BB%E5%9E%8B-%E5%AD%97%E7%AC%A6%E9%9B%86%E4%B8%8D%E4%B8%80%E8%87%B4"><span class="toc-number">1.2.9.</span> <span class="toc-text">场景9：join关联字段类型&#x2F;字符集不一致</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9C%BA%E6%99%AF10%EF%BC%9A%E4%BD%BF%E7%94%A8%E8%A6%86%E7%9B%96%E7%B4%A2%E5%BC%95%E6%97%B6%EF%BC%8C%E6%9F%A5%E8%AF%A2%E5%88%97%E8%B6%85%E5%87%BA%E8%A6%86%E7%9B%96%E8%8C%83%E5%9B%B4"><span class="toc-number">1.2.10.</span> <span class="toc-text">场景10：使用覆盖索引时，查询列超出覆盖范围</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9B%9B%E3%80%81%E6%80%BB%E7%BB%93"><span class="toc-number">1.3.</span> <span class="toc-text">四、总结</span></a></li></ol></li></ol>
+      </div>
+    
+  </span>
+</div>
+
+    
+    <div class="content index py4 ">
+        
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle p-name" itemprop="name headline">
+        常见的MySQL索引失效案例总结与分析
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author p-author h-card" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span class="p-name" itemprop="name"><a target="_blank" href="https://zhengyk.cn" rel="author noopener">Yakai Zheng</a></span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2023-03-01T08:39:03.000Z" class="dt-published" itemprop="datePublished">2023-03-01</time>
+        
+      
+    </div>
+
+
+      
+    <div class="article-category">
+        <i class="fa-solid fa-archive"></i>
+        <a class="category-link" href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a>
+    </div>
+
+
+      
+    <div class="article-tag">
+        <i class="fa-solid fa-tag"></i>
+        <a class="p-category" href="/tags/MySQL/" rel="tag">MySQL</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content e-content" itemprop="articleBody">
+    <h1 id="MySQL索引失效？10大高频场景-避坑指南，看完再也不踩坑"><a href="#MySQL索引失效？10大高频场景-避坑指南，看完再也不踩坑" class="headerlink" title="MySQL索引失效？10大高频场景+避坑指南，看完再也不踩坑"></a>MySQL索引失效？10大高频场景+避坑指南，看完再也不踩坑</h1><p>作为后端开发者，我们每天都在和MySQL打交道，索引更是优化SQL性能的“神器”——合理的索引能让查询速度提升10倍、100倍，而一旦索引失效，原本毫秒级的查询可能会变成秒级、甚至分钟级，直接拖垮整个系统。</p>
+<p>但实际开发中，我经常遇到这样的困惑：明明给字段建了索引，查询还是走全表扫描？最近项目中生产数据整理、迁移就遇到，明明测试环境都ok为什么到生产就不行了？其实这都是索引失效在“搞鬼”。今天就结合生产环境中的真实案例，梳理MySQL索引失效的10大高频场景，拆解失效原因，给出避坑技巧，帮你避开99%的索引踩坑问题。</p>
+<h2 id="一、先明确：什么是索引失效？"><a href="#一、先明确：什么是索引失效？" class="headerlink" title="一、先明确：什么是索引失效？"></a>一、先明确：什么是索引失效？</h2><p>索引失效，简单来说就是：MySQL优化器在执行查询时，判断使用索引的效率，不如全表扫描高，因此主动放弃使用索引，转而执行全表扫描。这种情况在高并发、大数据量场景下，会直接导致查询性能暴跌，甚至引发系统瓶颈。</p>
+<p>索引失效不是索引本身的问题，更多是我们的SQL写法、索引设计，或者数据分布导致的。下面这10个场景，是生产中最常出现的，一定要重点记牢。</p>
+<h2 id="二、10大高频索引失效场景（附案例-原因）"><a href="#二、10大高频索引失效场景（附案例-原因）" class="headerlink" title="二、10大高频索引失效场景（附案例+原因）"></a>二、10大高频索引失效场景（附案例+原因）</h2><h3 id="场景1：违反最左前缀法则（最常考、最易踩坑）"><a href="#场景1：违反最左前缀法则（最常考、最易踩坑）" class="headerlink" title="场景1：违反最左前缀法则（最常考、最易踩坑）"></a>场景1：违反最左前缀法则（最常考、最易踩坑）</h3><p>这是最常见的索引失效场景，尤其在使用联合索引时，几乎每个开发者都踩过这个坑。</p>
+<p>核心规则：联合索引（a,b,c）的查询，必须从左到右依次使用索引列，不能跳过、不能打乱顺序，否则会导致索引失效或部分失效。</p>
+<p>案例（联合索引：idx_a_b_c(a,b,c)）：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 有效：严格遵循最左前缀，使用全部索引</span></span><br><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> <span class="keyword">user</span> <span class="keyword">where</span> a <span class="operator">=</span> <span class="number">1</span> <span class="keyword">and</span> b <span class="operator">=</span> <span class="number">2</span> <span class="keyword">and</span> c <span class="operator">=</span> <span class="number">3</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 有效：使用索引a、b（部分生效）</span></span><br><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> <span class="keyword">user</span> <span class="keyword">where</span> a <span class="operator">=</span> <span class="number">1</span> <span class="keyword">and</span> b <span class="operator">=</span> <span class="number">2</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 失效：跳过a，直接查b、c，索引完全失效，走全表扫描</span></span><br><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> <span class="keyword">user</span> <span class="keyword">where</span> b <span class="operator">=</span> <span class="number">2</span> <span class="keyword">and</span> c <span class="operator">=</span> <span class="number">3</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 部分失效：只使用索引a，b、c失效</span></span><br><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> <span class="keyword">user</span> <span class="keyword">where</span> a <span class="operator">=</span> <span class="number">1</span> <span class="keyword">and</span> c <span class="operator">=</span> <span class="number">3</span>;</span><br></pre></td></tr></table></figure>
+
+<p>避坑技巧：联合索引的设计要贴合实际查询场景，查询时尽量从左到右使用索引列，避免跳过左侧列。</p>
+<h3 id="场景2：索引列上做计算、函数、类型转换"><a href="#场景2：索引列上做计算、函数、类型转换" class="headerlink" title="场景2：索引列上做计算、函数、类型转换"></a>场景2：索引列上做计算、函数、类型转换</h3><p>核心原则：只要在索引列上做了“动手脚”（计算、函数调用、类型转换），MySQL就无法直接使用索引，只能放弃索引走全表扫描。</p>
+<p>案例（索引：idx_age(age)、idx_name(name)、idx_create_time(create_time)）：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 失效：索引列age做了加法计算</span></span><br><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> <span class="keyword">user</span> <span class="keyword">where</span> age <span class="operator">+</span> <span class="number">1</span> <span class="operator">=</span> <span class="number">10</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 失效：索引列name使用了left函数</span></span><br><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> <span class="keyword">user</span> <span class="keyword">where</span> <span class="keyword">left</span>(name, <span class="number">2</span>) <span class="operator">=</span> <span class="string">&#x27;张&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 失效：索引列create_time使用了date函数</span></span><br><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> <span class="keyword">user</span> <span class="keyword">where</span> <span class="type">date</span>(create_time) <span class="operator">=</span> <span class="string">&#x27;2025-01-01&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 失效：隐式类型转换（索引列name是varchar，查询用数字）</span></span><br><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> <span class="keyword">user</span> <span class="keyword">where</span> name <span class="operator">=</span> <span class="number">123</span>;</span><br></pre></td></tr></table></figure>
+
+<p>避坑技巧：将计算、函数操作移到等号右侧，避免在索引列上操作；字符串查询必须加引号，避免隐式类型转换。</p>
+<p>优化后示例：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 优化：计算移到右侧</span></span><br><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> <span class="keyword">user</span> <span class="keyword">where</span> age <span class="operator">=</span> <span class="number">10</span> <span class="operator">-</span> <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 优化：函数移到右侧（或提前计算）</span></span><br><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> <span class="keyword">user</span> <span class="keyword">where</span> name <span class="keyword">like</span> <span class="string">&#x27;张%&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 优化：避免date函数，用范围查询</span></span><br><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> <span class="keyword">user</span> <span class="keyword">where</span> create_time <span class="keyword">between</span> <span class="string">&#x27;2025-01-01 00:00:00&#x27;</span> <span class="keyword">and</span> <span class="string">&#x27;2025-01-01 23:59:59&#x27;</span>;</span><br></pre></td></tr></table></figure>
+
+<h3 id="场景3：模糊查询like以-开头"><a href="#场景3：模糊查询like以-开头" class="headerlink" title="场景3：模糊查询like以%开头"></a>场景3：模糊查询like以%开头</h3><p>模糊查询是业务中常用的场景，但如果使用不当，很容易导致索引失效。</p>
+<p>核心规则：like查询中，%在前面（%xx）会导致索引失效；%在后面（xx%）则不会，能正常使用索引。</p>
+<p>案例（索引：idx_name(name)）：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 失效：%在前面，无法使用索引，全表扫描</span></span><br><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> <span class="keyword">user</span> <span class="keyword">where</span> name <span class="keyword">like</span> <span class="string">&#x27;%张三&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 有效：%在后面，正常使用索引</span></span><br><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> <span class="keyword">user</span> <span class="keyword">where</span> name <span class="keyword">like</span> <span class="string">&#x27;张三%&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 失效：前后都有%，同样无法使用索引</span></span><br><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> <span class="keyword">user</span> <span class="keyword">where</span> name <span class="keyword">like</span> <span class="string">&#x27;%张三%&#x27;</span>;</span><br></pre></td></tr></table></figure>
+
+<p>避坑技巧：尽量避免%在前面的模糊查询；如果必须使用，可考虑使用全文索引（FULLTEXT）替代，或提前对数据进行预处理。</p>
+<h3 id="场景4：使用-、、not-in、not-exists"><a href="#场景4：使用-、、not-in、not-exists" class="headerlink" title="场景4：使用!&#x3D;、&lt;&gt;、not in、not exists"></a>场景4：使用!&#x3D;、&lt;&gt;、not in、not exists</h3><p>核心原因：MySQL优化器认为，使用范围否定（!&#x3D;、&lt;&gt;、not in等）时，符合条件的数据量可能较多，全表扫描的效率比使用索引更高，因此会放弃索引。</p>
+<p>案例（索引：idx_age(age)、idx_id(id)）：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 失效：使用!=</span></span><br><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> <span class="keyword">user</span> <span class="keyword">where</span> age <span class="operator">!=</span> <span class="number">18</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 失效：使用not in</span></span><br><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> <span class="keyword">user</span> <span class="keyword">where</span> id <span class="keyword">not</span> <span class="keyword">in</span> (<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 失效：使用not exists</span></span><br><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> <span class="keyword">user</span> u <span class="keyword">where</span> <span class="keyword">not</span> <span class="keyword">exists</span> (<span class="keyword">select</span> <span class="number">1</span> <span class="keyword">from</span> <span class="keyword">order</span> o <span class="keyword">where</span> o.user_id <span class="operator">=</span> u.id);</span><br></pre></td></tr></table></figure>
+
+<p>避坑技巧：尽量用范围查询替代否定查询；如果必须使用not in，可考虑用left join替代，提升性能。</p>
+<p>优化示例：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 优化：用范围查询替代!=</span></span><br><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> <span class="keyword">user</span> <span class="keyword">where</span> age <span class="operator">&lt;</span> <span class="number">18</span> <span class="keyword">or</span> age <span class="operator">&gt;</span> <span class="number">18</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 优化：用left join替代not in</span></span><br><span class="line"><span class="keyword">select</span> u.<span class="operator">*</span> <span class="keyword">from</span> <span class="keyword">user</span> u <span class="keyword">left</span> <span class="keyword">join</span> <span class="keyword">order</span> o <span class="keyword">on</span> u.id <span class="operator">=</span> o.user_id <span class="keyword">where</span> o.user_id <span class="keyword">is</span> <span class="keyword">null</span>;</span><br></pre></td></tr></table></figure>
+
+<h3 id="场景5：is-null-is-not-null-有时失效"><a href="#场景5：is-null-is-not-null-有时失效" class="headerlink" title="场景5：is null &#x2F; is not null 有时失效"></a>场景5：is null &#x2F; is not null 有时失效</h3><p>这个场景不是绝对的，索引是否失效，取决于数据分布：</p>
+<ul>
+<li>如果索引列的NULL值很少，MySQL会使用索引；</li>
+<li>如果索引列的NULL值很多，MySQL认为全表扫描更快，会放弃索引。</li>
+</ul>
+<p>案例（索引：idx_email(email)）：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 可能失效：如果email字段NULL值较多</span></span><br><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> <span class="keyword">user</span> <span class="keyword">where</span> email <span class="keyword">is</span> <span class="keyword">null</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 可能失效：同理，NULL值较多时</span></span><br><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> <span class="keyword">user</span> <span class="keyword">where</span> email <span class="keyword">is</span> <span class="keyword">not null</span>;</span><br></pre></td></tr></table></figure>
+
+<p>避坑技巧：尽量避免索引列存储NULL值，可用默认值（如空字符串’’）替代；如果必须存储NULL，可结合数据分布，判断是否需要调整查询方式。</p>
+<h3 id="场景6：or连接的条件有一方没有索引"><a href="#场景6：or连接的条件有一方没有索引" class="headerlink" title="场景6：or连接的条件有一方没有索引"></a>场景6：or连接的条件有一方没有索引</h3><p>核心规则：or连接的多个条件中，只要有一个条件对应的字段没有索引，那么整个查询的索引都会失效，MySQL会走全表扫描。</p>
+<p>案例（索引：idx_name(name)，age无索引）：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 失效：age无索引，即使name有索引，整个索引也会失效</span></span><br><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> <span class="keyword">user</span> <span class="keyword">where</span> name <span class="operator">=</span> <span class="string">&#x27;张三&#x27;</span> <span class="keyword">or</span> age <span class="operator">=</span> <span class="number">18</span>;</span><br></pre></td></tr></table></figure>
+
+<p>避坑技巧：or连接的所有条件字段，都要建立索引；如果部分字段无法建索引，可考虑用union替代or，提升性能。</p>
+<p>优化示例：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 优化：用union替代or</span></span><br><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> <span class="keyword">user</span> <span class="keyword">where</span> name <span class="operator">=</span> <span class="string">&#x27;张三&#x27;</span></span><br><span class="line"><span class="keyword">union</span></span><br><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> <span class="keyword">user</span> <span class="keyword">where</span> age <span class="operator">=</span> <span class="number">18</span>;</span><br></pre></td></tr></table></figure>
+
+<h3 id="场景7：order-by-group-by-违反最左前缀"><a href="#场景7：order-by-group-by-违反最左前缀" class="headerlink" title="场景7：order by &#x2F; group by 违反最左前缀"></a>场景7：order by &#x2F; group by 违反最左前缀</h3><p>联合索引不仅能优化查询，还能优化排序和分组，但如果order by、group by的字段不遵循最左前缀法则，就无法使用索引排序，会产生filesort（文件排序），性能下降。</p>
+<p>案例（联合索引：idx_a_b_c(a,b,c)）：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 失效：order by违反最左前缀，产生filesort</span></span><br><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> <span class="keyword">user</span> <span class="keyword">order</span> <span class="keyword">by</span> b;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 失效：group by违反最左前缀，产生filesort</span></span><br><span class="line"><span class="keyword">select</span> a, <span class="built_in">count</span>(<span class="operator">*</span>) <span class="keyword">from</span> <span class="keyword">user</span> <span class="keyword">group</span> <span class="keyword">by</span> c;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 有效：遵循最左前缀，使用索引排序</span></span><br><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> <span class="keyword">user</span> <span class="keyword">where</span> a <span class="operator">=</span> <span class="number">1</span> <span class="keyword">order</span> <span class="keyword">by</span> b;</span><br></pre></td></tr></table></figure>
+
+<p>避坑技巧：order by、group by的字段，要和联合索引的最左前缀保持一致；如果无法保持，可考虑调整索引设计，或避免使用order by&#x2F;group by（如业务允许）。</p>
+<h3 id="场景8：MySQL优化器判断：全表扫描更快"><a href="#场景8：MySQL优化器判断：全表扫描更快" class="headerlink" title="场景8：MySQL优化器判断：全表扫描更快"></a>场景8：MySQL优化器判断：全表扫描更快</h3><p>这是一个容易被忽略的场景：即使你写的SQL符合索引使用规则，但MySQL优化器会根据数据量、数据分布，判断“使用索引”和“全表扫描”的效率，最终选择效率更高的方式。</p>
+<p>常见情况：</p>
+<ul>
+<li>表数据量极小（如只有几十条数据），全表扫描比走索引更快；</li>
+<li>索引列重复值极高（如性别、状态字段，只有0和1两个值），使用索引过滤后，仍需扫描大部分数据，优化器会放弃索引。</li>
+</ul>
+<p>避坑技巧：这种情况无需强行优化，MySQL会自动选择最优方案；但如果是大数据量、重复值低的字段，索引仍需正常使用。</p>
+<h3 id="场景9：join关联字段类型-字符集不一致"><a href="#场景9：join关联字段类型-字符集不一致" class="headerlink" title="场景9：join关联字段类型&#x2F;字符集不一致"></a>场景9：join关联字段类型&#x2F;字符集不一致</h3><p>多表join关联时，如果关联字段的类型、字符集不一致，会导致隐式类型转换，进而导致索引失效。</p>
+<p>案例（user表：user_id int，索引idx_user_id；order表：user_id varchar，无索引）：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 失效：user_id类型不一致（int vs varchar），隐式转换，索引失效</span></span><br><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> <span class="keyword">user</span> u <span class="keyword">join</span> `<span class="keyword">order</span>` o <span class="keyword">on</span> u.user_id <span class="operator">=</span> o.user_id;</span><br></pre></td></tr></table></figure>
+
+<p>避坑技巧：多表join的关联字段，必须保证类型、字符集完全一致；同时给关联字段建立索引，提升join效率。</p>
+<h3 id="场景10：使用覆盖索引时，查询列超出覆盖范围"><a href="#场景10：使用覆盖索引时，查询列超出覆盖范围" class="headerlink" title="场景10：使用覆盖索引时，查询列超出覆盖范围"></a>场景10：使用覆盖索引时，查询列超出覆盖范围</h3><p>覆盖索引是指：索引包含了查询所需的所有字段，MySQL无需回表，直接通过索引就能获取数据，效率极高。但如果查询列超出了覆盖索引的范围，就会导致索引失效（或回表查询）。</p>
+<p>案例（联合索引：idx_name_age(name, age)，覆盖name和age字段）：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 有效：查询列name、age，属于覆盖索引范围，无需回表</span></span><br><span class="line"><span class="keyword">select</span> name, age <span class="keyword">from</span> <span class="keyword">user</span> <span class="keyword">where</span> name <span class="operator">=</span> <span class="string">&#x27;张三&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 失效：查询列包含id（不在覆盖索引中），需回表，索引效率下降（或失效）</span></span><br><span class="line"><span class="keyword">select</span> id, name, age <span class="keyword">from</span> <span class="keyword">user</span> <span class="keyword">where</span> name <span class="operator">=</span> <span class="string">&#x27;张三&#x27;</span>;</span><br></pre></td></tr></table></figure>
+
+<p>避坑技巧：设计覆盖索引时，结合实际查询场景，包含常用的查询列；查询时尽量只查需要的字段，避免select *。</p>
+<h2 id="四、总结"><a href="#四、总结" class="headerlink" title="四、总结"></a>四、总结</h2><p>MySQL索引失效，本质是“SQL写法”“索引设计”“数据分布”三者不匹配，导致MySQL优化器放弃使用索引。记住以上10大场景和避坑技巧，能帮你避开大部分索引踩坑问题。</p>
+<p>最后提醒两点：</p>
+<ol>
+<li>索引不是越多越好，过多的索引会影响插入、更新、删除的性能，按需建立即可；</li>
+<li>写完SQL后，养成用explain查看执行计划的习惯，提前发现索引失效问题，避免线上踩坑。</li>
+</ol>
+<p>希望这篇文章能帮你彻底搞懂MySQL索引失效，写出更高效的SQL，提升系统性能～</p>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">首页</a></li>
+        
+          <li><a href="/about/">关于</a></li>
+        
+          <li><a href="/archives/">归档</a></li>
+        
+          <li><a href="/tags/">标签</a></li>
+        
+          <li><a href="/categories/">分类</a></li>
+        
+          <li><a href="/search/">搜索</a></li>
+        
+      </ul>
+    </div>
+
+    
+    
+      <div id="toc-footer" style="display: none">
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#MySQL%E7%B4%A2%E5%BC%95%E5%A4%B1%E6%95%88%EF%BC%9F10%E5%A4%A7%E9%AB%98%E9%A2%91%E5%9C%BA%E6%99%AF-%E9%81%BF%E5%9D%91%E6%8C%87%E5%8D%97%EF%BC%8C%E7%9C%8B%E5%AE%8C%E5%86%8D%E4%B9%9F%E4%B8%8D%E8%B8%A9%E5%9D%91"><span class="toc-number">1.</span> <span class="toc-text">MySQL索引失效？10大高频场景+避坑指南，看完再也不踩坑</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E3%80%81%E5%85%88%E6%98%8E%E7%A1%AE%EF%BC%9A%E4%BB%80%E4%B9%88%E6%98%AF%E7%B4%A2%E5%BC%95%E5%A4%B1%E6%95%88%EF%BC%9F"><span class="toc-number">1.1.</span> <span class="toc-text">一、先明确：什么是索引失效？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8C%E3%80%8110%E5%A4%A7%E9%AB%98%E9%A2%91%E7%B4%A2%E5%BC%95%E5%A4%B1%E6%95%88%E5%9C%BA%E6%99%AF%EF%BC%88%E9%99%84%E6%A1%88%E4%BE%8B-%E5%8E%9F%E5%9B%A0%EF%BC%89"><span class="toc-number">1.2.</span> <span class="toc-text">二、10大高频索引失效场景（附案例+原因）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9C%BA%E6%99%AF1%EF%BC%9A%E8%BF%9D%E5%8F%8D%E6%9C%80%E5%B7%A6%E5%89%8D%E7%BC%80%E6%B3%95%E5%88%99%EF%BC%88%E6%9C%80%E5%B8%B8%E8%80%83%E3%80%81%E6%9C%80%E6%98%93%E8%B8%A9%E5%9D%91%EF%BC%89"><span class="toc-number">1.2.1.</span> <span class="toc-text">场景1：违反最左前缀法则（最常考、最易踩坑）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9C%BA%E6%99%AF2%EF%BC%9A%E7%B4%A2%E5%BC%95%E5%88%97%E4%B8%8A%E5%81%9A%E8%AE%A1%E7%AE%97%E3%80%81%E5%87%BD%E6%95%B0%E3%80%81%E7%B1%BB%E5%9E%8B%E8%BD%AC%E6%8D%A2"><span class="toc-number">1.2.2.</span> <span class="toc-text">场景2：索引列上做计算、函数、类型转换</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9C%BA%E6%99%AF3%EF%BC%9A%E6%A8%A1%E7%B3%8A%E6%9F%A5%E8%AF%A2like%E4%BB%A5-%E5%BC%80%E5%A4%B4"><span class="toc-number">1.2.3.</span> <span class="toc-text">场景3：模糊查询like以%开头</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9C%BA%E6%99%AF4%EF%BC%9A%E4%BD%BF%E7%94%A8-%E3%80%81%E3%80%81not-in%E3%80%81not-exists"><span class="toc-number">1.2.4.</span> <span class="toc-text">场景4：使用!&#x3D;、&lt;&gt;、not in、not exists</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9C%BA%E6%99%AF5%EF%BC%9Ais-null-is-not-null-%E6%9C%89%E6%97%B6%E5%A4%B1%E6%95%88"><span class="toc-number">1.2.5.</span> <span class="toc-text">场景5：is null &#x2F; is not null 有时失效</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9C%BA%E6%99%AF6%EF%BC%9Aor%E8%BF%9E%E6%8E%A5%E7%9A%84%E6%9D%A1%E4%BB%B6%E6%9C%89%E4%B8%80%E6%96%B9%E6%B2%A1%E6%9C%89%E7%B4%A2%E5%BC%95"><span class="toc-number">1.2.6.</span> <span class="toc-text">场景6：or连接的条件有一方没有索引</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9C%BA%E6%99%AF7%EF%BC%9Aorder-by-group-by-%E8%BF%9D%E5%8F%8D%E6%9C%80%E5%B7%A6%E5%89%8D%E7%BC%80"><span class="toc-number">1.2.7.</span> <span class="toc-text">场景7：order by &#x2F; group by 违反最左前缀</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9C%BA%E6%99%AF8%EF%BC%9AMySQL%E4%BC%98%E5%8C%96%E5%99%A8%E5%88%A4%E6%96%AD%EF%BC%9A%E5%85%A8%E8%A1%A8%E6%89%AB%E6%8F%8F%E6%9B%B4%E5%BF%AB"><span class="toc-number">1.2.8.</span> <span class="toc-text">场景8：MySQL优化器判断：全表扫描更快</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9C%BA%E6%99%AF9%EF%BC%9Ajoin%E5%85%B3%E8%81%94%E5%AD%97%E6%AE%B5%E7%B1%BB%E5%9E%8B-%E5%AD%97%E7%AC%A6%E9%9B%86%E4%B8%8D%E4%B8%80%E8%87%B4"><span class="toc-number">1.2.9.</span> <span class="toc-text">场景9：join关联字段类型&#x2F;字符集不一致</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9C%BA%E6%99%AF10%EF%BC%9A%E4%BD%BF%E7%94%A8%E8%A6%86%E7%9B%96%E7%B4%A2%E5%BC%95%E6%97%B6%EF%BC%8C%E6%9F%A5%E8%AF%A2%E5%88%97%E8%B6%85%E5%87%BA%E8%A6%86%E7%9B%96%E8%8C%83%E5%9B%B4"><span class="toc-number">1.2.10.</span> <span class="toc-text">场景10：使用覆盖索引时，查询列超出覆盖范围</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9B%9B%E3%80%81%E6%80%BB%E7%BB%93"><span class="toc-number">1.3.</span> <span class="toc-text">四、总结</span></a></li></ol></li></ol>
+      </div>
+    
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://www.zhengyk.cn/1109165779.html"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://www.zhengyk.cn/1109165779.html&text=常见的MySQL索引失效案例总结与分析"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://www.zhengyk.cn/1109165779.html&title=常见的MySQL索引失效案例总结与分析"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://www.zhengyk.cn/1109165779.html&is_video=false&description=常见的MySQL索引失效案例总结与分析"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=常见的MySQL索引失效案例总结与分析&body=Check out this article: https://www.zhengyk.cn/1109165779.html"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://www.zhengyk.cn/1109165779.html&title=常见的MySQL索引失效案例总结与分析"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://www.zhengyk.cn/1109165779.html&title=常见的MySQL索引失效案例总结与分析"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://www.zhengyk.cn/1109165779.html&title=常见的MySQL索引失效案例总结与分析"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://www.zhengyk.cn/1109165779.html&title=常见的MySQL索引失效案例总结与分析"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://www.zhengyk.cn/1109165779.html&name=常见的MySQL索引失效案例总结与分析&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://www.zhengyk.cn/1109165779.html&t=常见的MySQL索引失效案例总结与分析"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> 菜单</a>
+        
+          <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> 目录</a>
+        
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> 分享</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> 返回顶部</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2017-2026
+    薛定谔的汪
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     --><!--
+       --><li><a href="/archives/">归档</a></li><!--
+     --><!--
+       --><li><a href="/tags/">标签</a></li><!--
+     --><!--
+       --><li><a href="/categories/">分类</a></li><!--
+     --><!--
+       --><li><a href="/search/">搜索</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script>
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script>
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"复制到粘贴板！\">";
+    btn += '<i class="fa-regular fa-clone"></i>';
+    btn += '</span>';
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "复制成功！");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+
+<script type="text/javascript">
+(function() {
+  var bar = document.getElementById('reading-progress-bar');
+  if (!bar) return;
+  function update() {
+    var root = document.documentElement;
+    var scrolled = window.scrollY || root.scrollTop;
+    var height = root.scrollHeight - root.clientHeight;
+    bar.style.width = (height > 0 ? (scrolled / height) * 100 : 0) + '%';
+  }
+  window.addEventListener('scroll', update, { passive: true });
+  window.addEventListener('resize', update);
+  update();
+})();
+</script>
+
+<!-- search -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>

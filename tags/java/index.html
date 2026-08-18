@@ -61,6 +61,22 @@
 
 <body class="max-width mx-auto px3 ltr">
     
+<div id="reading-progress-bar" aria-hidden="true"></div>
+<style>
+  #reading-progress-bar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 0;
+    height: 5px;
+    background: #37c6c0;
+    z-index: 9999;
+    pointer-events: none;
+  }
+</style>
+
+
+    
     <div class="content index py4 ">
         
           <header id="header">
@@ -122,7 +138,7 @@
 
         <span>
     
-        <a class="" href="/java/CollectorstoMapNPE/">Java8 Collectors.toMap 方法报空指针</a>
+        <a class="" href="/3023166665.html">Java8 Collectors.toMap 方法报空指针</a>
     
 
 
@@ -146,7 +162,7 @@
 
         <span>
     
-        <a class="" href="/java/joda-time-common-use/">Java8 中 joda-time 时间操作工具常用常用 API</a>
+        <a class="" href="/2102357015.html">Java8 中 joda-time 时间操作工具常用常用 API</a>
     
 
 
@@ -170,7 +186,7 @@
 
         <span>
     
-        <a class="" href="/java/Optional-practice/">Optional 练习、实战</a>
+        <a class="" href="/2053850269.html">Optional 练习、实战</a>
     
 
 
@@ -196,7 +212,7 @@
 
         <span>
     
-        <a class="" href="/java/transient/">transient 关键字小结</a>
+        <a class="" href="/1714884519.html">transient 关键字小结</a>
     
 
 
@@ -220,7 +236,7 @@
 
         <span>
     
-        <a class="" href="/java/HandleException/">Java中9个处理Exception的最佳实践--转</a>
+        <a class="" href="/2269867358.html">Java中9个处理Exception的最佳实践--转</a>
     
 
 
@@ -244,7 +260,7 @@
 
         <span>
     
-        <a class="" href="/java/Eqha/">关于重写equals方法和hashCode方法</a>
+        <a class="" href="/2664206266.html">关于重写equals方法和hashCode方法</a>
     
 
 
@@ -268,7 +284,7 @@
 
         <span>
     
-        <a class="" href="/java/Java_Exception/">Java中的异常和处理--转</a>
+        <a class="" href="/3365906913.html">Java中的异常和处理--转</a>
     
 
 
@@ -292,7 +308,7 @@
 
         <span>
     
-        <a class="" href="/java/HFJ02/">Head First Java 读书笔记(02)--this、super关键字</a>
+        <a class="" href="/4172707970.html">Head First Java 读书笔记(02)--this、super关键字</a>
     
 
 
@@ -316,7 +332,7 @@
 
         <span>
     
-        <a class="" href="/java/HFJ01/">Head First Java 读书笔记(01)--Java的三大特性</a>
+        <a class="" href="/4269216610.html">Head First Java 读书笔记(01)--Java的三大特性</a>
     
 
 
@@ -377,6 +393,23 @@
 
 
 <script src="/js/main.js"></script>
+
+
+<script type="text/javascript">
+(function() {
+  var bar = document.getElementById('reading-progress-bar');
+  if (!bar) return;
+  function update() {
+    var root = document.documentElement;
+    var scrolled = window.scrollY || root.scrollTop;
+    var height = root.scrollHeight - root.clientHeight;
+    bar.style.width = (height > 0 ? (scrolled / height) * 100 : 0) + '%';
+  }
+  window.addEventListener('scroll', update, { passive: true });
+  window.addEventListener('resize', update);
+  update();
+})();
+</script>
 
 <!-- search -->
 

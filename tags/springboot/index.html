@@ -61,6 +61,22 @@
 
 <body class="max-width mx-auto px3 ltr">
     
+<div id="reading-progress-bar" aria-hidden="true"></div>
+<style>
+  #reading-progress-bar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 0;
+    height: 5px;
+    background: #37c6c0;
+    z-index: 9999;
+    pointer-events: none;
+  }
+</style>
+
+
+    
     <div class="content index py4 ">
         
           <header id="header">
@@ -122,7 +138,7 @@
 
         <span>
     
-        <a class="" href="/springboot/spring-boot-config-load-order/">SpringBoot 配置加载优先级顺序</a>
+        <a class="" href="/1398319173.html">SpringBoot 配置加载优先级顺序</a>
     
 
 
@@ -148,7 +164,7 @@
 
         <span>
     
-        <a class="" href="/other/humbnails/">Thumbnails小工具</a>
+        <a class="" href="/1266400863.html">Thumbnails小工具</a>
     
 
 
@@ -174,7 +190,7 @@
 
         <span>
     
-        <a class="" href="/springboot/Sboot04/">SpringBoot(04)--整合mybatis</a>
+        <a class="" href="/3547610163.html">SpringBoot(04)--整合mybatis</a>
     
 
 
@@ -198,7 +214,7 @@
 
         <span>
     
-        <a class="" href="/springboot/Sboot03/">SpringBoot(03)--thymeleaf模板介绍(二)</a>
+        <a class="" href="/2675205685.html">SpringBoot(03)--thymeleaf模板介绍(二)</a>
     
 
 
@@ -222,7 +238,7 @@
 
         <span>
     
-        <a class="" href="/springboot/Sboot02/">SpringBoot(02)--thymeleaf模板介绍(一)</a>
+        <a class="" href="/203759199.html">SpringBoot(02)--thymeleaf模板介绍(一)</a>
     
 
 
@@ -246,7 +262,7 @@
 
         <span>
     
-        <a class="" href="/springboot/Sboot01/">SpringBoot(01)--Hello World</a>
+        <a class="" href="/3834930727.html">SpringBoot(01)--Hello World</a>
     
 
 
@@ -307,6 +323,23 @@
 
 
 <script src="/js/main.js"></script>
+
+
+<script type="text/javascript">
+(function() {
+  var bar = document.getElementById('reading-progress-bar');
+  if (!bar) return;
+  function update() {
+    var root = document.documentElement;
+    var scrolled = window.scrollY || root.scrollTop;
+    var height = root.scrollHeight - root.clientHeight;
+    bar.style.width = (height > 0 ? (scrolled / height) * 100 : 0) + '%';
+  }
+  window.addEventListener('scroll', update, { passive: true });
+  window.addEventListener('resize', update);
+  update();
+})();
+</script>
 
 <!-- search -->
 

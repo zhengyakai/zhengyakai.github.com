@@ -61,6 +61,22 @@
 
 <body class="max-width mx-auto px3 ltr">
     
+<div id="reading-progress-bar" aria-hidden="true"></div>
+<style>
+  #reading-progress-bar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 0;
+    height: 5px;
+    background: #37c6c0;
+    z-index: 9999;
+    pointer-events: none;
+  }
+</style>
+
+
+    
     <div class="content index py4 ">
         
           <header id="header">
@@ -122,7 +138,7 @@
 
         <span>
     
-        <a class="" href="/java/LinkedHashMap/">LinkedHashMap那点事儿</a>
+        <a class="" href="/19140892.html">LinkedHashMap那点事儿</a>
     
 
 
@@ -146,7 +162,7 @@
 
         <span>
     
-        <a class="" href="/java/HashSet/">HashSet那点事儿</a>
+        <a class="" href="/34292048.html">HashSet那点事儿</a>
     
 
 
@@ -170,7 +186,7 @@
 
         <span>
     
-        <a class="" href="/java/HashMap/">HashMap那点事儿</a>
+        <a class="" href="/1913594855.html">HashMap那点事儿</a>
     
 
 
@@ -194,7 +210,7 @@
 
         <span>
     
-        <a class="" href="/java/LinkedList/">LinkedList那点事儿</a>
+        <a class="" href="/4279544009.html">LinkedList那点事儿</a>
     
 
 
@@ -218,7 +234,7 @@
 
         <span>
     
-        <a class="" href="/java/ArrayList/">ArrayList那点事儿</a>
+        <a class="" href="/2065284027.html">ArrayList那点事儿</a>
     
 
 
@@ -279,6 +295,23 @@
 
 
 <script src="/js/main.js"></script>
+
+
+<script type="text/javascript">
+(function() {
+  var bar = document.getElementById('reading-progress-bar');
+  if (!bar) return;
+  function update() {
+    var root = document.documentElement;
+    var scrolled = window.scrollY || root.scrollTop;
+    var height = root.scrollHeight - root.clientHeight;
+    bar.style.width = (height > 0 ? (scrolled / height) * 100 : 0) + '%';
+  }
+  window.addEventListener('scroll', update, { passive: true });
+  window.addEventListener('resize', update);
+  update();
+})();
+</script>
 
 <!-- search -->
 

@@ -61,6 +61,22 @@
 
 <body class="max-width mx-auto px3 ltr">
     
+<div id="reading-progress-bar" aria-hidden="true"></div>
+<style>
+  #reading-progress-bar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 0;
+    height: 5px;
+    background: #37c6c0;
+    z-index: 9999;
+    pointer-events: none;
+  }
+</style>
+
+
+    
     <div class="content index py4 ">
         
           <header id="header">
@@ -122,7 +138,7 @@
 
         <span>
     
-        <a class="" href="/netty/nio-theory/">NIO的一些知识点</a>
+        <a class="" href="/2188799803.html">NIO的一些知识点</a>
     
 
 
@@ -146,7 +162,7 @@
 
         <span>
     
-        <a class="" href="/redis/redis-distributed-lock/">自己动手用 Redis 撸一个分布式锁</a>
+        <a class="" href="/4011177933.html">自己动手用 Redis 撸一个分布式锁</a>
     
 
 
@@ -170,7 +186,7 @@
 
         <span>
     
-        <a class="" href="/java/ThreadLocal/">ThreadLocal是什么鬼？</a>
+        <a class="" href="/4066644791.html">ThreadLocal是什么鬼？</a>
     
 
 
@@ -194,7 +210,7 @@
 
         <span>
     
-        <a class="" href="/java/ThreadPool/">线程池的理解、分析</a>
+        <a class="" href="/2399817179.html">线程池的理解、分析</a>
     
 
 
@@ -218,7 +234,7 @@
 
         <span>
     
-        <a class="" href="/java/ConcurrentHashMap/">ConcurrentHashMap那些事儿</a>
+        <a class="" href="/1826674716.html">ConcurrentHashMap那些事儿</a>
     
 
 
@@ -242,7 +258,7 @@
 
         <span>
     
-        <a class="" href="/java/AtomicInteger/">原子类 AtomicInteger</a>
+        <a class="" href="/1308493211.html">原子类 AtomicInteger</a>
     
 
 
@@ -266,7 +282,7 @@
 
         <span>
     
-        <a class="" href="/java/BlockingQueue/">BlockingLock 阻塞队列</a>
+        <a class="" href="/2316232430.html">BlockingLock 阻塞队列</a>
     
 
 
@@ -290,7 +306,7 @@
 
         <span>
     
-        <a class="" href="/java/ReentrantLock-2/">ReentrantLock那些事儿（二）</a>
+        <a class="" href="/816129959.html">ReentrantLock那些事儿（二）</a>
     
 
 
@@ -314,7 +330,7 @@
 
         <span>
     
-        <a class="" href="/java/ReentrantLock-1/">ReentrantLock那些事儿（一）</a>
+        <a class="" href="/11783039.html">ReentrantLock那些事儿（一）</a>
     
 
 
@@ -338,7 +354,7 @@
 
         <span>
     
-        <a class="" href="/java/lock-aqs/">Lock And AQS</a>
+        <a class="" href="/2895673668.html">Lock And AQS</a>
     
 
 
@@ -410,6 +426,23 @@
 
 
 <script src="/js/main.js"></script>
+
+
+<script type="text/javascript">
+(function() {
+  var bar = document.getElementById('reading-progress-bar');
+  if (!bar) return;
+  function update() {
+    var root = document.documentElement;
+    var scrolled = window.scrollY || root.scrollTop;
+    var height = root.scrollHeight - root.clientHeight;
+    bar.style.width = (height > 0 ? (scrolled / height) * 100 : 0) + '%';
+  }
+  window.addEventListener('scroll', update, { passive: true });
+  window.addEventListener('resize', update);
+  update();
+})();
+</script>
 
 <!-- search -->
 

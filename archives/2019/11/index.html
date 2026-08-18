@@ -61,6 +61,22 @@
 
 <body class="max-width mx-auto px3 ltr">
     
+<div id="reading-progress-bar" aria-hidden="true"></div>
+<style>
+  #reading-progress-bar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 0;
+    height: 5px;
+    background: #37c6c0;
+    z-index: 9999;
+    pointer-events: none;
+  }
+</style>
+
+
+    
     <div class="content index py4 ">
         
           <header id="header">
@@ -122,7 +138,7 @@
 
         <span>
     
-        <a class="" href="/elasticsearch/es-reindex/">Elasticsearch 使用 reindex 快速修改生产环境索引 mapping</a>
+        <a class="" href="/3949515000.html">Elasticsearch 使用 reindex 快速修改生产环境索引 mapping</a>
     
 
 
@@ -146,7 +162,7 @@
 
         <span>
     
-        <a class="" href="/project/tx-distributedLock/">记录项目中 spring 事务与分布式锁、mq消息发送使用不当的 bug</a>
+        <a class="" href="/2696016877.html">记录项目中 spring 事务与分布式锁、mq消息发送使用不当的 bug</a>
     
 
 
@@ -207,6 +223,23 @@
 
 
 <script src="/js/main.js"></script>
+
+
+<script type="text/javascript">
+(function() {
+  var bar = document.getElementById('reading-progress-bar');
+  if (!bar) return;
+  function update() {
+    var root = document.documentElement;
+    var scrolled = window.scrollY || root.scrollTop;
+    var height = root.scrollHeight - root.clientHeight;
+    bar.style.width = (height > 0 ? (scrolled / height) * 100 : 0) + '%';
+  }
+  window.addEventListener('scroll', update, { passive: true });
+  window.addEventListener('resize', update);
+  update();
+})();
+</script>
 
 <!-- search -->
 
