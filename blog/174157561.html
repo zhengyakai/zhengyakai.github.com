@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="EasyExcel 归档之后，该迁移到 Apache Fesod 吗？前言组里上周有人问，EasyExcel 都归档了，我们是不是该换个库。问题本身不奇怪，我花了两天把几个仓库、POM 和官方文档翻了一遍，最后给组里的答复是：不用换，至少现在不用。 顺带说一句，这类话题里转来转去的版本号、坐标和协议，错得比想象中多，转述几手之后细节就走样了。下面只写我自己核对过的东西：这三个库各自是什么、关系怎">
+<meta property="og:type" content="article">
+<meta property="og:title" content="EasyExcel 归档之后，该迁移到 Apache Fesod 吗？">
+<meta property="og:url" content="https://www.zhengyk.cn/blog/174157561.html">
+<meta property="og:site_name" content="薛定谔的汪 - 技术博客">
+<meta property="og:description" content="EasyExcel 归档之后，该迁移到 Apache Fesod 吗？前言组里上周有人问，EasyExcel 都归档了，我们是不是该换个库。问题本身不奇怪，我花了两天把几个仓库、POM 和官方文档翻了一遍，最后给组里的答复是：不用换，至少现在不用。 顺带说一句，这类话题里转来转去的版本号、坐标和协议，错得比想象中多，转述几手之后细节就走样了。下面只写我自己核对过的东西：这三个库各自是什么、关系怎">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://www.zhengyk.cn/images/easyexcel-fesod-timeline.png">
+<meta property="og:image" content="https://www.zhengyk.cn/images/easyexcel-fesod-migration.png">
+<meta property="article:published_time" content="2026-09-16T10:01:54.000Z">
+<meta property="article:modified_time" content="2026-09-16T06:34:30.905Z">
+<meta property="article:author" content="薛定谔的汪">
+<meta property="article:tag" content="easyexcel">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://www.zhengyk.cn/images/easyexcel-fesod-timeline.png">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/portrait.jpg">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/portrait.jpg" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/portrait.jpg">
+        
+      
+    
+    <!-- title -->
+    <title>EasyExcel 归档之后，该迁移到 Apache Fesod 吗？</title>
+    <!-- async scripts -->
+    <!-- Google Analytics -->
+
+
+    <!-- Umami Analytics -->
+
+
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    
+<link rel="stylesheet" href="/css/custom.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+<meta name="generator" content="Hexo 8.1.2"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+<div id="reading-progress-bar" aria-hidden="true"></div>
+<style>
+  #reading-progress-bar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 0;
+    height: 5px;
+    background: #37c6c0;
+    z-index: 9999;
+    pointer-events: none;
+  }
+</style>
+
+
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="目录"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="目录"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="顶部" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     --><!--
+       --><li><a href="/archives/">归档</a></li><!--
+     --><!--
+       --><li><a href="/tags/">标签</a></li><!--
+     --><!--
+       --><li><a href="/categories/">分类</a></li><!--
+     --><!--
+       --><li><a href="/search/">搜索</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        
+        <li><a class="icon" aria-label="下一篇" href="/blog/1501271315.html"><i class="fa-solid fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="返回顶部" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="分享文章" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">上一篇</span>
+      <span id="i-next" class="info" style="display:none;">下一篇</span>
+      <span id="i-top" class="info" style="display:none;">返回顶部</span>
+      <span id="i-share" class="info" style="display:none;">分享文章</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://www.zhengyk.cn/blog/174157561.html"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://www.zhengyk.cn/blog/174157561.html&text=EasyExcel 归档之后，该迁移到 Apache Fesod 吗？"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://www.zhengyk.cn/blog/174157561.html&title=EasyExcel 归档之后，该迁移到 Apache Fesod 吗？"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://www.zhengyk.cn/blog/174157561.html&is_video=false&description=EasyExcel 归档之后，该迁移到 Apache Fesod 吗？"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=EasyExcel 归档之后，该迁移到 Apache Fesod 吗？&body=Check out this article: https://www.zhengyk.cn/blog/174157561.html"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://www.zhengyk.cn/blog/174157561.html&title=EasyExcel 归档之后，该迁移到 Apache Fesod 吗？"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://www.zhengyk.cn/blog/174157561.html&title=EasyExcel 归档之后，该迁移到 Apache Fesod 吗？"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://www.zhengyk.cn/blog/174157561.html&title=EasyExcel 归档之后，该迁移到 Apache Fesod 吗？"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://www.zhengyk.cn/blog/174157561.html&title=EasyExcel 归档之后，该迁移到 Apache Fesod 吗？"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://www.zhengyk.cn/blog/174157561.html&name=EasyExcel 归档之后，该迁移到 Apache Fesod 吗？&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://www.zhengyk.cn/blog/174157561.html&t=EasyExcel 归档之后，该迁移到 Apache Fesod 吗？"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    
+    
+      <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#EasyExcel-%E5%BD%92%E6%A1%A3%E4%B9%8B%E5%90%8E%EF%BC%8C%E8%AF%A5%E8%BF%81%E7%A7%BB%E5%88%B0-Apache-Fesod-%E5%90%97%EF%BC%9F"><span class="toc-number">1.</span> <span class="toc-text">EasyExcel 归档之后，该迁移到 Apache Fesod 吗？</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-number">1.1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E3%80%81EasyExcel-%E4%B8%BA%E4%BB%80%E4%B9%88%E5%81%9C%E4%BA%86"><span class="toc-number">1.2.</span> <span class="toc-text">一、EasyExcel 为什么停了</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8C%E3%80%81%E6%8E%A5%E6%A3%92%E7%9A%84%E6%98%AF-FastExcel"><span class="toc-number">1.3.</span> <span class="toc-text">二、接棒的是 FastExcel</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%89%E3%80%81Apache-Fesod"><span class="toc-number">1.4.</span> <span class="toc-text">三、Apache Fesod</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9B%9B%E3%80%81%E4%B8%89%E8%80%85%E7%9A%84%E5%9D%90%E6%A0%87%E3%80%81%E5%8C%85%E5%90%8D%E5%92%8C%E5%85%A5%E5%8F%A3%E7%B1%BB"><span class="toc-number">1.5.</span> <span class="toc-text">四、三者的坐标、包名和入口类</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%94%E3%80%81%E7%9C%9F%E8%A6%81%E8%BF%81%E7%9A%84%E8%AF%9D%EF%BC%8C%E6%94%B9%E5%93%AA%E4%BA%9B%E5%9C%B0%E6%96%B9"><span class="toc-number">1.6.</span> <span class="toc-text">五、真要迁的话，改哪些地方</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%AD%E3%80%81%E5%AE%B9%E6%98%93%E6%90%9E%E9%94%99%E7%9A%84%E5%87%A0%E4%B8%AA%E7%82%B9"><span class="toc-number">1.7.</span> <span class="toc-text">六、容易搞错的几个点</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%83%E3%80%81%E6%88%91%E4%BB%AC%E8%87%AA%E5%B7%B1%E7%9A%84%E9%A1%B9%E7%9B%AE%EF%BC%8C%E8%BF%81%E8%BF%98%E6%98%AF%E4%B8%8D%E8%BF%81"><span class="toc-number">1.8.</span> <span class="toc-text">七、我们自己的项目，迁还是不迁</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%AB%E3%80%81%E5%86%99%E5%9C%A8%E6%9C%80%E5%90%8E"><span class="toc-number">1.9.</span> <span class="toc-text">八、写在最后</span></a></li></ol></li></ol>
+      </div>
+    
+  </span>
+</div>
+
+    
+    <div class="content index py4 ">
+        
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle p-name" itemprop="name headline">
+        EasyExcel 归档之后，该迁移到 Apache Fesod 吗？
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author p-author h-card" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span class="p-name" itemprop="name"><a target="_blank" href="https://zhengyk.cn" rel="author noopener">Yakai Zheng</a></span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2026-09-16T10:01:54.000Z" class="dt-published" itemprop="datePublished">2026-09-16</time>
+        
+      
+    </div>
+
+
+      
+    <div class="article-category">
+        <i class="fa-solid fa-archive"></i>
+        <a class="category-link" href="/categories/Java%E6%A1%86%E6%9E%B6/">Java框架</a>
+    </div>
+
+
+      
+    <div class="article-tag">
+        <i class="fa-solid fa-tag"></i>
+        <a class="p-category" href="/tags/easyexcel/" rel="tag">easyexcel</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content e-content" itemprop="articleBody">
+    <hr>
+<h1 id="EasyExcel-归档之后，该迁移到-Apache-Fesod-吗？"><a href="#EasyExcel-归档之后，该迁移到-Apache-Fesod-吗？" class="headerlink" title="EasyExcel 归档之后，该迁移到 Apache Fesod 吗？"></a>EasyExcel 归档之后，该迁移到 Apache Fesod 吗？</h1><h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>组里上周有人问，EasyExcel 都归档了，我们是不是该换个库。问题本身不奇怪，我花了两天把几个仓库、POM 和官方文档翻了一遍，最后给组里的答复是：不用换，至少现在不用。</p>
+<p>顺带说一句，这类话题里转来转去的版本号、坐标和协议，错得比想象中多，转述几手之后细节就走样了。下面只写我自己核对过的东西：这三个库各自是什么、关系怎么变的、真要迁代码要动哪里，以及我们自己的项目为什么决定先不动。</p>
+<hr>
+<h2 id="一、EasyExcel-为什么停了"><a href="#一、EasyExcel-为什么停了" class="headerlink" title="一、EasyExcel 为什么停了"></a>一、EasyExcel 为什么停了</h2><p>EasyExcel 是阿里 2018 年开源的。它当年能起来，靠的是一个实打实的技术点：用 SAX 流式解析替代「把整个工作簿读进内存」。在这之前，POI 的默认用法是 user model，几十万行直接把堆顶爆。EasyExcel 改成事件回调逐行读，内存占用和文件大小解耦，报表导出、批量导入这种场景一下就顺了。它后来成为这类需求的首选，原因就在这。</p>
+<p>把这两条路线摊开看会更清楚。POI 的 user model 会把整个工作簿解析成 XSSFWorkbook、Sheet、Row、Cell 这一棵对象树，全部驻留内存，行数一多就撑不住。SAX 反过来，把文件当成一串事件：开始一行、读一个单元格、结束一行。你注册回调，框架按顺序推给你，同一时刻内存里只有当前这一行。差别不在写法好不好看，而在内存占用能不能和文件大小脱钩。几十万行的导出，只有后者跑得动。</p>
+<p>转折出现在核心作者身上。大约 2023 年，EasyExcel 的核心作者离开阿里。作者一走，项目基本进入事实上的停滞。停滞期的表现很具体：issue 有人提，但很少看到维护者回应，PR 挂着不动，版本号长期不跳。对一个已经被大量项目引用的库来说，这种状态能拖上好几年，因为存量用户不会因为不更新就立刻搬走。</p>
+<p>最后一个版本是 4.0.3，2024 年 9 月发布。这次升级把底层 POI 从 4.1.2 提到了 5.2.5，并且支持 JDK 21。也就是说，它在停止维护之前，做的最后一件事恰好是把「JDK 21 上能不能用」这个问题解决掉。再往后，2025 年 9 月 4 日，alibaba&#x2F;easyexcel 仓库被归档，变成只读。</p>
+<p>归档这件事本身也不难理解。一个开源项目的主要维护者离开，如果没有组织接手，代码放在那里慢慢冷却，是挺常见的结果。与其挂着一个没人管的仓库，不如把它标成只读，至少让后来的人一眼看出它的状态。对使用者来说，这比一个看起来还在更新、实际没人维护的库要诚实。</p>
+<p>关于归档，我想把话说清楚一点。归档不等于有漏洞，归档只等于不再有新功能。判断一个冻结的依赖能不能继续留，我会看三件事：当前版本有没有被公开的 CVE 影响，它的底层依赖有没有同样的问题，以及它是否还覆盖得住现有需求。这三条过了，归档这个状态本身就不构成换库的理由。把归档直接等同于必须换，是挺常见的误解。</p>
+<hr>
+<h2 id="二、接棒的是-FastExcel"><a href="#二、接棒的是-FastExcel" class="headerlink" title="二、接棒的是 FastExcel"></a>二、接棒的是 FastExcel</h2><p>EasyExcel 停了之后，接着往下做的是 FastExcel。主导的人是庄家钜，他本来就是 EasyExcel 的维护者之一，不是外面随便来的人。</p>
+<p>坐标是 cn.idev.excel:fastexcel，最新版本 1.3.0，2025 年 8 月发布。它不是随手 fork 出来的一条分支，API 和 EasyExcel 保持兼容。这个兼容性挺关键：从 EasyExcel 迁到 FastExcel，绝大多数调用只需要改 import 和入口类，业务逻辑不用重写。这也是它能在短时间内被接受的原因。</p>
+<p>API 兼容这四个字落到代码上，就是包名和入口类对得上，方法签名基本一致，链式调用的写法也一样。它不是把 EasyExcel 推倒重写一遍再换个名字，而是同一套调用方式往下延续。所以迁移的主要成本不在理解新 API，而在把散落各处的 import 换掉。</p>
+<p>协议这里要提一下，FastExcel 是 Apache-2.0。不少人下意识以为它是 MIT，其实是错的。对企业项目来说协议不是小事，Apache-2.0 和 MIT 虽然都算宽松协议，但在专利授权、商标和衍生作品的处理上有差别。走合规流程的时候，协议写错会让整个评估建在一个错误的前提上。顺便说，EasyExcel、FastExcel、Fesod 这三个全部是 Apache-2.0。</p>
+<p>还有一个细节能说明「捐给 Apache」这件事是真的：github.com&#x2F;fast-excel&#x2F;fastexcel 现在会重定向到 apache&#x2F;fesod。一个个人组织下的仓库指向了 Apache 基金会下的仓库，这就是代码归属发生转移的直接痕迹。</p>
+<p>由维护者接手，比被完全陌生的人 fork 让人放心一些。他熟悉原来的设计取舍，也知道哪些历史包袱不能动。走 API 兼容这条路线本身就说明，他想的不是另起炉灶，而是把原来那套东西接着维护下去。</p>
+<hr>
+<h2 id="三、Apache-Fesod"><a href="#三、Apache-Fesod" class="headerlink" title="三、Apache Fesod"></a>三、Apache Fesod</h2><p>Apache Fesod 是捐给 ASF 之后的名字。podling 的起始时间是 2025 年 9 月 17 日，仓库在 github.com&#x2F;apache&#x2F;fesod。</p>
+<p>Fesod 这个名字是 “fast easy spreadsheet and other documents” 的缩写，快速、简单的电子表格和其他文档。名字本身就说明了定位：EasyExcel 那套快和简单的体验保留，同时往其他文档格式扩展。</p>
+<p>它和 POI 的关系容易被搞混，这里说清楚。Fesod 是一个独立的 Apache 孵化项目，不是 Apache POI 的子项目，它只是把 POI 5.5.1 当成底层的读写引擎来用。这两者一个是上层封装，一个是底层引擎，Fesod 有自己的 committer、自己的 podling、自己的发版节奏。把它当成 POI 的子项目，会让人误以为它的路线图和治理挂在 POI 下面，实际上不是。</p>
+<p>坐标方面，artifact 是 org.apache.fesod:fesod-sheet。注意，并不存在一个叫 org.apache.fesod:fesod 的 artifact，照这个坐标去写 POM，Maven 会直接报找不到依赖，编译都进不去。它的兄弟 artifact 还有 fesod-common、fesod-bom、fesod-parent、fesod-shaded、fesod-examples。</p>
+<p>入口类是 FesodSheet，包根在 org.apache.fesod.sheet，工具类在 org.apache.fesod.common。官方文档里给的就是 FesodSheet.read 和 FesodSheet.write。</p>
+<p>版本目前走到三个：</p>
+<ul>
+<li>2.0.0-incubating，2026 年 1 月</li>
+<li>2.0.1-incubating，2026 年 2 月 11 日</li>
+<li>2.0.2-incubating，2026 年 5 月 30 日，最新</li>
+</ul>
+<p>真要用它，有两个坑得先知道。</p>
+<p>第一，IP 清理还在进行。Fesod 的 POM 里写了，从 Alibaba EasyExcel 派生过来的代码，许可证头更新和 IP 清理工作仍在进行中。这是 Apache 孵化项目的常规动作，但它意味着项目这个阶段还在整理来源，不是最终形态。第二，Fesod 会打包 POI。README 里专门警告过：如果你的项目本身已经引入了 POI，引入 Fesod 时必须手动排除 POI 相关的 jar，否则会撞版本冲突。</p>
+<p>这里说的孵化是 Apache 的一个正式阶段。项目进孵化器之后，要按 ASF 的治理、法务和发布流程走一遍，通过评审才能毕业成顶级项目。孵化期的项目可以用，但发布节奏和治理成熟度都还在路上。IP 清理处理的是代码来源，每一段从别处搬来的代码，版权归属和许可证头都得交代清楚，Apache 对这一块卡得严，所以这个阶段会拖上一阵。</p>
+<p>迁移路径还有一点要注意。官方给的迁移指南是 FastExcel 迁到 Fesod，不是从 EasyExcel 直接迁，中间为 FastExcel 保留了 FastExcel、FastExcelFactory 这类已废弃的别名作为过渡。FastExcel 本来就是 EasyExcel 的延续，入口类和方法签名都没大改，从它再往 Fesod 走改动面最小。EasyExcel 用户直接跳到 Fesod，等于要一次性处理两个阶段的差异，所以实际上是要跨两层。</p>
+<p><img src="/images/easyexcel-fesod-timeline.png" alt="EasyExcel → FastExcel → Apache Fesod 演进时间线"></p>
+<hr>
+<h2 id="四、三者的坐标、包名和入口类"><a href="#四、三者的坐标、包名和入口类" class="headerlink" title="四、三者的坐标、包名和入口类"></a>四、三者的坐标、包名和入口类</h2><p>这一节是三者的直接对照，放一张表：</p>
+<table>
+<thead>
+<tr>
+<th>维度</th>
+<th>EasyExcel</th>
+<th>FastExcel</th>
+<th>Apache Fesod</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>坐标</td>
+<td><code>com.alibaba:easyexcel:4.0.3</code></td>
+<td><code>cn.idev.excel:fastexcel:1.3.0</code></td>
+<td><code>org.apache.fesod:fesod-sheet:2.0.2-incubating</code></td>
+</tr>
+<tr>
+<td>根包名</td>
+<td><code>com.alibaba.excel</code></td>
+<td><code>cn.idev.excel</code></td>
+<td><code>org.apache.fesod.sheet</code></td>
+</tr>
+<tr>
+<td>入口类</td>
+<td><code>EasyExcel</code></td>
+<td><code>FastExcel</code></td>
+<td><code>FesodSheet</code></td>
+</tr>
+<tr>
+<td>协议</td>
+<td>Apache-2.0</td>
+<td>Apache-2.0</td>
+<td>Apache-2.0</td>
+</tr>
+<tr>
+<td>最新版本</td>
+<td>4.0.3（2024-09）</td>
+<td>1.3.0（2025-08）</td>
+<td>2.0.2-incubating（2026-05-30）</td>
+</tr>
+<tr>
+<td>维护状态</td>
+<td>已归档（2025-09-04），只读</td>
+<td>活跃，已捐给 ASF</td>
+<td>Apache 孵化中</td>
+</tr>
+<tr>
+<td>迁移成本</td>
+<td>不适用（已归档）</td>
+<td>低（API 兼容，改包名 + 入口类）</td>
+<td>中到高（跨两层 + 扩展点需重写验证）</td>
+</tr>
+</tbody></table>
+<p>三个库的底层都是 POI，只是封装层次不同。EasyExcel 4.0.3 用的是 POI 5.2.5，Fesod 用的是 POI 5.5.1。这个 POI 版本差不是小事，后面讲扩展点的时候会回到这里：一旦你的代码摸到 POI 那一层，这个版本差就意味着要重新验证。</p>
+<p>对照的时候别只盯着版本号新旧。引一个 Excel 库，实际上把 POI 和它那一串传递依赖也引了进来，所以换库时真正决定成本的是两件事：你的代码摸到了哪一层，以及底层引擎换了多少。只用到基础读写，三个库换起来都轻松；摸到 handler 或者直接调 POI，成本就取决于底层 POI 版本差了多少。EasyExcel 到 Fesod，这一跳是从 POI 5.2.5 到 5.5.1。</p>
+<p><img src="/images/easyexcel-fesod-migration.png" alt="三方对照与迁移路径"></p>
+<hr>
+<h2 id="五、真要迁的话，改哪些地方"><a href="#五、真要迁的话，改哪些地方" class="headerlink" title="五、真要迁的话，改哪些地方"></a>五、真要迁的话，改哪些地方</h2><p>动手之前，先把自己代码里的使用面摸清楚。我的做法是搜 import，把 com.alibaba.excel 和 org.apache.poi 这两个前缀都过一遍，再看有没有类实现了 handler 接口。这一步花不了多少时间，但它能直接告诉你这次迁移是机械替换，还是要重写加验证。摸完之后再动 POM。</p>
+<p>下面按依赖、代码、扩展点三层来拆，能改的和要验的分开看。</p>
+<p>先说依赖。假设你原来在根 POM 里统一管 EasyExcel 4.0.3，迁移时先换坐标，注意 artifact 是 fesod-sheet：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- 迁移前：EasyExcel 4.0.3 --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>com.alibaba<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>easyexcel<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>4.0.3<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">&lt;!-- 迁移后：Apache Fesod 2.0.2-incubating --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.apache.fesod<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>fesod-sheet<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>2.0.2-incubating<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">exclusions</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!-- Fesod 内部打包了 POI，项目里若已自带 POI 必须排除，避免版本冲突 --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">exclusion</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.apache.poi<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>poi<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">exclusion</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">exclusion</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.apache.poi<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>poi-ooxml<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">exclusion</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">exclusions</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>用 fesod-bom 统一管版本会省事一点，但排除 POI 这件事不能省。</p>
+<p>import 和入口类的替换是机械的。三个库的根包名和入口类一一对应：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// EasyExcel</span></span><br><span class="line"><span class="keyword">import</span> com.alibaba.excel.EasyExcel;</span><br><span class="line">EasyExcel.write(outputStream, OrderExportVO.class).sheet(<span class="string">&quot;订单明细&quot;</span>).doWrite(list);</span><br><span class="line"></span><br><span class="line"><span class="comment">// FastExcel</span></span><br><span class="line"><span class="keyword">import</span> cn.idev.excel.FastExcel;</span><br><span class="line">FastExcel.write(outputStream, OrderExportVO.class).sheet(<span class="string">&quot;订单明细&quot;</span>).doWrite(list);</span><br><span class="line"></span><br><span class="line"><span class="comment">// Apache Fesod</span></span><br><span class="line"><span class="keyword">import</span> org.apache.fesod.sheet.FesodSheet;</span><br><span class="line">FesodSheet.write(outputStream, OrderExportVO.class).sheet(<span class="string">&quot;订单明细&quot;</span>).doWrite(list);</span><br></pre></td></tr></table></figure>
+
+<p>@ExcelProperty 注解的简单名在三者之间是一致的，所以 DTO 上的注解通常不用动，改 import 就行。</p>
+<p>下面是一个迁到 Fesod 之后的导出示例，写法上刻意和 EasyExcel 保持一致，方便对照：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> org.apache.fesod.sheet.FesodSheet;</span><br><span class="line"><span class="keyword">import</span> org.apache.fesod.sheet.annotation.ExcelProperty;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.io.OutputStream;</span><br><span class="line"><span class="keyword">import</span> java.math.BigDecimal;</span><br><span class="line"><span class="keyword">import</span> java.util.List;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 订单导出：查询订单后交给 FesodSheet 写出。</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">OrderExportService</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/** 导出 DTO：<span class="doctag">@ExcelProperty</span> 的简单名与 EasyExcel 一致，迁移时无需改动 */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">class</span> <span class="title class_">OrderExportVO</span> &#123;</span><br><span class="line">        <span class="meta">@ExcelProperty(&quot;订单号&quot;)</span></span><br><span class="line">        <span class="keyword">private</span> String orderNo;</span><br><span class="line"></span><br><span class="line">        <span class="meta">@ExcelProperty(&quot;金额&quot;)</span></span><br><span class="line">        <span class="keyword">private</span> BigDecimal amount;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// getter / setter 省略</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 查询订单并写出到输出流。</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> os 输出流，通常直接来自 HTTP 响应</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">export</span><span class="params">(OutputStream os)</span> &#123;</span><br><span class="line">        <span class="comment">// 业务侧仍是普通分页查询，Excel 侧只负责把结果写出</span></span><br><span class="line">        List&lt;OrderExportVO&gt; orders = loadOrders();</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 入口类换成 FesodSheet，其余调用链与 EasyExcel 保持一致</span></span><br><span class="line">        FesodSheet.write(os, OrderExportVO.class)</span><br><span class="line">                .sheet(<span class="string">&quot;订单明细&quot;</span>)</span><br><span class="line">                .doWrite(orders);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> List&lt;OrderExportVO&gt; <span class="title function_">loadOrders</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="comment">// 实际项目里换成 Mapper 查询</span></span><br><span class="line">        <span class="keyword">return</span> List.of();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>导入侧也一样，基本是机械替换：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">List&lt;OrderImportDTO&gt; rows = FesodSheet.read(inputStream)</span><br><span class="line">        .head(OrderImportDTO.class)</span><br><span class="line">        .sheet()</span><br><span class="line">        .doReadSync();</span><br></pre></td></tr></table></figure>
+
+<p>读取这一侧，doReadSync 会一次性返回解析好的对象列表，适合数据量可控的导入；数据量大的话，仍然建议用监听器逐行处理，别把整张表读进内存再落库。迁到 Fesod 之后，这套读法没有变化，改的还是 import 和入口类。</p>
+<p>到这里看着挺轻松，但「换包名就行」这句话只对基础读写成立，真正的工作量在扩展点上。</p>
+<p>另外，import 不一定都摆在明面上。有些项目会把 EasyExcel 的类型藏在泛型或者反射里，grep 看不出来，这种情况只能靠编译器和测试兜底。</p>
+<p>一旦你用到写处理器这类扩展点，或者代码里直接 import 了 org.apache.poi.*，迁移就不是改包名那么简单了。常见的几类：</p>
+<table>
+<thead>
+<tr>
+<th>扩展点</th>
+<th>迁移时需要做什么</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>CellWriteHandler</code></td>
+<td>逐个 handler 重新验证回调时机与 API 签名</td>
+</tr>
+<tr>
+<td><code>SheetWriteHandler</code></td>
+<td>重新验证 sheet 生命周期回调</td>
+</tr>
+<tr>
+<td><code>AbstractRowHeightStyleStrategy</code></td>
+<td>自定义行高策略需重新验证</td>
+</tr>
+<tr>
+<td><code>OnceAbsoluteMergeStrategy</code></td>
+<td>合并策略需重新验证</td>
+</tr>
+<tr>
+<td><code>WriteCellData</code> + <code>ImageData</code></td>
+<td>图片嵌入链路需重新验证</td>
+</tr>
+<tr>
+<td>直接使用 <code>org.apache.poi.*</code>（<code>XSSFSheet</code>、<code>PrintSetup</code>、<code>CellRangeAddress</code>）</td>
+<td>POI 从 5.2.5 升到 5.5.1，需按新版本重新验证</td>
+</tr>
+</tbody></table>
+<p>最后一行最容易被忽略。只要代码里直接 import 了 org.apache.poi.*，POI 从 5.2.5 到 5.5.1 这段迁移就躲不掉，得按新版本重新验证。EasyExcel 的扩展点很多时候就是把 POI 对象直接暴露给你，所以在真实项目里，「用 EasyExcel 的 handler」和「直接调 POI」往往是混在一起的。</p>
+<p>表里没有一项是难改的，难的是验证。改 import 是几分钟的事，但要让每个 handler 在新的 POI 版本上行为一致，得把导出结果逐项对比。这也是为什么我把这类迁移归到「中到高」成本，而不是「低」。</p>
+<hr>
+<h2 id="六、容易搞错的几个点"><a href="#六、容易搞错的几个点" class="headerlink" title="六、容易搞错的几个点"></a>六、容易搞错的几个点</h2><p>这几点都不复杂，但被传错的频率很高。</p>
+<p>EasyExcel 的最后一个版本是 4.0.3，2024 年 9 月。不是 3.3.2。3.3.2 是 2023 年 5 月的东西，它后面还有 3.3.3、3.3.4，最后才是 4.0.3。4.0.3 这次升级的重点之一就是 JDK 21 支持，所以只看到 3.3.2，会漏掉归档前最关键的一次变化。</p>
+<p>协议方面，EasyExcel、FastExcel、Fesod 三个都是 Apache-2.0，没有一个是 MIT。FastExcel 和 Fesod 尤其容易被当成 MIT，这两处都要注意。</p>
+<p>入口类叫 FesodSheet，不是 Fesod；调用是 FesodSheet.write，不是 Fesod.write。这个写错代码直接编译不过。坐标是 org.apache.fesod:fesod-sheet，不存在 org.apache.fesod:fesod 这个 artifact。当前版本是 2.0.2-incubating。Fesod 是独立的 Apache 孵化项目，不是 POI 的子模块，它只是用 POI 当引擎。</p>
+<p>这些其实都不需要靠记忆。坐标去 Maven Central 搜，入口类和包名看官方文档或源码，协议看仓库根目录的 LICENSE，版本看 release 记录，都是几分钟的事。</p>
+<p>还有一点：迁移是两层，不是一次改包名。官方主线是 FastExcel 到 Fesod，EasyExcel 用户得先过 FastExcel 这一层。</p>
+<p>最后一个人名容易混。FastExcel 是庄家钜主导的，他原本就是 EasyExcel 的维护者；而 EasyExcel 最初的作者是姬朋飞。这是两个人。把这两者当成同一个人，会让人以为 FastExcel 是原作者的回归之作，其实它是维护者在项目停滞后接着往下做的一条 API 兼容的延续线。</p>
+<p>这些点单看都是小地方，但选型的时候会被放大：版本号看错，可能让你以为项目早就死了；协议看错，合规评估就建在错误前提上；坐标和入口类看错，代码连编译都过不了。</p>
+<hr>
+<h2 id="七、我们自己的项目，迁还是不迁"><a href="#七、我们自己的项目，迁还是不迁" class="headerlink" title="七、我们自己的项目，迁还是不迁"></a>七、我们自己的项目，迁还是不迁</h2><p>背景得先交代，否则结论没意义。我们的技术栈是 Spring Boot 3.2 加 JDK 21，多模块 Maven 单体，Excel 用的是 EasyExcel 4.0.3，版本在根 POM 里统一管。</p>
+<p>真正碰 Excel 的代码不多：4 个 Java 文件，大约 600 行，集中在 2 个应用里。除此之外整个代码库没有别的地方碰 Excel。这个规模不大，但也不是随手就能推平。代码量小意味着盘点快，难度集中意味着真正要花时间的就那一个文件。</p>
+<p>这 4 个文件里难度分布很不均。有一个大概 400 行的样式导出器是硬骨头：它嵌了 logo 图片，做了单元格合并，设了自定义行高，逐单元格配了样式，还配了 A4 打印，页脚页码加重复表头行。它同时用了 EasyExcel 的 handler 扩展点和原生 POI 类。剩下的很轻，一个模板下载，加一个带单个 @ExcelProperty DTO 的 doReadSync 导入，基本是机械活。</p>
+<p>我们最后决定不迁，理由三条：</p>
+<ul>
+<li>4.0.3 已经在 JDK 21 &#x2F; POI 5.2.5 上正常工作，没有影响我们的 CVE；</li>
+<li>归档的库不等于有漏洞的库，它只是不再有新功能，而我们不需要新功能；</li>
+<li>Fesod 还在孵化期，IP 清理尚在进行，而那个 400 行的样式导出器迁过去等于重写加重新验证，功能上没有任何收益。</li>
+</ul>
+<p>这三条里，第三条是关键。前两条是防守，第三条是实打实的成本。那个导出器里，图片、合并、行高、样式、打印设置和 POI 原生调用是混在一起的，换底层引擎意味着这些行为都要重新验一遍。验证这种代码，靠跑一遍导出看一眼是不够的，得逐项对照格式和打印效果。</p>
+<p>真要迁，工作量大致是这样：把 handler 和 POI 调用逐个对照新版本改一遍，再拿真实数据跑导出，逐项检查图片位置、合并范围、行高、单元格样式和打印分页。这些检查没有捷径，因为 POI 版本变了，同样的调用行为可能有细微差别。</p>
+<p>说到底，迁移在我们这里的投入产出比是负的：付出一个复杂导出器的重写成本，换来的是一个名字更正统的依赖。</p>
+<p>那什么时候才值得迁？我们给自己列了触发条件，满足任意一条再动手：</p>
+<ul>
+<li>有真正可利用的漏洞落到 EasyExcel 4.0.3 上；</li>
+<li>确实需要 Fesod 独有的能力，比如 Excel 转 PDF、读取指定行区间这类 EasyExcel 做不到的功能；</li>
+<li>团队统一要求依赖必须挂在 Apache 基金会名下，合规或采购层面的硬性要求。</li>
+</ul>
+<p>在这三条之外，为了追热度去迁一个已经稳定的导出模块，不划算。</p>
+<p>除此之外我们没做别的动作。EasyExcel 4.0.3 继续用，版本锁在根 POM 里，依赖扫描照常跑。哪天扫描真的报出一个可利用的漏洞，再按第一条触发迁移，那时候该评估什么、改哪里，也已经清楚了。</p>
+<hr>
+<h2 id="八、写在最后"><a href="#八、写在最后" class="headerlink" title="八、写在最后"></a>八、写在最后</h2><p>这轮变化里最容易被混在一起的是两件事：毕业和停更。</p>
+<p>EasyExcel 是停更，代码冻结，不再有新功能，但现有版本仍然能用。FastExcel 和 Fesod 是毕业，项目从个人维护走向基金会治理，获得了更长期的生存保障。</p>
+<p>这两件事方向完全不同，但对使用者的意义经常被搅在一起。一个稳定的依赖停更，对绝大多数项目不构成风险；一个正在孵化的项目毕业，也不代表你必须跟过去。选型是把你的风险和收益对上，不是谁新就跟谁。如果你的 Excel 需求已经稳定，底层库又没有实际风险，那不动往往就是最省事也最稳的选择。</p>
+<blockquote>
+<p>能用不等于该换。</p>
+</blockquote>
+<p>先把自己项目里的 Excel 代码盘清楚，再决定要不要动。多数时候你会发现，真正要改的就是那个最复杂的文件，而它恰恰是最不该为了「新」而重写的。</p>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">首页</a></li>
+        
+          <li><a href="/about/">关于</a></li>
+        
+          <li><a href="/archives/">归档</a></li>
+        
+          <li><a href="/tags/">标签</a></li>
+        
+          <li><a href="/categories/">分类</a></li>
+        
+          <li><a href="/search/">搜索</a></li>
+        
+      </ul>
+    </div>
+
+    
+    
+      <div id="toc-footer" style="display: none">
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#EasyExcel-%E5%BD%92%E6%A1%A3%E4%B9%8B%E5%90%8E%EF%BC%8C%E8%AF%A5%E8%BF%81%E7%A7%BB%E5%88%B0-Apache-Fesod-%E5%90%97%EF%BC%9F"><span class="toc-number">1.</span> <span class="toc-text">EasyExcel 归档之后，该迁移到 Apache Fesod 吗？</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-number">1.1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E3%80%81EasyExcel-%E4%B8%BA%E4%BB%80%E4%B9%88%E5%81%9C%E4%BA%86"><span class="toc-number">1.2.</span> <span class="toc-text">一、EasyExcel 为什么停了</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8C%E3%80%81%E6%8E%A5%E6%A3%92%E7%9A%84%E6%98%AF-FastExcel"><span class="toc-number">1.3.</span> <span class="toc-text">二、接棒的是 FastExcel</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%89%E3%80%81Apache-Fesod"><span class="toc-number">1.4.</span> <span class="toc-text">三、Apache Fesod</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9B%9B%E3%80%81%E4%B8%89%E8%80%85%E7%9A%84%E5%9D%90%E6%A0%87%E3%80%81%E5%8C%85%E5%90%8D%E5%92%8C%E5%85%A5%E5%8F%A3%E7%B1%BB"><span class="toc-number">1.5.</span> <span class="toc-text">四、三者的坐标、包名和入口类</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%94%E3%80%81%E7%9C%9F%E8%A6%81%E8%BF%81%E7%9A%84%E8%AF%9D%EF%BC%8C%E6%94%B9%E5%93%AA%E4%BA%9B%E5%9C%B0%E6%96%B9"><span class="toc-number">1.6.</span> <span class="toc-text">五、真要迁的话，改哪些地方</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%AD%E3%80%81%E5%AE%B9%E6%98%93%E6%90%9E%E9%94%99%E7%9A%84%E5%87%A0%E4%B8%AA%E7%82%B9"><span class="toc-number">1.7.</span> <span class="toc-text">六、容易搞错的几个点</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%83%E3%80%81%E6%88%91%E4%BB%AC%E8%87%AA%E5%B7%B1%E7%9A%84%E9%A1%B9%E7%9B%AE%EF%BC%8C%E8%BF%81%E8%BF%98%E6%98%AF%E4%B8%8D%E8%BF%81"><span class="toc-number">1.8.</span> <span class="toc-text">七、我们自己的项目，迁还是不迁</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%AB%E3%80%81%E5%86%99%E5%9C%A8%E6%9C%80%E5%90%8E"><span class="toc-number">1.9.</span> <span class="toc-text">八、写在最后</span></a></li></ol></li></ol>
+      </div>
+    
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://www.zhengyk.cn/blog/174157561.html"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://www.zhengyk.cn/blog/174157561.html&text=EasyExcel 归档之后，该迁移到 Apache Fesod 吗？"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://www.zhengyk.cn/blog/174157561.html&title=EasyExcel 归档之后，该迁移到 Apache Fesod 吗？"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://www.zhengyk.cn/blog/174157561.html&is_video=false&description=EasyExcel 归档之后，该迁移到 Apache Fesod 吗？"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=EasyExcel 归档之后，该迁移到 Apache Fesod 吗？&body=Check out this article: https://www.zhengyk.cn/blog/174157561.html"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://www.zhengyk.cn/blog/174157561.html&title=EasyExcel 归档之后，该迁移到 Apache Fesod 吗？"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://www.zhengyk.cn/blog/174157561.html&title=EasyExcel 归档之后，该迁移到 Apache Fesod 吗？"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://www.zhengyk.cn/blog/174157561.html&title=EasyExcel 归档之后，该迁移到 Apache Fesod 吗？"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://www.zhengyk.cn/blog/174157561.html&title=EasyExcel 归档之后，该迁移到 Apache Fesod 吗？"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://www.zhengyk.cn/blog/174157561.html&name=EasyExcel 归档之后，该迁移到 Apache Fesod 吗？&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://www.zhengyk.cn/blog/174157561.html&t=EasyExcel 归档之后，该迁移到 Apache Fesod 吗？"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> 菜单</a>
+        
+          <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> 目录</a>
+        
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> 分享</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> 返回顶部</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2017-2026
+    薛定谔的汪
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     --><!--
+       --><li><a href="/archives/">归档</a></li><!--
+     --><!--
+       --><li><a href="/tags/">标签</a></li><!--
+     --><!--
+       --><li><a href="/categories/">分类</a></li><!--
+     --><!--
+       --><li><a href="/search/">搜索</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script>
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script>
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"复制到粘贴板！\">";
+    btn += '<i class="fa-regular fa-clone"></i>';
+    btn += '</span>';
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "复制成功！");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+
+<script type="text/javascript">
+(function() {
+  var bar = document.getElementById('reading-progress-bar');
+  if (!bar) return;
+  function update() {
+    var root = document.documentElement;
+    var scrolled = window.scrollY || root.scrollTop;
+    var height = root.scrollHeight - root.clientHeight;
+    bar.style.width = (height > 0 ? (scrolled / height) * 100 : 0) + '%';
+  }
+  window.addEventListener('scroll', update, { passive: true });
+  window.addEventListener('resize', update);
+  update();
+})();
+</script>
+
+<!-- search -->
+
+<!-- Baidu Analytics -->
+
+  <script type="text/javascript">
+        var _hmt = _hmt || [];
+        (function() {
+          var hm = document.createElement("script");
+          hm.src = "https://hm.baidu.com/hm.js?6118f8bad18ee2aa20400925ac6e8926";
+          var s = document.getElementsByTagName("script")[0];
+          s.parentNode.insertBefore(hm, s);
+        })();
+        </script>
+
+<!-- Cloudflare Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/koharu.model.json"},"display":{"position":"right","width":240,"height":480,"hOffset":0,"vOffset":-20},"mobile":{"show":false,"scale":0.5},"react":{"opacityDefault":0.7,"opacityOnHover":0.2},"log":false});</script></body>
+</html>
